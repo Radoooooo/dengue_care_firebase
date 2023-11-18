@@ -3,14 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 
 class InputConfirmPassWidget extends StatefulWidget {
   const InputConfirmPassWidget({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.controller,
     required this.confirmController,
     required this.obscureText,
     required this.iconButton,
     this.labelText,
-  }) : super(key: key);
+  });
 
   final String hintText;
   final TextEditingController controller;
@@ -51,6 +51,7 @@ class _InputConfirmPassWidgetState extends State<InputConfirmPassWidget> {
                 _validatePassword(), // Check password match on change
             decoration: InputDecoration(
               labelText: widget.labelText,
+              labelStyle: GoogleFonts.poppins(),
               border: InputBorder.none,
               hintText: widget.hintText,
               hintStyle: GoogleFonts.poppins(),

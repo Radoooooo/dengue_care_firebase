@@ -41,6 +41,7 @@ class InputPasswordWidget extends StatelessWidget {
             border: InputBorder.none,
             hintText: hintText,
             labelText: labelText,
+            labelStyle: GoogleFonts.poppins(),
             hintStyle: GoogleFonts.poppins(),
             // contentPadding: const EdgeInsets.symmetric(horizontal: 8),
             suffixIcon: iconButton),

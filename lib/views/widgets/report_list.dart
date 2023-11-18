@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:denguecare_firebase/views/admins/admin_viewreportedcasespage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
@@ -75,6 +76,8 @@ class _ReportListWidgetState extends State<ReportListWidget> {
                             .contains(_searchController.text.toLowerCase()))
                     .toList();
               }
+              bool showBadge =
+                  reports.any((report) => report['checked'] == 'No');
 
               return ListView.builder(
                 itemCount: filteredReports.length,
@@ -90,113 +93,127 @@ class _ReportListWidgetState extends State<ReportListWidget> {
                   return Container(
                     width: 50,
                     padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                      color: _getColorForStatus(data['status']),
-                      elevation: 3.0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0)),
-                      child: ListTile(
-                        textColor: Colors.white,
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            RichText(
-                              text: TextSpan(children: [
-                                const WidgetSpan(
-                                  child: Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                  ),
+                    child: InkWell(
+                      onTap: () {
+                        Get.to(() =>
+                            AdminViewReportedCasesPage(reportedCaseData: data));
+                      },
+                      child: badges.Badge(
+                        showBadge: showBadge && data['checked'] == 'No',
+                        badgeStyle: const badges.BadgeStyle(
+                          padding: EdgeInsets.all(1),
+                        ),
+                        position: badges.BadgePosition.topEnd(end: 1),
+                        badgeContent: showBadge && data['checked'] == 'No'
+                            ? const Icon(
+                                Icons.priority_high,
+                                color: Colors.white,
+                                size: 24,
+                              )
+                            : const SizedBox(),
+                        child: Card(
+                          color: _getColorForStatus(data['status']),
+                          elevation: 3.0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0)),
+                          child: ListTile(
+                            textColor: Colors.white,
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                RichText(
+                                  text: TextSpan(children: [
+                                    const WidgetSpan(
+                                      child: Icon(
+                                        Icons.person,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const TextSpan(text: ' '),
+                                    TextSpan(
+                                      text: data['firstName'],
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 14, color: Colors.white),
+                                    ),
+                                    const TextSpan(text: ' '),
+                                    TextSpan(
+                                      text: data['lastName'],
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 14, color: Colors.white),
+                                    ),
+                                  ]),
                                 ),
-                                const TextSpan(text: ' '),
-                                TextSpan(
-                                  text: data['firstName'],
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 14, color: Colors.white),
+                                RichText(
+                                  text: TextSpan(children: [
+                                    const WidgetSpan(
+                                      child: Icon(
+                                        Icons.calendar_today_rounded,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const TextSpan(text: ' '),
+                                    TextSpan(
+                                        text: data['age'],
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14, color: Colors.white)),
+                                  ]),
                                 ),
-                                const TextSpan(text: ' '),
-                                TextSpan(
-                                  text: data['lastName'],
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 14, color: Colors.white),
-                                ),
-                              ]),
+                              ],
                             ),
-                            RichText(
+                            subtitle: RichText(
                               text: TextSpan(children: [
                                 const WidgetSpan(
                                   child: Icon(
-                                    Icons.calendar_today_rounded,
+                                    Icons.contact_phone,
                                     color: Colors.white,
                                   ),
                                 ),
                                 const TextSpan(text: ' '),
                                 TextSpan(
-                                    text: data['age'],
+                                    text: data['contact_number'],
                                     style: GoogleFonts.poppins(
                                         fontSize: 14, color: Colors.white)),
                               ]),
                             ),
-                          ],
-                        ),
-                        subtitle: RichText(
-                          text: TextSpan(children: [
-                            const WidgetSpan(
-                              child: Icon(
-                                Icons.contact_phone,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const TextSpan(text: ' '),
-                            TextSpan(
-                                text: data['contact_number'],
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14, color: Colors.white)),
-                          ]),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Text(
-                            //   'Status',
-                            //   style: GoogleFonts.poppins(fontSize: 14),
-                            //   overflow: TextOverflow.ellipsis,
-                            //   maxLines: 1,
-                            // ),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            RichText(
-                              text: TextSpan(children: [
-                                const WidgetSpan(
-                                  child: Icon(
-                                    Icons.calendar_month_rounded,
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                RichText(
+                                  text: TextSpan(children: [
+                                    const WidgetSpan(
+                                      child: Icon(
+                                        Icons.calendar_month_rounded,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const TextSpan(text: ' '),
+                                    TextSpan(
+                                        text: formattedDate,
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14, color: Colors.white)),
+                                  ]),
+                                ),
+                                const SizedBox(
+                                  width: 24,
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    // Get.offAll(() => AdminViewReportedCasesPage(
+                                    //     reportedCaseData: data));
+                                    Get.to(() => AdminViewReportedCasesPage(
+                                        reportedCaseData: data));
+                                  },
+                                  icon: const Icon(
+                                    Icons.edit_note_rounded,
                                     color: Colors.white,
                                   ),
                                 ),
-                                const TextSpan(text: ' '),
-                                TextSpan(
-                                    text: formattedDate,
-                                    style: GoogleFonts.poppins(
-                                        fontSize: 14, color: Colors.white)),
-                              ]),
+                              ],
                             ),
-                            const SizedBox(
-                              width: 24,
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                // Get.offAll(() => AdminViewReportedCasesPage(
-                                //     reportedCaseData: data));
-                                Get.to(() => AdminViewReportedCasesPage(
-                                    reportedCaseData: data));
-                              },
-                              icon: const Icon(
-                                Icons.edit_note_rounded,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -224,5 +241,34 @@ Color _getColorForStatus(String status) {
       return Colors.red;
     default:
       return Colors.white;
+  }
+}
+
+class LengthIndicator extends StatelessWidget {
+  const LengthIndicator({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Access the length of the ListView
+    int length = 0;
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('reports')
+          .where('checked', isEqualTo: 'No')
+          .orderBy('date', descending: true)
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          length = snapshot.data!.docs.length;
+          print(length);
+          return Text(
+            '$length',
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 12),
+          );
+        }
+        return Text('$length',
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 12));
+      },
+    );
   }
 }

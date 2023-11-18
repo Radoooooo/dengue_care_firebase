@@ -48,6 +48,7 @@ class InputAgeWidget extends StatelessWidget {
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hintText,
+          labelStyle: GoogleFonts.poppins(),
           labelText: labelText,
           hintStyle: GoogleFonts.poppins(),
         ), // contentPadding: const EdgeInsets.symmetric(horizontal: 20)),

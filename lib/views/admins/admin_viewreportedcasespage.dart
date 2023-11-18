@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../widgets/input_address_widget.dart';
 import '../widgets/input_age_widget.dart';
@@ -31,10 +32,23 @@ class _AdminViewReportedCasesPageState
     }
   }
 
-  final TextEditingController _hospitalnameController = TextEditingController();
+  final TextEditingController _otherHospitalController =
+      TextEditingController();
   final TextEditingController _contactNumberController =
       TextEditingController();
 
+  String? valueHospital;
+  final hospitalList = [
+    'Select Hospital',
+    'Souhtern Philippines Medical Center',
+    'Metro Davao Medical And Research Center',
+    'Davao Doctors Hospital',
+    'Brokenshire Memorial Hospital',
+    'Davao Medical School Foundation Hospital',
+    'San Pedro Hospital',
+    'Adventist Hospital Davao',
+    'Other'
+  ];
   String? value;
   final sex = ['Male', 'Female'];
   String? valueStatus;
@@ -110,10 +124,21 @@ class _AdminViewReportedCasesPageState
   void initState() {
     super.initState();
     // Set the default value for the text controller
-    _hospitalnameController.text = widget.reportedCaseData['hospital_name'];
+    //_hospitalnameController.text = widget.reportedCaseData['hospital_name'];
     valueRecovered = widget.reportedCaseData['patient_recovered'];
     valueAdmitted = widget.reportedCaseData['patient_admitted'];
     valueStatus = widget.reportedCaseData['status'];
+    if (hospitalList.contains(widget.reportedCaseData['hospital_name'])) {
+      // If 'hospital_name' is in the list, use it
+      valueHospital = widget.reportedCaseData['hospital_name'];
+    } else if (widget.reportedCaseData['other_hospital'] == 'Yes') {
+      // If 'hospital_name' is not in the list and 'other_hospital' is 'yes', use 'Other'
+      valueHospital = 'Other';
+    } else {
+      // Otherwise, set a default value or handle it according to your needs
+      valueHospital = hospitalList[0];
+    }
+    _otherHospitalController.text = widget.reportedCaseData['hospital_name'];
     _contactNumberController.text =
         '0${widget.reportedCaseData['contact_number']}';
   }
@@ -158,7 +183,7 @@ class _AdminViewReportedCasesPageState
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text("Reported Case",
-                            style: Theme.of(context).textTheme.headlineSmall),
+                            style: GoogleFonts.poppins(fontSize: 28)),
                       ),
                       _gap(),
                       Row(
@@ -261,8 +286,10 @@ class _AdminViewReportedCasesPageState
                       _gap(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text("Symptoms",
-                            style: Theme.of(context).textTheme.headlineSmall),
+                        child: Text(
+                          "Symptoms",
+                          style: GoogleFonts.poppins(fontSize: 28),
+                        ),
                       ),
                       _gap(),
                       Row(
@@ -445,7 +472,10 @@ class _AdminViewReportedCasesPageState
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Text("Status : "),
+                          Text(
+                            "Status : ",
+                            style: GoogleFonts.poppins(fontSize: 18),
+                          ),
                           const SizedBox(width: 20),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -486,11 +516,17 @@ class _AdminViewReportedCasesPageState
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text("Date of first symptom:"),
+                                Text(
+                                  "Date of first symptom:",
+                                  style: GoogleFonts.poppins(fontSize: 18),
+                                ),
                                 const SizedBox(width: 16),
-                                Text(widget.reportedCaseData[
-                                        'first_symptom_date'] ??
-                                    formattedDateOnly),
+                                Text(
+                                  widget.reportedCaseData[
+                                          'first_symptom_date'] ??
+                                      formattedDateOnly,
+                                  style: GoogleFonts.poppins(fontSize: 16),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 8),
@@ -517,7 +553,10 @@ class _AdminViewReportedCasesPageState
                                       });
                                     }
                                   },
-                                  child: const Text('Select date'),
+                                  child: Text(
+                                    'Select date',
+                                    style: GoogleFonts.poppins(fontSize: 14),
+                                  ),
                                 ),
                               ],
                             ),
@@ -537,7 +576,10 @@ class _AdminViewReportedCasesPageState
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text("Patient Admitted? : "),
+                                Text(
+                                  "Patient Admitted? : ",
+                                  style: GoogleFonts.poppins(fontSize: 18),
+                                ),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 4),
@@ -569,28 +611,86 @@ class _AdminViewReportedCasesPageState
                                 ),
                               ],
                             ),
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [Text("If YES :")],
+                            Visibility(
+                              visible: valueAdmitted == 'Yes',
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "If YES :",
+                                    style: GoogleFonts.poppins(fontSize: 18),
+                                  )
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _hospitalnameController,
-                                    enabled: true,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Hospital name',
-                                      prefixIcon:
-                                          Icon(Icons.local_hospital_rounded),
-                                      border: OutlineInputBorder(),
+                            Visibility(
+                              visible: valueAdmitted == 'Yes',
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0)),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        items: hospitalList
+                                            .map(buildMenuItemHospital)
+                                            .toList(),
+                                        value: valueHospital ??
+                                            widget.reportedCaseData[
+                                                'hospital_name'],
+                                        hint: Text(widget.reportedCaseData[
+                                                'hospital_name'] ??
+                                            valueHospital),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            // Update valueAdmitted only if the user selects a new value
+                                            valueHospital = value;
+                                          });
+
+                                          // print it to the console
+                                          print("Selected value: $value");
+                                        },
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
+                            const SizedBox(height: 8),
+                            Visibility(
+                                visible: valueHospital == 'Other' &&
+                                    valueAdmitted == 'Yes',
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Please Specify',
+                                      style: GoogleFonts.poppins(fontSize: 14),
+                                    )
+                                  ],
+                                )),
+                            const SizedBox(height: 8),
+                            Visibility(
+                                visible: valueHospital == 'Other' &&
+                                    valueAdmitted == 'Yes',
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: InputWidget(
+                                        obscureText: false,
+                                        controller: _otherHospitalController,
+                                        labelText: 'Hospital Name',
+                                      ),
+                                    )
+                                  ],
+                                )),
                           ],
                         ),
                       ),
@@ -598,7 +698,10 @@ class _AdminViewReportedCasesPageState
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Text("Patient Recovered? : "),
+                          Text(
+                            "Patient Recovered? : ",
+                            style: GoogleFonts.poppins(fontSize: 18),
+                          ),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
@@ -638,12 +741,12 @@ class _AdminViewReportedCasesPageState
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4)),
                           ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(10.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
                             child: Text(
                               'Submit',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              style: GoogleFonts.poppins(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                           ),
                           onPressed: () {
@@ -716,7 +819,12 @@ class _AdminViewReportedCasesPageState
     Map<String, dynamic> updateData = {
       'first_symptom_date': formattedDateOnly,
       'patient_admitted': valueAdmitted,
-      'hospital_name': _hospitalnameController.text,
+      'hospital_name': valueHospital == hospitalList[0]
+          ? ''
+          : valueHospital == 'Other'
+              ? _otherHospitalController.text
+              : valueHospital,
+      'other_hospital': valueHospital == 'Other' ? 'Yes' : 'No',
       'patient_recovered': valueRecovered,
       'checked': 'Yes'
     };
@@ -780,19 +888,39 @@ void _showSnackbarSuccess(BuildContext context, String message) {
 Widget _gap() => const SizedBox(height: 16);
 DropdownMenuItem<String> buildMenuItem(String sex) => DropdownMenuItem(
       value: sex,
-      child: Text(sex),
+      child: Text(
+        sex,
+        style: GoogleFonts.poppins(fontSize: 16),
+      ),
     );
 DropdownMenuItem<String> buildMenuItemStatus(String status) => DropdownMenuItem(
       value: status,
-      child: Text(status),
+      child: Text(
+        status,
+        style: GoogleFonts.poppins(fontSize: 16),
+      ),
     );
 DropdownMenuItem<String> buildMenuItemAdmitted(String admitted) =>
     DropdownMenuItem(
       value: admitted,
-      child: Text(admitted),
+      child: Text(
+        admitted,
+        style: GoogleFonts.poppins(fontSize: 16),
+      ),
     );
 DropdownMenuItem<String> buildMenuItemRecovered(String recovered) =>
     DropdownMenuItem(
       value: recovered,
-      child: Text(recovered),
+      child: Text(
+        recovered,
+        style: GoogleFonts.poppins(fontSize: 16),
+      ),
+    );
+DropdownMenuItem<String> buildMenuItemHospital(String hospital) =>
+    DropdownMenuItem(
+      value: hospital,
+      child: Text(
+        hospital,
+        style: GoogleFonts.poppins(fontSize: 13),
+      ),
     );

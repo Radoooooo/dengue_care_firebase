@@ -551,6 +551,7 @@ class _UserReportPageState extends State<UserReportPage> {
         'emailid': user!.email!,
         'status': 'Suspected',
         'first_symptom_date': '',
+        'other_hospital': 'No',
         'patient_admitted': 'No',
         'hospital_name': ' ',
         'patient_recovered': 'No',

@@ -43,6 +43,7 @@ class InputAddressWidget extends StatelessWidget {
         decoration: InputDecoration(
           border: InputBorder.none,
           labelText: labelText,
+          labelStyle: GoogleFonts.poppins(),
           //hintText: hintText,
           hintStyle: GoogleFonts.poppins(),
         ), // contentPadding: const EdgeInsets.symmetric(horizontal: 20)),

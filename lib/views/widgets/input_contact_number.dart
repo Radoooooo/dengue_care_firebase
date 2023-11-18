@@ -48,6 +48,7 @@ class InputContactNumber extends StatelessWidget {
         decoration: InputDecoration(
           border: InputBorder.none,
           labelText: labelText,
+          labelStyle: GoogleFonts.poppins(),
           hintText: hintText,
           hintStyle: GoogleFonts.poppins(fontSize: 14),
         ), // contentPadding: const EdgeInsets.symmetric(horizontal: 20)),
