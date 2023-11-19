@@ -28,7 +28,7 @@ Widget conditionalImage(String? imageUrl) {
     // If the platform is web
     return Image(
       image: NetworkImage(imageUrl),
-      fit: BoxFit.fill,
+      fit: BoxFit.contain,
       width: double.maxFinite,
     );
   } else if (Platform.isAndroid) {
