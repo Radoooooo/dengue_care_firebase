@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:cross_file_image/cross_file_image.dart';
 import 'admin_homepage.dart';
 
 String imageUrl = '';
@@ -20,7 +21,7 @@ File? _selectedImage;
 File? image;
 List<Uint8List> pickedImagesInBytes = [];
 XFile? imagefromWeb;
-late Uint8List? bytes;
+Uint8List? bytes;
 
 Uint8List convertListToUint8List(List<int> list) {
   return Uint8List.fromList(list);
@@ -40,6 +41,7 @@ class _AdminPostPageState extends State<AdminPostPage> {
     try {
       ImagePicker picker = ImagePicker();
       imagefromWeb = await picker.pickImage(source: ImageSource.gallery);
+
       if (imagefromWeb != null) {
         bytes = await imagefromWeb!.readAsBytes();
       }
@@ -63,6 +65,17 @@ class _AdminPostPageState extends State<AdminPostPage> {
       setState(() {
         this.downloadURL = downloadURL;
       });
+      FirebaseFirestore.instance.collection('posts').add({
+        'imageUrl': downloadURL,
+        'caption': _titleController.text.trim(),
+        'postDetails': _contentController.text.trim(),
+        'uploaderEmail':
+            user!.email, // Assuming the displayName is set for Firebase user.
+        'uploaderUID': user.uid,
+        'date': FieldValue.serverTimestamp(),
+      });
+      logAdminAction('Created Post', user.uid);
+      _showSnackbarSuccess(context, 'Success');
     } catch (e) {
       _showSnackbarError(context, e.toString());
     }
@@ -81,8 +94,12 @@ class _AdminPostPageState extends State<AdminPostPage> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                postUpload();
+              onPressed: () async {
+                if (kIsWeb) {
+                  uploadimgWeb();
+                } else if (Platform.isAndroid) {
+                  postUpload();
+                }
               },
               icon: const Icon(Icons.check))
         ],
@@ -94,10 +111,10 @@ class _AdminPostPageState extends State<AdminPostPage> {
             child: Center(
               child: Column(
                 children: [
-                  _selectedImage != null
+                  _selectedImage != null || bytes != null
                       ? kIsWeb
-                          ? Image.file(
-                              _selectedImage!,
+                          ? Image.memory(
+                              bytes!,
                               width: 350,
                               height: 350,
                               fit: BoxFit.cover,
@@ -140,9 +157,9 @@ class _AdminPostPageState extends State<AdminPostPage> {
                             child: ElevatedButton.icon(
                               icon: const Icon(
                                   Icons.add_photo_alternate_outlined),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (kIsWeb) {
-                                  _pickImageWeb();
+                                  await _pickImageWeb();
                                 } else if (Platform.isAndroid) {
                                   imgPickUpload();
                                 }
@@ -243,7 +260,7 @@ class _AdminPostPageState extends State<AdminPostPage> {
       logAdminAction('Created Post', user.uid);
       _showSnackbarSuccess(context, 'Success');
     } catch (e) {
-      //  Utils.showSnackBar(e.toString());
+      _showSnackbarError(context, e.toString());
     }
   }
 }
