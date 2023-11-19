@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:cross_file_image/cross_file_image.dart';
+import 'package:uuid/uuid.dart';
 import 'admin_homepage.dart';
 
 String imageUrl = '';
@@ -36,6 +37,13 @@ class AdminPostPage extends StatefulWidget {
 
 class _AdminPostPageState extends State<AdminPostPage> {
   String downloadURL = '';
+  final uuid = const Uuid();
+  String uniqueDocId = '';
+  void generateUniqueId() {
+    setState(() {
+      uniqueDocId = uuid.v4(); // Generates a new unique ID
+    });
+  }
 
   Future<void> _pickImageWeb() async {
     try {
@@ -44,6 +52,11 @@ class _AdminPostPageState extends State<AdminPostPage> {
 
       if (imagefromWeb != null) {
         bytes = await imagefromWeb!.readAsBytes();
+        setState(() {
+          bytes;
+        });
+
+        _showSnackbarSuccess(context, "Image Selected");
       }
     } catch (e) {
       _showSnackbarError(context, e.toString());
@@ -72,6 +85,7 @@ class _AdminPostPageState extends State<AdminPostPage> {
         'uploaderEmail':
             user!.email, // Assuming the displayName is set for Firebase user.
         'uploaderUID': user.uid,
+        'post_id': uniqueDocId,
         'date': FieldValue.serverTimestamp(),
       });
       logAdminAction('Created Post', user.uid);
@@ -79,6 +93,13 @@ class _AdminPostPageState extends State<AdminPostPage> {
     } catch (e) {
       _showSnackbarError(context, e.toString());
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    generateUniqueId();
   }
 
   @override
@@ -185,8 +206,10 @@ class _AdminPostPageState extends State<AdminPostPage> {
       _titleController.clear();
       _contentController.clear();
       // other input resets if any
+      bytes = null;
       _selectedImage = null;
       imageUrl = '';
+      downloadURL = '';
     });
   }
 
@@ -255,6 +278,7 @@ class _AdminPostPageState extends State<AdminPostPage> {
         'uploaderEmail':
             user!.email, // Assuming the displayName is set for Firebase user.
         'uploaderUID': user.uid,
+        'post_id': uniqueDocId,
         'date': FieldValue.serverTimestamp(),
       });
       logAdminAction('Created Post', user.uid);

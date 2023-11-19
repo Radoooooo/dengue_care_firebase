@@ -276,6 +276,8 @@ class _AdminViewReportedCasesPageState
                             borderRadius: BorderRadius.circular(8.0)),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
+                            padding: const EdgeInsets.all(0),
+                            isExpanded: true,
                             items: puroklist.map(buildMenuItem).toList(),
                             value: widget.reportedCaseData['purok'],
                             hint: const Text('Purok'),
