@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 List<DengueData> chart = [];
 List<DengueData> chart2 = [];
 List<DengueData> chart3 = [];
+List<LineSeries<DengueData, int>> yearlySeries = [];
 List<piechartData> pieChart = [];
+
 List<StreetPurokData> barChart = [];
 List<int> listYear = [];
 
@@ -84,6 +86,7 @@ class _testChartState extends State<testChart> {
       future: Future.wait([
         getListYear(),
         getYearlyDataMonth(selectedYear),
+        generateYearlySeries(),
         getYearlyDataWeek(selectedYear),
         getDataYear(),
         queryAgeGroupsCount(selectedYear),
@@ -327,6 +330,44 @@ class _testChartState extends State<testChart> {
                   ],
                 ),
                 width: double.infinity,
+                child: Column(
+                  children: [
+                    SfCartesianChart(
+                      title: ChartTitle(
+                          text:
+                              "Number of Active Cases Per Month - Multiple Years"),
+                      enableAxisAnimation: true,
+                      primaryXAxis: NumericAxis(
+                        title: AxisTitle(text: "Morbidity Month"),
+                        minimum: 0,
+                        maximum: 12,
+                        interval: 1,
+                      ),
+                      primaryYAxis: NumericAxis(
+                        title: AxisTitle(text: "Number of Active Cases"),
+                      ),
+                      tooltipBehavior: _tooltipBehavior,
+                      series: yearlySeries,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      spreadRadius: 2,
+                      blurRadius: 2,
+                      offset: Offset(2, 2),
+                    ),
+                  ],
+                ),
+                width: double.infinity,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -489,8 +530,10 @@ Future<List<int>> getListYear() async {
     String x = 'Year';
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    QuerySnapshot querySnapshot =
-        await firestore.collection('denguelinelist').get();
+    QuerySnapshot querySnapshot = await firestore
+        .collection('denguelinelist')
+        .orderBy('Year', descending: false)
+        .get();
 
     Set<int> uniqueValues = {};
     for (QueryDocumentSnapshot doc in querySnapshot.docs) {
@@ -513,7 +556,8 @@ Future<List<DengueData>> getYearlyDataMonth(int year) async {
     String x = 'MorbidityMonth';
     CollectionReference collection =
         FirebaseFirestore.instance.collection('denguelinelist');
-    QuerySnapshot querySnapshot = await collection.get();
+    QuerySnapshot querySnapshot =
+        await collection.orderBy('MorbidityMonth', descending: false).get();
 
     Map<int, int> valueL = {};
 
@@ -676,6 +720,23 @@ void logAdminAction(String action, String documentId) async {
 
   // Add the log entry to the 'admin_logs' collection
   await adminLogs.add(logEntry);
+}
+
+Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
+  List<int> listYear = await getListYear();
+
+  for (int year in listYear) {
+    List<DengueData> yearlyData = await getYearlyDataMonth(year);
+    yearlySeries.add(LineSeries<DengueData, int>(
+      dataSource: yearlyData, // list of yearly data
+      xValueMapper: (DengueData data, _) => data.x, // extract x-axis value
+      yValueMapper: (DengueData data, _) => data.y, // extract y-axis value
+      name: '$year', // set year as series name
+      markerSettings: const MarkerSettings(isVisible: true), // enable markers
+    ));
+  }
+
+  return yearlySeries;
 }
 
 Widget _gap() => const SizedBox(height: 8);
