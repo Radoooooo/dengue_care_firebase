@@ -210,7 +210,7 @@ class _AdminViewPostState extends State<AdminViewPost> {
 
     try {
       if (pickedFile != null) {
-        deleteFileByURL(widget.post['imgUrl']);
+        deleteFileByURL(widget.post['imageUrl']);
         image = File(pickedFile.path);
 
         setState(() {
