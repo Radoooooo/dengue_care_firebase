@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:denguecare_firebase/views/admins/admin_homepage.dart';
+import 'package:denguecare_firebase/views/admins/admin_register.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,6 +26,17 @@ class _ManageAdminState extends State<ManageAdmin> {
             Get.offAll(() => const AdminMainPage());
           },
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Get.offAll(const AdminRegisterPage());
+            },
+            icon: const Icon(Icons.person_add),
+          ),
+          const SizedBox(
+            width: 5,
+          )
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: user.where('role', isEqualTo: 'Admin').snapshots(),

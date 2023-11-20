@@ -18,8 +18,12 @@ String userName = '';
 String selectedFile = '';
 final TextEditingController _titleController = TextEditingController();
 final TextEditingController _contentController = TextEditingController();
+
+//! FOR MOBILE
 File? _selectedImage;
 File? image;
+
+//! WEB
 List<Uint8List> pickedImagesInBytes = [];
 XFile? imagefromWeb;
 Uint8List? bytes;

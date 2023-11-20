@@ -816,7 +816,6 @@ class _AdminViewReportedCasesPageState
         reports.doc(documentID); // Use the document_id here
 
     _buildProgressIndicator();
-    // // Get the current date
 
     Map<String, dynamic> updateData = {
       'first_symptom_date': formattedDateOnly,

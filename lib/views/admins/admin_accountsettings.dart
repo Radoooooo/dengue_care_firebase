@@ -17,7 +17,6 @@ class AdminAccountSettings extends StatefulWidget {
 
 class _AdminAccountSettingsState extends State<AdminAccountSettings> {
   final user = FirebaseAuth.instance.currentUser!;
-  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,15 +44,81 @@ class AdminEdit extends StatefulWidget {
 class _AdminEditState extends State<AdminEdit> {
   final FirebaseAuth aw = FirebaseAuth.instance;
   final TextEditingController _newnameController = TextEditingController();
+  final TextEditingController _newfirstnameController = TextEditingController();
+  final TextEditingController _newlastnameController = TextEditingController();
   final TextEditingController _newageController = TextEditingController();
-
   final TextEditingController _newemailController = TextEditingController();
+  final puroklist = <String>{
+    'Select Purok',
+    'Bread Village',
+    'Carnation St.',
+    'Hillside Sibdivision',
+    'Ladislawa Village',
+    'NCCC Village',
+    'NHA Buhangin',
+    'Purok Anahaw',
+    'Purok Apollo',
+    'Purok Bagong Lipunan',
+    'Purok Balite 1 and 2',
+    'Purok Birsaba',
+    'Purok Blk. 10',
+    'Purok Buhangin Hills',
+    'Purok Cubcub',
+    'Purok Damayan',
+    'Purok Dumanlas Proper',
+    'Purok Engan Village',
+    'Purok Kalayaan',
+    'Purok Lopzcom',
+    'Purok Lourdes',
+    'Purok Lower St Jude',
+    'Purok Maglana',
+    'Purok Mahayag',
+    'Purok Margarita',
+    'Purok Medalla Melagrosa',
+    'Purok Molave',
+    'Purok Mt. Carmel',
+    'Purok New San Isidro',
+    'Purok NIC',
+    'Purok Old San Isidro',
+    'Purok Orchids',
+    'Purok Palm Drive',
+    'Purok Panorama Village',
+    'Purok Pioneer Village',
+    'Purok Purok Pine Tree',
+    'Purok Sampaguita',
+    'Purok San Antonio',
+    'Purok Sandawa',
+    'Purok San Jose',
+    'Purok San Lorenzo',
+    'Purok San Miguel Lower and Upper',
+    'Purok San Nicolas',
+    'Purok San Pedro Village',
+    'Purok San Vicente',
+    'Purok Spring Valley 1 and 2',
+    'Purok Sta. Cruz',
+    'Purok Sta. Maria',
+    'Purok Sta. Teresita',
+    'Purok Sto. Niño',
+    'Purok Sto. Rosario',
+    'Purok Sunflower',
+    'Purok Talisay',
+    'Purok Upper St. Jude',
+    'Purok Waling-waling',
+    'Purok Watusi',
+  };
+  String? _selectedPurok;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
     _newnameController.dispose();
+    _newfirstnameController.dispose();
+    _newlastnameController.dispose();
     _newageController.dispose();
-
     _newemailController.dispose();
     super.dispose();
   }
@@ -73,8 +138,9 @@ class _AdminEditState extends State<AdminEdit> {
         Map<String, dynamic> userData =
             snapshot.data!.data() as Map<String, dynamic>;
         _newnameController.text = userData['name'] ?? '';
+        _newfirstnameController.text = userData['firstName'] ?? '';
+        _newlastnameController.text = userData['lastName'] ?? '';
         _newageController.text = userData['age'] ?? '';
-
         _newemailController.text = userData['email'] ?? '';
         return SingleChildScrollView(
           child: Center(
@@ -100,22 +166,55 @@ class _AdminEditState extends State<AdminEdit> {
                         style: GoogleFonts.poppins(fontSize: 18),
                       ),
                       const SizedBox(height: 20),
-                      InputWidget(
-                        hintText: "Update Name",
-                        controller: _newnameController,
-                        obscureText: false,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InputWidget(
+                              labelText: 'First Name',
+                              controller: _newfirstnameController,
+                              obscureText: false,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: InputWidget(
+                              labelText: "Last Name",
+                              controller: _newlastnameController,
+                              obscureText: false,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 20),
                       InputAgeWidget(
-                        hintText: "Update Age",
+                        labelText: "Age",
                         controller: _newageController,
                         obscureText: false,
                       ),
                       const SizedBox(height: 20),
                       InputEmailWidget(
-                        hintText: "Update Email",
+                        labelText: "Email",
                         controller: _newemailController,
                         obscureText: false,
+                      ),
+                      const SizedBox(height: 20),
+                      DropdownButtonFormField<String>(
+                        value: _selectedPurok ?? userData['purok'],
+                        items: puroklist.map((purok) {
+                          return DropdownMenuItem(
+                            value: purok,
+                            child: Text(purok),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          print(val);
+                          setState(() {
+                            _selectedPurok = val;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Select Purok',
+                        ),
                       ),
                       const SizedBox(height: 20),
                       SizedBox(
@@ -150,22 +249,43 @@ class _AdminEditState extends State<AdminEdit> {
     );
   }
 
-  Future<void> _updateUserInfoinFirestore(
-      String uid, String newName, String newAge, String newEmail) async {
+  Future<void> _updateUserInfoinFirestore() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String newName =
+        '${_newfirstnameController.text} ${_newlastnameController.text}';
+
+    String newfirstName = _newfirstnameController.text;
+    String newlastName = _newlastnameController.text;
+    String newAge = _newageController.text;
+    String newEmail = _newemailController.text;
     try {
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      await user!.updateDisplayName(newName);
+      await user.updateEmail(newEmail);
+      // _updateUserInfoinFirestore(user.uid, newfirstName, newlastName, newAge,
+      //     newEmail, _selectedPurok!);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
+        'firstName': newfirstName,
+        'lastName': newlastName,
         'name': newName,
         'age': newAge,
         'email': newEmail,
+        'purok': _selectedPurok!,
       });
+      await user.reload();
+
+      // ignore: use_build_context_synchronously
+      _showSnackbarSuccess(context, "User Information updated successfully");
     } catch (error) {
-      rethrow;
+      // ignore: use_build_context_synchronously
+      _showSnackbarError(context, error.toString());
     }
   }
 
   Future<void> _updateUserInfo() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    bool proceed = await showDialog(
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -174,14 +294,14 @@ class _AdminEditState extends State<AdminEdit> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true); // Return true if user confirms
+                _updateUserInfoinFirestore();
+                Navigator.of(context).pop(); // Return true if user confirms
               },
               child: const Text('OK'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context)
-                    .pop(false); // Return false if user cancels
+                Navigator.of(context).pop(); // Return false if user cancels
               },
               child: const Text('Cancel'),
             ),
@@ -189,24 +309,6 @@ class _AdminEditState extends State<AdminEdit> {
         );
       },
     );
-    if (proceed = true) {
-      String newName = _newnameController.text;
-      String newAge = _newageController.text;
-      String newEmail = _newemailController.text;
-
-      try {
-        await user!.updateDisplayName(newName);
-        await user.updateEmail(newEmail);
-        await _updateUserInfoinFirestore(user.uid, newName, newAge, newEmail);
-        await user.reload();
-
-        // ignore: use_build_context_synchronously
-        _showSnackbarSuccess(context, "User Information updated successfully");
-      } catch (error) {
-        // ignore: use_build_context_synchronously
-        _showSnackbarError(context, error.toString());
-      }
-    } else {}
   }
 
   void _showSnackbarSuccess(BuildContext context, String message) {
