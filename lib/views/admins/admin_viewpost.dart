@@ -266,7 +266,12 @@ class _AdminViewPostState extends State<AdminViewPost> {
         'uploaderUID': user.uid,
         'date': FieldValue.serverTimestamp(),
       });
-      logAdminAction('Created Post', user.uid);
+      setState(() {
+        widget.post['caption'] = captionController.text.trim();
+        widget.post['postDetails'] = postDetailsController.text.trim();
+        isEditing = false;
+      });
+
       _showSnackbarSuccess(context, 'Success');
     } catch (e) {
       _showSnackbarError(context, e.toString());
