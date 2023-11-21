@@ -6,7 +6,7 @@ import 'package:denguecare_firebase/charts/testchart.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 List<List<dynamic>> data = [];
 
@@ -26,7 +26,10 @@ class _AdminDataVizPageState extends State<AdminDataVizPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text('Loading...'),
+        title: Text('Loading...',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+            )),
         content: CircularProgressIndicator(),
       ),
     );
