@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 List<DengueData> chart = [];
 List<DengueData> chart2 = [];
 List<DengueData> chart3 = [];
+List<DengueData> yearlyData = [];
 List<LineSeries<DengueData, int>> yearlySeries = [];
 List<piechartData> pieChart = [];
 
@@ -25,6 +26,7 @@ double a4 = 0;
 late TooltipBehavior _tooltipBehavior;
 late TooltipBehavior _tooltipBehavior2;
 late TooltipBehavior _tooltipBehavior3;
+late TooltipBehavior _tooltipBehavior4;
 late ZoomPanBehavior _zoomPanBehavior;
 
 class DengueData {
@@ -72,10 +74,10 @@ class _testChartState extends State<testChart> {
 
   @override
   void initState() {
-    selectedYear = selectedYear;
     _tooltipBehavior = TooltipBehavior(enable: true);
     _tooltipBehavior2 = TooltipBehavior(enable: true);
     _tooltipBehavior3 = TooltipBehavior(enable: true);
+    _tooltipBehavior4 = TooltipBehavior(enable: true);
     _zoomPanBehavior =
         ZoomPanBehavior(enableMouseWheelZooming: true, enablePinching: true);
 
@@ -88,19 +90,19 @@ class _testChartState extends State<testChart> {
       future: Future.wait([
         getListYear(),
         getYearlyDataMonth(selectedYear),
-        generateYearlySeries(),
         getYearlyDataWeek(selectedYear),
         getDataYear(),
+        generateYearlySeries(),
         queryAgeGroupsCount(selectedYear),
         getPurokCases(selectedYear),
       ]),
       builder: (context, snapshot) {
         if (chart.isNotEmpty) {
-          chart.sort((a, b) => a.x.compareTo(b.x));
-          chart2.sort((a, b) => a.x.compareTo(b.x));
-          chart3.sort((a, b) => a.x.compareTo(b.x));
+          //chart.sort((a, b) => a.x.compareTo(b.x));
+          //chart2.sort((a, b) => a.x.compareTo(b.x));
+          //chart3.sort((a, b) => a.x.compareTo(b.x));
           barChart.sort((a, b) => a.cases.compareTo(b.cases));
-          listYear.sort((a, b) => a.compareTo(b));
+          //listYear.sort((a, b) => a.compareTo(b));
           a1 = pieChart[pieChart.length - 4].number;
           a2 = pieChart[pieChart.length - 3].number;
           a3 = pieChart[pieChart.length - 2].number;
@@ -109,14 +111,12 @@ class _testChartState extends State<testChart> {
           maxYear = listYear.last + 1;
         } else {}
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // Display a circular progress indicator while waiting for data.
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
 
         if (snapshot.hasError) {
-          // Handle errors.
           return Center(
             child: Text("Error: ${snapshot.error}"),
           );
@@ -173,16 +173,16 @@ class _testChartState extends State<testChart> {
                     ),
                     onPressed: () async {
                       setState(() {
-                        a1 = 0;
-                        a2 = 0;
-                        a3 = 0;
-                        a4 = 0;
                         chart = [];
                         chart2 = [];
                         chart3 = [];
                         barChart = [];
                         pieChart = [];
                         yearlySeries = [];
+                        a1 = 0;
+                        a2 = 0;
+                        a3 = 0;
+                        a4 = 0;
                       });
                       showLoadingDialog();
                       await deleteAllDocumentsInCollection('denguelinelist');
@@ -214,7 +214,8 @@ class _testChartState extends State<testChart> {
                     SfCartesianChart(
                       title: ChartTitle(
                           text: "Number of Active Cases Per Month",
-                          textStyle: GoogleFonts.poppins(fontSize: 20)),
+                          textStyle: GoogleFonts.poppins(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
                       enableAxisAnimation: true,
                       primaryXAxis: NumericAxis(
                           title: AxisTitle(
@@ -233,6 +234,7 @@ class _testChartState extends State<testChart> {
                             dataSource: chart,
                             xValueMapper: (DengueData data, _) => data.x,
                             yValueMapper: (DengueData data, _) => data.y,
+                            name: 'Active Cases',
                             markerSettings:
                                 const MarkerSettings(isVisible: true)),
                       ],
@@ -261,7 +263,8 @@ class _testChartState extends State<testChart> {
                     SfCartesianChart(
                       title: ChartTitle(
                           text: "Number of Active Cases Per Week",
-                          textStyle: GoogleFonts.poppins(fontSize: 20)),
+                          textStyle: GoogleFonts.poppins(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
                       enableAxisAnimation: true,
                       primaryXAxis: NumericAxis(
                           title: AxisTitle(
@@ -280,6 +283,7 @@ class _testChartState extends State<testChart> {
                             dataSource: chart2,
                             xValueMapper: (DengueData data, _) => data.x,
                             yValueMapper: (DengueData data, _) => data.y,
+                            name: 'Active Cases',
                             markerSettings:
                                 const MarkerSettings(isVisible: true)),
                       ],
@@ -308,7 +312,8 @@ class _testChartState extends State<testChart> {
                     SfCartesianChart(
                       title: ChartTitle(
                           text: "Number of Active Cases Per Year",
-                          textStyle: GoogleFonts.poppins(fontSize: 20)),
+                          textStyle: GoogleFonts.poppins(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
                       enableAxisAnimation: true,
                       primaryXAxis: NumericAxis(
                           title: AxisTitle(
@@ -327,6 +332,7 @@ class _testChartState extends State<testChart> {
                             dataSource: chart3,
                             xValueMapper: (DengueData data, _) => data.x,
                             yValueMapper: (DengueData data, _) => data.y,
+                            name: 'Active Cases',
                             markerSettings:
                                 const MarkerSettings(isVisible: true)),
                       ],
@@ -356,7 +362,8 @@ class _testChartState extends State<testChart> {
                       title: ChartTitle(
                         text:
                             "Number of Active Cases Per Month - Multiple Years",
-                        textStyle: GoogleFonts.poppins(fontSize: 20),
+                        textStyle: GoogleFonts.poppins(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       enableAxisAnimation: true,
                       primaryXAxis: NumericAxis(
@@ -374,7 +381,7 @@ class _testChartState extends State<testChart> {
                           textStyle: GoogleFonts.poppins(fontSize: 20),
                         ),
                       ),
-                      tooltipBehavior: _tooltipBehavior,
+                      tooltipBehavior: _tooltipBehavior4,
                       series: yearlySeries,
                     ),
                   ],
@@ -403,7 +410,8 @@ class _testChartState extends State<testChart> {
                       child: SfCircularChart(
                         title: ChartTitle(
                             text: 'Active Cases Age Group',
-                            textStyle: GoogleFonts.poppins(fontSize: 20)),
+                            textStyle: GoogleFonts.poppins(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
                         series: <CircularSeries>[
                           PieSeries<piechartData, String>(
                             dataSource: pieChart,
@@ -466,7 +474,8 @@ class _testChartState extends State<testChart> {
                             //zoomPanBehavior: _zoomPanBehavior,
                             title: ChartTitle(
                                 text: 'Active Cases Per Street/Purok',
-                                textStyle: GoogleFonts.poppins(fontSize: 20)),
+                                textStyle: GoogleFonts.poppins(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
                             series: <ChartSeries>[
                               BarSeries<StreetPurokData, String>(
                                 dataSource: barChart,
@@ -479,7 +488,7 @@ class _testChartState extends State<testChart> {
                               )
                             ],
                             primaryXAxis: CategoryAxis(
-                                labelStyle: const TextStyle(fontSize: 5)),
+                                labelStyle: const TextStyle(fontSize: 10)),
                             primaryYAxis: NumericAxis(
                                 title: AxisTitle(
                                     text: 'Number of Active Cases',
@@ -608,6 +617,7 @@ Future<List<DengueData>> getYearlyDataMonth(int year) async {
 
     chart = [];
     Map<int, int> counts = valueL;
+    print(valueL);
     counts.forEach((x, y) {
       chart.add(DengueData(x, y));
     });
@@ -626,7 +636,8 @@ Future<List<DengueData>> getYearlyDataWeek(int year) async {
     String x = 'MorbidityWeek';
     CollectionReference collection =
         FirebaseFirestore.instance.collection('denguelinelist');
-    QuerySnapshot querySnapshot = await collection.get();
+    QuerySnapshot querySnapshot =
+        await collection.orderBy('MorbidityWeek', descending: false).get();
 
     Map<int, int> valueL = {};
 
@@ -658,7 +669,8 @@ Future<List<DengueData>> getDataYear() async {
     String x = 'Year';
     CollectionReference collection =
         FirebaseFirestore.instance.collection('denguelinelist');
-    QuerySnapshot querySnapshot = await collection.get();
+    QuerySnapshot querySnapshot =
+        await collection.orderBy('Year', descending: false).get();
 
     Map<int, int> valueL = {};
 
@@ -759,12 +771,33 @@ Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
   List<int> listYear = await getListYear();
 
   for (int year in listYear) {
-    List<DengueData> yearlyData = await getYearlyDataMonth(year);
+    String x = 'MorbidityMonth';
+    CollectionReference collection =
+        FirebaseFirestore.instance.collection('denguelinelist');
+    QuerySnapshot querySnapshot =
+        await collection.orderBy('MorbidityMonth', descending: false).get();
+
+    Map<int, int> valueL = {};
+
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data() as Map<String, dynamic>;
+      if (data.containsKey(x) && data['Year'] == year) {
+        var value = data[x];
+        valueL[value] = (valueL[value] ?? 0) + 1;
+      }
+    }
+
+    yearlyData = [];
+    Map<int, int> counts = valueL;
+    print(valueL);
+    counts.forEach((x, y) {
+      yearlyData.add(DengueData(x, y));
+    });
     yearlySeries.add(LineSeries<DengueData, int>(
       dataSource: yearlyData,
       xValueMapper: (DengueData data, _) => data.x,
       yValueMapper: (DengueData data, _) => data.y,
-      name: '$year',
+      name: 'Year: $year',
       markerSettings: MarkerSettings(isVisible: true),
     ));
   }
