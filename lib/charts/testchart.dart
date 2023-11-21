@@ -170,15 +170,16 @@ class _testChartState extends State<testChart> {
                     ),
                     onPressed: () async {
                       setState(() {
+                        a1 = 0;
+                        a2 = 0;
+                        a3 = 0;
+                        a4 = 0;
                         chart = [];
                         chart2 = [];
                         chart3 = [];
                         barChart = [];
                         pieChart = [];
-                        a1 = 0;
-                        a2 = 0;
-                        a3 = 0;
-                        a4 = 0;
+                        yearlySeries = [];
                       });
                       showLoadingDialog();
                       await deleteAllDocumentsInCollection('denguelinelist');
