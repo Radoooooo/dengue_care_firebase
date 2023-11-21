@@ -269,23 +269,28 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
   }
 
   Future<void> sendSMS(String apikey, String number, String message) async {
-    final parameters = {
-      'apikey': apikey,
-      'number': number,
-      'message': message,
-    };
-    final response = await http.post(
-      Uri.parse('https://api.semaphore.co/api/v4/messages'),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: parameters,
-    );
+    try {
+      final parameters = {
+        'apikey': apikey,
+        'number': number,
+        'message': message,
+      };
+      final response = await http.post(
+        Uri.parse('https://api.semaphore.co/api/v4/messages'),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: parameters,
+      );
 
-    if (response.statusCode == 200) {
-      _showSnackbarSuccess('SMS sent successfully');
-    } else {
-      _showSnackbarError('Failed to send SMS');
+      if (response.statusCode == 200) {
+        _showSnackbarSuccess('SMS sent successfully');
+      } else {
+        _showSnackbarError('Failed to send SMS');
+      }
+    } catch (e) {
+      print(e.toString());
+      _showSnackbarError(e.toString());
     }
 
     // phoneController.clear();

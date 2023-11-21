@@ -516,18 +516,22 @@ class _AdminViewReportedCasesPageState
                         child: Column(
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  "Date of first symptom:",
-                                  style: GoogleFonts.poppins(fontSize: 18),
-                                ),
-                                const SizedBox(width: 16),
-                                Text(
-                                  widget.reportedCaseData[
-                                          'first_symptom_date'] ??
-                                      formattedDateOnly,
-                                  style: GoogleFonts.poppins(fontSize: 16),
+                                RichText(
+                                  text: TextSpan(
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 12, color: Colors.black),
+                                    children: [
+                                      const TextSpan(
+                                        text: "Date of first symptom: ",
+                                      ),
+                                      TextSpan(
+                                          text: widget.reportedCaseData[
+                                                  'first_symptom_date'] ??
+                                              formattedDateOnly),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -631,33 +635,37 @@ class _AdminViewReportedCasesPageState
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey),
-                                        borderRadius:
-                                            BorderRadius.circular(8.0)),
-                                    child: DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        items: hospitalList
-                                            .map(buildMenuItemHospital)
-                                            .toList(),
-                                        value: valueHospital ??
-                                            widget.reportedCaseData[
-                                                'hospital_name'],
-                                        hint: Text(widget.reportedCaseData[
-                                                'hospital_name'] ??
-                                            valueHospital),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            // Update valueAdmitted only if the user selects a new value
-                                            valueHospital = value;
-                                          });
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0)),
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                          isExpanded: true,
+                                          items: hospitalList
+                                              .map(buildMenuItemHospital)
+                                              .toList(),
+                                          value: valueHospital ??
+                                              widget.reportedCaseData[
+                                                  'hospital_name'],
+                                          hint: Text(widget.reportedCaseData[
+                                                  'hospital_name'] ??
+                                              valueHospital),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              // Update valueAdmitted only if the user selects a new value
+                                              valueHospital = value;
+                                            });
 
-                                          // print it to the console
-                                          print("Selected value: $value");
-                                        },
+                                            // print it to the console
+                                            print("Selected value: $value");
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ),

@@ -200,6 +200,7 @@ class _AdminEditState extends State<AdminEdit> {
                       ),
                       const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         value: _selectedPurok ?? userData['purok'],
                         items: puroklist.map((purok) {
                           return DropdownMenuItem(

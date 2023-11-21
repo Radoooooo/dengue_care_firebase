@@ -228,50 +228,41 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: SlidingUpPanel(
-        backdropEnabled: true,
-        backdropTapClosesPanel: true,
-        controller: _panelController,
-        panel: _floatingPanel(),
-        collapsed: _floatingCollapsed(),
-        minHeight: 50.0,
-        color: const Color.fromRGBO(255, 255, 255, 0),
-        body: FlutterMap(
-          mapController: mapController,
-          options: const MapOptions(
-            initialCenter: LatLng(7.1090628857797755, 125.61323257408277),
-            initialZoom: 15.0,
-            maxZoom: 18.0,
-            minZoom: 5.0,
-          ),
-          children: [
-            TileLayer(
-              urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-            ),
-            MarkerLayer(
-              markers: purokList.entries.map((entry) {
-                return Marker(
-                  child: GestureDetector(
-                    onTap: () {
-                      _showDialog(context, entry.value, entry.key);
-                      getCountForPurok(entry.key);
-                      setState(() {
-                        selectPurok = entry.key;
-                      });
-                    },
-                    child: Icon(
-                      Icons.circle,
-                      color: Colors.red[400],
-                    ),
-                  ),
-                  width: 40.0,
-                  height: 40.0,
-                  point: entry.value,
-                );
-              }).toList(),
-            )
-          ],
+      body: FlutterMap(
+        mapController: mapController,
+        options: const MapOptions(
+          initialCenter: LatLng(7.1090628857797755, 125.61323257408277),
+          initialZoom: 15.0,
+          maxZoom: 18.0,
+          minZoom: 5.0,
         ),
+        children: [
+          TileLayer(
+            urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+          ),
+          MarkerLayer(
+            markers: purokList.entries.map((entry) {
+              return Marker(
+                child: GestureDetector(
+                  onTap: () {
+                    _showDialog(context, entry.value, entry.key);
+                    getCountForPurok(entry.key);
+                    setState(() {
+                      selectPurok = entry.key;
+                    });
+                  },
+                  child: Icon(
+                    Icons.circle,
+                    color: Colors.red[400],
+                  ),
+                ),
+                width: 40.0,
+                height: 40.0,
+                point: entry.value,
+              );
+            }).toList(),
+          )
+        ],
       ),
     );
   }

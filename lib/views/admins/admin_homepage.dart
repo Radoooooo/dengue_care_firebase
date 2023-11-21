@@ -7,6 +7,7 @@ import 'package:denguecare_firebase/views/admins/admin_postpage.dart';
 import 'package:denguecare_firebase/views/widgets/post_list.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:get/get.dart';
@@ -79,27 +80,23 @@ class AdminHomePage extends StatefulWidget {
   State<AdminHomePage> createState() => _AdminHomePageState();
 }
 
-class _AdminHomePageState extends State<AdminHomePage> {
-  static const _actionTitles = [
-    'Edit Posts',
-    'Create announcement',
-    'Add new post',
-  ];
-  void _showAction(BuildContext context, int index) {
-    showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Text(_actionTitles[index]),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('CLOSE'),
-            ),
-          ],
-        );
-      },
+class _AdminHomePageState extends State<AdminHomePage>
+    with SingleTickerProviderStateMixin {
+  Animation<double>? _animation;
+  AnimationController? _animationController;
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
     );
+
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController!);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+
+    super.initState();
   }
 
   @override
@@ -107,282 +104,40 @@ class _AdminHomePageState extends State<AdminHomePage> {
     return SafeArea(
       child: Scaffold(
         body: const PostsList(),
-        floatingActionButton: ExpandableFab(
-          distance: 112,
-          children: [
-            ActionButton(
-              onPressed: () => _showAction(context, 0),
-              icon: const Icon(Icons.edit),
-            ),
-            ActionButton(
-              onPressed: () {
-                Get.offAll(() => const AdminAnnouncementPage());
-              },
-              icon: const Icon(Icons.announcement),
-            ),
-            ActionButton(
-              onPressed: () {
+        floatingActionButton: FloatingActionBubble(
+          items: <Bubble>[
+            Bubble(
+              title: "Create Post",
+              iconColor: Colors.white,
+              bubbleColor: Colors.green,
+              icon: Icons.add_box,
+              titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+              onPress: () {
+                // _animationController!.reverse();
                 Get.offAll(() => const AdminPostPage());
               },
-              icon: const Icon(Icons.add_box),
+            ),
+            Bubble(
+              title: "Create Announcements",
+              iconColor: Colors.white,
+              bubbleColor: Colors.green,
+              icon: Icons.announcement,
+              titleStyle:
+                  GoogleFonts.poppins(fontSize: 16, color: Colors.white),
+              onPress: () {
+                // _animationController!.reverse();
+                Get.offAll(() => const AdminAnnouncementPage());
+              },
             ),
           ],
+          animation: _animation!,
+          onPress: () => _animationController!.isCompleted
+              ? _animationController!.reverse()
+              : _animationController!.forward(),
+          backGroundColor: Colors.green,
+          iconColor: Colors.white,
+          iconData: Icons.menu,
         ),
-      ),
-    );
-  }
-
-  // void listenToPosts() {
-  //   FirebaseFirestore.instance.collection('posts').snapshots().listen(
-  //       (snapshot) {
-  //     List<DocumentSnapshot> documents = snapshot.docs;
-  //     for (DocumentSnapshot doc in documents) {
-  //       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-  //       print(data);
-  //     }
-  //   }, onError: (e) {
-  //     Utils.showSnackBar(e.toString());
-  //   });
-  // }
-}
-
-void handleClick(int item) {
-  switch (item) {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      break;
-  }
-}
-
-@immutable
-class ExpandableFab extends StatefulWidget {
-  const ExpandableFab({
-    super.key,
-    this.initialOpen,
-    required this.distance,
-    required this.children,
-  });
-
-  final bool? initialOpen;
-  final double distance;
-  final List<Widget> children;
-
-  @override
-  State<ExpandableFab> createState() => _ExpandableFabState();
-}
-
-class _ExpandableFabState extends State<ExpandableFab>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _expandAnimation;
-  bool _open = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _open = widget.initialOpen ?? false;
-    _controller = AnimationController(
-      value: _open ? 1.0 : 0.0,
-      duration: const Duration(milliseconds: 250),
-      vsync: this,
-    );
-    _expandAnimation = CurvedAnimation(
-      curve: Curves.fastOutSlowIn,
-      reverseCurve: Curves.easeOutQuad,
-      parent: _controller,
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    setState(() {
-      _open = !_open;
-      if (_open) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Stack(
-        alignment: Alignment.bottomRight,
-        clipBehavior: Clip.none,
-        children: [
-          _buildTapToCloseFab(),
-          ..._buildExpandingActionButtons(),
-          _buildTapToOpenFab(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTapToCloseFab() {
-    return SizedBox(
-      width: 56,
-      height: 56,
-      child: Center(
-        child: Material(
-          shape: const CircleBorder(),
-          clipBehavior: Clip.antiAlias,
-          elevation: 4,
-          child: InkWell(
-            onTap: _toggle,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Icon(
-                Icons.close,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  List<Widget> _buildExpandingActionButtons() {
-    final children = <Widget>[];
-    final count = widget.children.length;
-    final step = 90.0 / (count - 1);
-    for (var i = 0, angleInDegrees = 0.0;
-        i < count;
-        i++, angleInDegrees += step) {
-      children.add(
-        _ExpandingActionButton(
-          directionInDegrees: angleInDegrees,
-          maxDistance: widget.distance,
-          progress: _expandAnimation,
-          child: widget.children[i],
-        ),
-      );
-    }
-    return children;
-  }
-
-  Widget _buildTapToOpenFab() {
-    return IgnorePointer(
-      ignoring: _open,
-      child: AnimatedContainer(
-        transformAlignment: Alignment.center,
-        transform: Matrix4.diagonal3Values(
-          _open ? 0.7 : 1.0,
-          _open ? 0.7 : 1.0,
-          1.0,
-        ),
-        duration: const Duration(milliseconds: 250),
-        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
-        child: AnimatedOpacity(
-          opacity: _open ? 0.0 : 1.0,
-          curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
-          duration: const Duration(milliseconds: 250),
-          child: FloatingActionButton(
-            heroTag: "btn1",
-            onPressed: _toggle,
-            child: const Icon(Icons.add),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-@immutable
-class _ExpandingActionButton extends StatelessWidget {
-  const _ExpandingActionButton({
-    required this.directionInDegrees,
-    required this.maxDistance,
-    required this.progress,
-    required this.child,
-  });
-
-  final double directionInDegrees;
-  final double maxDistance;
-  final Animation<double> progress;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: progress,
-      builder: (context, child) {
-        final offset = Offset.fromDirection(
-          directionInDegrees * (math.pi / 180.0),
-          progress.value * maxDistance,
-        );
-        return Positioned(
-          right: 4.0 + offset.dx,
-          bottom: 4.0 + offset.dy,
-          child: Transform.rotate(
-            angle: (1.0 - progress.value) * math.pi / 2,
-            child: child!,
-          ),
-        );
-      },
-      child: FadeTransition(
-        opacity: progress,
-        child: child,
-      ),
-    );
-  }
-}
-
-@immutable
-class ActionButton extends StatelessWidget {
-  const ActionButton({
-    super.key,
-    this.onPressed,
-    required this.icon,
-  });
-
-  final VoidCallback? onPressed;
-  final Widget icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      shape: const CircleBorder(),
-      clipBehavior: Clip.antiAlias,
-      color: theme.colorScheme.secondary,
-      elevation: 4,
-      child: IconButton(
-        onPressed: onPressed,
-        icon: icon,
-        color: theme.colorScheme.onSecondary,
-      ),
-    );
-  }
-}
-
-@immutable
-class FakeItem extends StatelessWidget {
-  const FakeItem({
-    super.key,
-    required this.isBig,
-  });
-
-  final bool isBig;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-      height: isBig ? 128 : 36,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-        color: Colors.grey.shade300,
       ),
     );
   }

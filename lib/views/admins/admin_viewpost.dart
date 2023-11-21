@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../widgets/post_list.dart';
 
@@ -111,7 +112,6 @@ class _AdminViewPostState extends State<AdminViewPost> {
                     ),
                   ],
                 ),
-              const SizedBox(height: 8.0),
               isEditing
                   ? Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -120,8 +120,22 @@ class _AdminViewPostState extends State<AdminViewPost> {
                         decoration: const InputDecoration(labelText: 'Caption'),
                       ),
                     )
-                  : Text(widget.post['caption']),
-              const SizedBox(height: 8.0),
+                  : SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0)),
+                            elevation: 3,
+                            child: Text(
+                              widget.post['caption'],
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.poppins(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            )),
+                      ),
+                    ),
               isEditing
                   ? Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -131,7 +145,18 @@ class _AdminViewPostState extends State<AdminViewPost> {
                             const InputDecoration(labelText: 'Post Details'),
                       ),
                     )
-                  : Text(widget.post['postDetails']),
+                  : SizedBox(
+                      width: 600,
+                      height: 150,
+                      child: Container(
+                        margin: const EdgeInsets.all(16),
+                        child: Text(
+                          widget.post['postDetails'],
+                          textAlign: TextAlign.left,
+                          style: GoogleFonts.poppins(fontSize: 16),
+                        ),
+                      ),
+                    ),
               if (isEditing)
                 ElevatedButton(
                   onPressed: () async {
@@ -245,25 +270,31 @@ class _AdminViewPostState extends State<AdminViewPost> {
     final user = auth.currentUser;
     String postID = await fetchPostID();
     try {
-      final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child('images/${imagefromWeb!.name}');
+      String? imageUrl;
 
-      await imageRef.putData(
-          bytes!, SettableMetadata(contentType: 'image/jpeg'));
+      if (bytes != null) {
+        final storageRef = FirebaseStorage.instance.ref();
+        final imageRef = storageRef.child('images/${imagefromWeb!.name}');
 
-      final String downloadURL = await imageRef.getDownloadURL();
+        await imageRef.putData(
+            bytes!, SettableMetadata(contentType: 'image/jpeg'));
+
+        imageUrl = await imageRef.getDownloadURL();
+      }
 
       setState(() {
-        this.downloadURL = downloadURL;
+        downloadURL = imageUrl ?? widget.post['imageUrl'];
       });
+
       FirebaseFirestore.instance.collection('posts').doc(postID).update({
-        'imageUrl': downloadURL,
+        if (imageUrl != null) 'imageUrl': imageUrl,
         'caption': captionController.text.trim(),
         'postDetails': postDetailsController.text.trim(),
         'uploaderEmail': user!.email,
         'uploaderUID': user.uid,
         'date': FieldValue.serverTimestamp(),
       });
+
       setState(() {
         widget.post['caption'] = captionController.text.trim();
         widget.post['postDetails'] = postDetailsController.text.trim();
