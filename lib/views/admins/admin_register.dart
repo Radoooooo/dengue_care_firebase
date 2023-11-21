@@ -57,7 +57,7 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 118, 162, 120),
       appBar: AppBar(
-        title: const Text('Admin Register'),
+        title: Text('Admin Register', style: GoogleFonts.poppins(fontSize: 20)),
         leading: BackButton(
           onPressed: () {
             Get.offAll(() => const ManageAdmin());
@@ -71,136 +71,143 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
               horizontal: 20,
               vertical: 20,
             ),
-            child: Card(
-              child: Container(
-                padding: const EdgeInsets.all(32),
-                constraints: const BoxConstraints(
-                  maxWidth: 370,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/images/logo-no-background.png'),
-                    const SizedBox(height: 20),
-                    const SizedBox(height: 20),
-                    Text(
-                      "ADMIN REGISTRATION",
-                      style: GoogleFonts.poppins(fontSize: 18),
-                    ),
-                    const SizedBox(height: 20),
-                    //! First Name and Last Name Widget
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InputWidget(
-                            hintText: "First Name",
-                            controller: _firstnameController,
-                            obscureText: false,
+            child: Form(
+              key: _formKey,
+              child: Card(
+                child: Container(
+                  padding: const EdgeInsets.all(32),
+                  constraints: const BoxConstraints(
+                    maxWidth: 370,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/images/logo-no-background.png'),
+                      const SizedBox(height: 20),
+                      const SizedBox(height: 20),
+                      Text(
+                        "ADMIN REGISTRATION",
+                        style: GoogleFonts.poppins(fontSize: 18),
+                      ),
+                      const SizedBox(height: 20),
+                      //! First Name and Last Name Widget
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InputWidget(
+                              hintText: "First Name",
+                              controller: _firstnameController,
+                              obscureText: false,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: InputWidget(
-                            hintText: "Last Name",
-                            controller: _lastnameController,
-                            obscureText: false,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: InputWidget(
+                              hintText: "Last Name",
+                              controller: _lastnameController,
+                              obscureText: false,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InputAgeWidget(
-                            hintText: "Age",
-                            controller: _ageController,
-                            obscureText: false,
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InputAgeWidget(
+                              hintText: "Age",
+                              controller: _ageController,
+                              obscureText: false,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(8.0)),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                items: sex.map(buildMenuItem).toList(),
-                                value: value,
-                                hint: const Text('Sex'),
-                                onChanged: (value) =>
-                                    setState(() => this.value = value),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(8.0)),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    items: sex.map(buildMenuItem).toList(),
+                                    value: value,
+                                    hint: const Text('Sex'),
+                                    onChanged: (val) {
+                                      print(val);
+                                      setState(() {
+                                        value = val;
+                                      });
+                                    }),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    InputContactNumber(
-                        hintText: "Contact Number (10-digit)",
-                        controller: _contactNumberController,
-                        obscureText: false),
-                    const SizedBox(height: 20),
-                    InputEmailWidget(
-                      hintText: "Email",
-                      controller: _emailController,
-                      obscureText: false,
-                    ),
-                    const SizedBox(height: 20),
-                    InputConfirmPassWidget(
-                      hintText: "Password",
-                      controller: _passwordController,
-                      confirmController: _confirmPasswordController,
-                      obscureText: _isPasswordNotVisible,
-                      iconButton: IconButton(
-                        icon: Icon(_isPasswordNotVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordNotVisible = !_isPasswordNotVisible;
-                          });
-                        },
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 50,
-                            vertical: 15,
+                      const SizedBox(height: 20),
+                      InputContactNumber(
+                          hintText: "Contact Number (10-digit)",
+                          controller: _contactNumberController,
+                          obscureText: false),
+                      const SizedBox(height: 20),
+                      InputEmailWidget(
+                        hintText: "Email",
+                        controller: _emailController,
+                        obscureText: false,
+                      ),
+                      const SizedBox(height: 20),
+                      InputConfirmPassWidget(
+                        hintText: "Password",
+                        controller: _passwordController,
+                        confirmController: _confirmPasswordController,
+                        obscureText: _isPasswordNotVisible,
+                        iconButton: IconButton(
+                          icon: Icon(_isPasswordNotVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordNotVisible = !_isPasswordNotVisible;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 50,
+                              vertical: 15,
+                            ),
                           ),
-                        ),
-                        onPressed: () async {
-                          try {
-                            if (_formKey.currentState!.validate()) {
-                              signUp(
-                                  _emailController.text.trim(),
-                                  _confirmPasswordController.text.trim(),
-                                  _firstnameController.text.trim(),
-                                  _lastnameController.text.trim(),
-                                  _ageController.text.trim(),
-                                  value,
-                                  _contactNumberController.text.trim(),
-                                  userType);
+                          onPressed: () async {
+                            try {
+                              if (_formKey.currentState!.validate()) {
+                                signUp(
+                                    _emailController.text.trim(),
+                                    _confirmPasswordController.text.trim(),
+                                    _firstnameController.text.trim(),
+                                    _lastnameController.text.trim(),
+                                    _ageController.text.trim(),
+                                    value!,
+                                    _contactNumberController.text.trim(),
+                                    userType);
+                              }
+                            } catch (e) {
+                              _showSnackbarError(context, e.toString());
+                              print(e.toString());
                             }
-                          } catch (e) {
-                            _showSnackbarError(context, e.toString());
-                            print(e.toString());
-                          }
-                        },
-                        child: Text("Register",
-                            style: GoogleFonts.poppins(fontSize: 20)),
+                          },
+                          child: Text("Register",
+                              style: GoogleFonts.poppins(fontSize: 20)),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -226,10 +233,10 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
                     contactnumber, userType)
               })
           .catchError((e) {
-        return _showSnackbarError(context, e.message.toString());
+        _showSnackbarError(context, e.message.toString());
       });
     } on FirebaseAuthException catch (e) {
-      //print(e);
+      print(e.message.toString());
       _showSnackbarError(context, e.message.toString());
     }
   }
@@ -240,10 +247,10 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
     CollectionReference ref = FirebaseFirestore.instance.collection('users');
     ref.doc(user!.uid).set({
       'email': _emailController.text,
-      'firstname': _firstnameController.text,
-      'lastname': _lastnameController.text,
+      'firstName': _firstnameController.text,
+      'lastName': _lastnameController.text,
       'age': _ageController.text,
-      'sex': value,
+      'sex': sex,
       'contact_number': _contactNumberController.text,
       'role': userType,
     });

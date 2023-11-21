@@ -22,7 +22,8 @@ class _AdminAccountSettingsState extends State<AdminAccountSettings> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 118, 162, 120),
       appBar: AppBar(
-        title: const Text("Account Settings"),
+        title:
+            Text("Account Settings", style: GoogleFonts.poppins(fontSize: 20)),
         leading: BackButton(
           onPressed: () {
             Get.offAll(() => const AdminMainPage());

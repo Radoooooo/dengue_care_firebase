@@ -770,11 +770,10 @@ class _AdminViewReportedCasesPageState
   void updateStatusData(String selectedValue) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     String docID = await fetchDocumentID();
-    // Assuming you have a 'your_collection' collection and a document with 'your_document_id'
+
     DocumentReference documentReference =
         firestore.collection('reports').doc(docID);
 
-    // Update the specific field with the selected value
     await documentReference.update({'status': selectedValue});
   }
 
@@ -857,7 +856,6 @@ class _AdminViewReportedCasesPageState
     // Format the date and time as a string
     String formattedDateTime = "${currentDateTime.toLocal()}";
 
-    // Create a log entry
     Map<String, dynamic> logEntry = {
       'admin_email': user?.email,
       'action': action,
@@ -865,7 +863,6 @@ class _AdminViewReportedCasesPageState
       'timestamp': formattedDateTime,
     };
 
-    // Add the log entry to the 'admin_logs' collection
     await adminLogs.add(logEntry);
   }
 }

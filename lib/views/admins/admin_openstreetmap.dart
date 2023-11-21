@@ -8,6 +8,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 final PanelController _panelController = PanelController();
 final mapController = MapController();
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class AdminOpenStreetMap extends StatefulWidget {
   const AdminOpenStreetMap({super.key});
@@ -27,6 +28,7 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
   int? suslen;
   int? problen;
   int? conflen;
+  int forMap = 0;
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
   @override
@@ -115,6 +117,7 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
       setState(() {
         size = querySnapshot.size;
         len = size;
+        forMap = size;
 
         susSize = querySus.size;
         suslen = susSize;
@@ -134,82 +137,97 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
   }
 
   Future<void> fetchDataForSelectedPurok() async {
-    // int fetchedData = await getCountForPurok(selectPurok);
+    //!! NEW CODE
+    List<Future<int>> futures = [];
 
-    // if (fetchedData != -1) {
-    //   print('Count for $selectPurok: $fetchedData');
-    // } else {
-    //   print('Error getting count for $selectPurok');
-    // }
     for (var purok in purokList.keys) {
-      int fetchedData = await getCountForPurok(purok);
-
-      if (fetchedData != -1) {
-        print('Count for $purok: $fetchedData');
-      } else {
-        print('Error getting count for $purok');
-      }
+      futures.add(getCountForPurok(purok));
     }
+
+    List<int> results = await Future.wait(futures);
+
+    // Now results contains the count for each purok
+    // Update the UI or handle the data as needed
+    for (int i = 0; i < purokList.length; i++) {
+      print('Count for ${purokList.keys.elementAt(i)}: ${results[i]}');
+    }
+
+    //!! OLD CODE
+    // for (var purok in purokList.keys) {
+    //   int fetchedData = await getCountForPurok(purok);
+    //   if (fetchedData != -1) {
+    //     print('Count for $purok: $fetchedData');
+    //   } else {
+    //     print('Error getting count for $purok');
+    //   }
+    // }
   }
 
-  void _showDialog(BuildContext context, LatLng point, String purokName) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            'Details',
-            style: GoogleFonts.poppins(fontSize: 24),
-          ),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Case Reported: $len',
-                style: GoogleFonts.poppins(
-                    fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Purok: $purokName ',
-                style: GoogleFonts.poppins(
-                    fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Suspected Cases: $suslen',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              Text(
-                'Probable Cases: $problen',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              Text(
-                'Confirmed Cases: $conflen',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              // const SizedBox(height: 10),
-              // Text(
-              //   'Latitude: ${point.latitude}, Longitude: ${point.longitude}',
-              // ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+  void _showDialog(BuildContext context, LatLng point, String purokName) async {
+    int fetchedData = await getCountForPurok(purokName);
+
+    if (fetchedData != -1) {
+      showDialog(
+        context: _scaffoldKey.currentContext!,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Details',
+              style: GoogleFonts.poppins(fontSize: 24),
             ),
-          ],
-        );
-      },
-    );
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Case Reported: $len',
+                  style: GoogleFonts.poppins(
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Purok: $purokName ',
+                  style: GoogleFonts.poppins(
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Suspected Cases: $suslen',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+                Text(
+                  'Probable Cases: $problen',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+                Text(
+                  'Confirmed Cases: $conflen',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+                // const SizedBox(height: 10),
+                // Text(
+                //   'Latitude: ${point.latitude}, Longitude: ${point.longitude}',
+                // ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      print('Error getting count for $purokName');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: SlidingUpPanel(
         backdropEnabled: true,
         backdropTapClosesPanel: true,
@@ -237,8 +255,6 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
                     onTap: () {
                       _showDialog(context, entry.value, entry.key);
                       getCountForPurok(entry.key);
-                      // print('len $len');
-                      // print(entry.key);
                       setState(() {
                         selectPurok = entry.key;
                       });
@@ -248,8 +264,8 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
                       color: Colors.red[400],
                     ),
                   ),
-                  width: 30.0,
-                  height: 30.0,
+                  width: 40.0,
+                  height: 40.0,
                   point: entry.value,
                 );
               }).toList(),

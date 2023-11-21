@@ -402,7 +402,6 @@ class _AdminMainPageState extends State<AdminMainPage>
   Future<String?> getUserRole() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      // Handle user not logged in scenario, if needed
       return null;
     }
 
@@ -412,8 +411,7 @@ class _AdminMainPageState extends State<AdminMainPage>
         .get();
 
     if (documentSnapshot.exists) {
-      return documentSnapshot.get('role')
-          as String?; // Cast to String, but ensure the 'role' field always contains a string or null
+      return documentSnapshot.get('role') as String?;
     } else {
       // ignore: use_build_context_synchronously
       _showSnackbarError(context, 'Document does not exist on the database');
@@ -426,8 +424,6 @@ class _AdminMainPageState extends State<AdminMainPage>
     if (role != null) {
       print("User Role: $role");
       return role;
-
-      // Do whatever you want with the role
     }
     return null;
   }
@@ -447,8 +443,6 @@ class _AdminMainPageState extends State<AdminMainPage>
     );
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
-
-  //int currentIndex = 0;
 
   Text? textForAdmin(String role) {
     Text? widget;
@@ -475,7 +469,6 @@ class _AdminMainPageState extends State<AdminMainPage>
     super.initState();
     checkUserRole();
     _tabController = TabController(length: 4, vsync: this);
-    // Calling the Future function when the page loads.
   }
 
   @override
@@ -568,17 +561,6 @@ class _AdminMainPageState extends State<AdminMainPage>
                             Get.offAll(() => const ManageAdmin());
                           },
                         ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          'Prefereneces',
-                          style: GoogleFonts.poppins(),
-                        ),
-                        leading: const Icon(
-                          Icons.checklist,
-                          color: Colors.black,
-                        ),
-                        onTap: () {},
                       ),
                       ListTile(
                         title: Text(

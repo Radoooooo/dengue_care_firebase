@@ -187,8 +187,7 @@ class _AdminViewPostState extends State<AdminViewPost> {
         if (imageUrl != null) 'imageUrl': imageUrl,
         'caption': captionController.text.trim(),
         'postDetails': postDetailsController.text.trim(),
-        'uploaderEmail':
-            user!.email, // Assuming the displayName is set for Firebase user.
+        'uploaderEmail': user!.email,
         'uploaderUID': user.uid,
         'date': FieldValue.serverTimestamp(),
       });
@@ -261,8 +260,7 @@ class _AdminViewPostState extends State<AdminViewPost> {
         'imageUrl': downloadURL,
         'caption': captionController.text.trim(),
         'postDetails': postDetailsController.text.trim(),
-        'uploaderEmail':
-            user!.email, // Assuming the displayName is set for Firebase user.
+        'uploaderEmail': user!.email,
         'uploaderUID': user.uid,
         'date': FieldValue.serverTimestamp(),
       });
