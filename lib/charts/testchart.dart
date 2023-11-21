@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,9 @@ import 'package:flutter/material.dart';
 List<DengueData> chart = [];
 List<DengueData> chart2 = [];
 List<DengueData> chart3 = [];
+List<LineSeries<DengueData, int>> yearlySeries = [];
 List<piechartData> pieChart = [];
+
 List<StreetPurokData> barChart = [];
 List<int> listYear = [];
 
@@ -56,7 +59,8 @@ class _testChartState extends State<testChart> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text('Clearing Data...'),
+        title:
+            Text('Clearing Data...', style: GoogleFonts.poppins(fontSize: 20)),
         content: CircularProgressIndicator(),
       ),
     );
@@ -84,6 +88,7 @@ class _testChartState extends State<testChart> {
       future: Future.wait([
         getListYear(),
         getYearlyDataMonth(selectedYear),
+        generateYearlySeries(),
         getYearlyDataWeek(selectedYear),
         getDataYear(),
         queryAgeGroupsCount(selectedYear),
@@ -126,13 +131,14 @@ class _testChartState extends State<testChart> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text('Sort by: '),
+                  Text('Sort by: ', style: GoogleFonts.poppins(fontSize: 20)),
                   DropdownButton<int>(
                     value: selectedYear,
                     items: listYear.map((year) {
                       return DropdownMenuItem<int>(
                         value: year,
-                        child: Text(year.toString()),
+                        child: Text(year.toString(),
+                            style: GoogleFonts.poppins(fontSize: 20)),
                       );
                     }).toList(),
                     onChanged: (newValue) async {
@@ -167,21 +173,23 @@ class _testChartState extends State<testChart> {
                     ),
                     onPressed: () async {
                       setState(() {
+                        a1 = 0;
+                        a2 = 0;
+                        a3 = 0;
+                        a4 = 0;
                         chart = [];
                         chart2 = [];
                         chart3 = [];
                         barChart = [];
                         pieChart = [];
-                        a1 = 0;
-                        a2 = 0;
-                        a3 = 0;
-                        a4 = 0;
+                        yearlySeries = [];
                       });
                       showLoadingDialog();
                       await deleteAllDocumentsInCollection('denguelinelist');
                       dismissLoadingDialog();
                     },
-                    child: const Text('Clear Data'),
+                    child: Text('Clear Data',
+                        style: GoogleFonts.poppins(fontSize: 20)),
                   ),
                 ],
               ),
@@ -204,16 +212,21 @@ class _testChartState extends State<testChart> {
                 child: Column(
                   children: [
                     SfCartesianChart(
-                      title:
-                          ChartTitle(text: "Number of Active Cases Per Month"),
+                      title: ChartTitle(
+                          text: "Number of Active Cases Per Month",
+                          textStyle: GoogleFonts.poppins(fontSize: 20)),
                       enableAxisAnimation: true,
                       primaryXAxis: NumericAxis(
-                          title: AxisTitle(text: "Morbidity Month"),
+                          title: AxisTitle(
+                              text: "Morbidity Month",
+                              textStyle: GoogleFonts.poppins(fontSize: 20)),
                           minimum: 0,
                           maximum: 12,
                           interval: 1),
                       primaryYAxis: NumericAxis(
-                          title: AxisTitle(text: "Number of Active Cases")),
+                          title: AxisTitle(
+                              text: "Number of Active Cases",
+                              textStyle: GoogleFonts.poppins(fontSize: 20))),
                       tooltipBehavior: _tooltipBehavior,
                       series: <ChartSeries>[
                         LineSeries<DengueData, int>(
@@ -246,16 +259,21 @@ class _testChartState extends State<testChart> {
                 child: Column(
                   children: [
                     SfCartesianChart(
-                      title:
-                          ChartTitle(text: "Number of Active Cases Per Week"),
+                      title: ChartTitle(
+                          text: "Number of Active Cases Per Week",
+                          textStyle: GoogleFonts.poppins(fontSize: 20)),
                       enableAxisAnimation: true,
                       primaryXAxis: NumericAxis(
-                          title: AxisTitle(text: "Morbidity Week"),
+                          title: AxisTitle(
+                              text: "Morbidity Week",
+                              textStyle: GoogleFonts.poppins(fontSize: 20)),
                           minimum: 0,
                           maximum: 48,
                           interval: 1),
                       primaryYAxis: NumericAxis(
-                          title: AxisTitle(text: "Number of Active Cases")),
+                          title: AxisTitle(
+                              text: "Number of Active Cases",
+                              textStyle: GoogleFonts.poppins(fontSize: 20))),
                       tooltipBehavior: _tooltipBehavior2,
                       series: <ChartSeries>[
                         LineSeries<DengueData, int>(
@@ -288,16 +306,21 @@ class _testChartState extends State<testChart> {
                 child: Column(
                   children: [
                     SfCartesianChart(
-                      title:
-                          ChartTitle(text: "Number of Active Cases Per Year"),
+                      title: ChartTitle(
+                          text: "Number of Active Cases Per Year",
+                          textStyle: GoogleFonts.poppins(fontSize: 20)),
                       enableAxisAnimation: true,
                       primaryXAxis: NumericAxis(
-                          title: AxisTitle(text: "Morbidity Yearly"),
+                          title: AxisTitle(
+                              text: "Morbidity Yearly",
+                              textStyle: GoogleFonts.poppins(fontSize: 20)),
                           minimum: minYear,
                           maximum: maxYear,
                           interval: 1),
                       primaryYAxis: NumericAxis(
-                          title: AxisTitle(text: "Number of Active Cases")),
+                          title: AxisTitle(
+                              text: "Number of Active Cases",
+                              textStyle: GoogleFonts.poppins(fontSize: 20))),
                       tooltipBehavior: _tooltipBehavior3,
                       series: <ChartSeries>[
                         LineSeries<DengueData, int>(
@@ -327,12 +350,60 @@ class _testChartState extends State<testChart> {
                   ],
                 ),
                 width: double.infinity,
+                child: Column(
+                  children: [
+                    SfCartesianChart(
+                      title: ChartTitle(
+                        text:
+                            "Number of Active Cases Per Month - Multiple Years",
+                        textStyle: GoogleFonts.poppins(fontSize: 20),
+                      ),
+                      enableAxisAnimation: true,
+                      primaryXAxis: NumericAxis(
+                        title: AxisTitle(
+                          text: "Morbidity Month",
+                          textStyle: GoogleFonts.poppins(fontSize: 20),
+                        ),
+                        minimum: 0,
+                        maximum: 12,
+                        interval: 1,
+                      ),
+                      primaryYAxis: NumericAxis(
+                        title: AxisTitle(
+                          text: "Number of Active Cases",
+                          textStyle: GoogleFonts.poppins(fontSize: 20),
+                        ),
+                      ),
+                      tooltipBehavior: _tooltipBehavior,
+                      series: yearlySeries,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      spreadRadius: 2,
+                      blurRadius: 2,
+                      offset: Offset(2, 2),
+                    ),
+                  ],
+                ),
+                width: double.infinity,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Expanded(
                       child: SfCircularChart(
-                        title: ChartTitle(text: 'Active Cases Age Group'),
+                        title: ChartTitle(
+                            text: 'Active Cases Age Group',
+                            textStyle: GoogleFonts.poppins(fontSize: 20)),
                         series: <CircularSeries>[
                           PieSeries<piechartData, String>(
                             dataSource: pieChart,
@@ -356,10 +427,14 @@ class _testChartState extends State<testChart> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Child(0-16): $a1'),
-                          Text('Young Adult(17-30): $a2'),
-                          Text('Middle Adult(31-45): $a3'),
-                          Text('Old Adult(45 above): $a4'),
+                          Text('Child(0-16): $a1',
+                              style: GoogleFonts.poppins(fontSize: 20)),
+                          Text('Young Adult(17-30): $a2',
+                              style: GoogleFonts.poppins(fontSize: 20)),
+                          Text('Middle Adult(31-45): $a3',
+                              style: GoogleFonts.poppins(fontSize: 20)),
+                          Text('Old Adult(45 above): $a4',
+                              style: GoogleFonts.poppins(fontSize: 20)),
                         ],
                       ),
                     ),
@@ -390,7 +465,8 @@ class _testChartState extends State<testChart> {
                           child: SfCartesianChart(
                             //zoomPanBehavior: _zoomPanBehavior,
                             title: ChartTitle(
-                                text: 'Active Cases Per Street/Purok'),
+                                text: 'Active Cases Per Street/Purok',
+                                textStyle: GoogleFonts.poppins(fontSize: 20)),
                             series: <ChartSeries>[
                               BarSeries<StreetPurokData, String>(
                                 dataSource: barChart,
@@ -405,8 +481,10 @@ class _testChartState extends State<testChart> {
                             primaryXAxis: CategoryAxis(
                                 labelStyle: const TextStyle(fontSize: 5)),
                             primaryYAxis: NumericAxis(
-                                title:
-                                    AxisTitle(text: 'Number of Active Cases'),
+                                title: AxisTitle(
+                                    text: 'Number of Active Cases',
+                                    textStyle:
+                                        GoogleFonts.poppins(fontSize: 20)),
                                 interval: 1),
                           ),
                         )
@@ -489,8 +567,10 @@ Future<List<int>> getListYear() async {
     String x = 'Year';
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    QuerySnapshot querySnapshot =
-        await firestore.collection('denguelinelist').get();
+    QuerySnapshot querySnapshot = await firestore
+        .collection('denguelinelist')
+        .orderBy('Year', descending: false)
+        .get();
 
     Set<int> uniqueValues = {};
     for (QueryDocumentSnapshot doc in querySnapshot.docs) {
@@ -513,7 +593,8 @@ Future<List<DengueData>> getYearlyDataMonth(int year) async {
     String x = 'MorbidityMonth';
     CollectionReference collection =
         FirebaseFirestore.instance.collection('denguelinelist');
-    QuerySnapshot querySnapshot = await collection.get();
+    QuerySnapshot querySnapshot =
+        await collection.orderBy('MorbidityMonth', descending: false).get();
 
     Map<int, int> valueL = {};
 
@@ -660,13 +741,10 @@ void logAdminAction(String action, String documentId) async {
   CollectionReference adminLogs =
       FirebaseFirestore.instance.collection('admin_logs');
 
-  // Get the current date and time
   DateTime currentDateTime = DateTime.now();
 
-  // Format the date and time as a string
   String formattedDateTime = "${currentDateTime.toLocal()}";
 
-  // Create a log entry
   Map<String, dynamic> logEntry = {
     'admin_email': user?.email,
     'action': action,
@@ -674,8 +752,24 @@ void logAdminAction(String action, String documentId) async {
     'timestamp': formattedDateTime,
   };
 
-  // Add the log entry to the 'admin_logs' collection
   await adminLogs.add(logEntry);
+}
+
+Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
+  List<int> listYear = await getListYear();
+
+  for (int year in listYear) {
+    List<DengueData> yearlyData = await getYearlyDataMonth(year);
+    yearlySeries.add(LineSeries<DengueData, int>(
+      dataSource: yearlyData,
+      xValueMapper: (DengueData data, _) => data.x,
+      yValueMapper: (DengueData data, _) => data.y,
+      name: '$year',
+      markerSettings: MarkerSettings(isVisible: true),
+    ));
+  }
+
+  return yearlySeries;
 }
 
 Widget _gap() => const SizedBox(height: 8);
