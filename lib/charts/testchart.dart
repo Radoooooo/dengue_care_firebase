@@ -64,7 +64,7 @@ class _testChartState extends State<testChart> {
       builder: (context) => AlertDialog(
         title:
             Text('Clearing Data...', style: GoogleFonts.poppins(fontSize: 20)),
-        content: CircularProgressIndicator(),
+        content: const CircularProgressIndicator(),
       ),
     );
   }
@@ -123,386 +123,403 @@ class _testChartState extends State<testChart> {
           );
         }
 
-        return SingleChildScrollView(
-          child: Center(
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              _gap(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('Sort by: ', style: GoogleFonts.poppins(fontSize: 20)),
-                  DropdownButton<int>(
-                    value: selectedYear,
-                    items: listYear.map((year) {
-                      return DropdownMenuItem<int>(
-                        value: year,
-                        child: Text(year.toString(),
+        return Scaffold(
+          body: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _gap(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('Sort by: ',
                             style: GoogleFonts.poppins(fontSize: 20)),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) async {
-                      setState(() {
-                        selectedYear = newValue!;
+                        DropdownButton<int>(
+                          value: selectedYear,
+                          items: listYear.map((year) {
+                            return DropdownMenuItem<int>(
+                              value: year,
+                              child: Text(year.toString(),
+                                  style: GoogleFonts.poppins(fontSize: 20)),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) async {
+                            setState(() {
+                              selectedYear = newValue!;
 
-                        if (selectedYear == newValue) {
-                          return;
-                        } else {
-                          getYearlyDataMonth(selectedYear).then((result) {
-                            chart = result;
-                          });
-                          getYearlyDataWeek(selectedYear).then((result) {
-                            chart2 = result;
-                          });
-                          queryAgeGroupsCount(selectedYear).then((result) {
-                            pieChart = result;
-                          });
-                          getPurokCases(selectedYear).then((result) {
-                            barChart = result;
-                          });
-                        }
-                      });
-                    },
-                  ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.all(16.0),
-                      textStyle: const TextStyle(fontSize: 20),
-                    ),
-                    onPressed: () async {
-                      setState(() {
-                        chart = [];
-                        chart2 = [];
-                        chart3 = [];
-                        barChart = [];
-                        pieChart = [];
-                        yearlyData = [];
-                        yearlySeries = [];
+                              if (selectedYear == newValue) {
+                                return;
+                              } else {
+                                getYearlyDataMonth(selectedYear).then((result) {
+                                  chart = result;
+                                });
+                                getYearlyDataWeek(selectedYear).then((result) {
+                                  chart2 = result;
+                                });
+                                queryAgeGroupsCount(selectedYear)
+                                    .then((result) {
+                                  pieChart = result;
+                                });
+                                getPurokCases(selectedYear).then((result) {
+                                  barChart = result;
+                                });
+                              }
+                            });
+                          },
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.all(16.0),
+                            textStyle: const TextStyle(fontSize: 20),
+                          ),
+                          onPressed: () async {
+                            setState(() {
+                              chart = [];
+                              chart2 = [];
+                              chart3 = [];
+                              barChart = [];
+                              pieChart = [];
+                              yearlyData = [];
+                              yearlySeries = [];
 
-                        a1 = 0;
-                        a2 = 0;
-                        a3 = 0;
-                        a4 = 0;
-                      });
-                      showLoadingDialog();
-                      await deleteAllDocumentsInCollection('denguelinelist');
-                      dismissLoadingDialog();
-                    },
-                    child: Text('Clear Data',
-                        style: GoogleFonts.poppins(fontSize: 20)),
-                  ),
-                ],
-              ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 2,
-                      blurRadius: 2,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    SfCartesianChart(
-                      title: ChartTitle(
-                          text: "Number of Active Cases Per Month",
-                          textStyle: GoogleFonts.poppins(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      enableAxisAnimation: true,
-                      primaryXAxis: NumericAxis(
-                          title: AxisTitle(
-                              text: "Morbidity Month",
-                              textStyle: GoogleFonts.poppins(fontSize: 20)),
-                          minimum: 0,
-                          maximum: 12,
-                          interval: 1),
-                      primaryYAxis: NumericAxis(
-                          title: AxisTitle(
-                              text: "Number of Active Cases",
-                              textStyle: GoogleFonts.poppins(fontSize: 20))),
-                      tooltipBehavior: _tooltipBehavior,
-                      series: <ChartSeries>[
-                        LineSeries<DengueData, int>(
-                            dataSource: chart,
-                            xValueMapper: (DengueData data, _) => data.x,
-                            yValueMapper: (DengueData data, _) => data.y,
-                            name: 'Active Cases',
-                            markerSettings:
-                                const MarkerSettings(isVisible: true)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 2,
-                      blurRadius: 2,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    SfCartesianChart(
-                      title: ChartTitle(
-                          text: "Number of Active Cases Per Week",
-                          textStyle: GoogleFonts.poppins(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      enableAxisAnimation: true,
-                      primaryXAxis: NumericAxis(
-                          title: AxisTitle(
-                              text: "Morbidity Week",
-                              textStyle: GoogleFonts.poppins(fontSize: 20)),
-                          minimum: 0,
-                          maximum: 48,
-                          interval: 1),
-                      primaryYAxis: NumericAxis(
-                          title: AxisTitle(
-                              text: "Number of Active Cases",
-                              textStyle: GoogleFonts.poppins(fontSize: 20))),
-                      tooltipBehavior: _tooltipBehavior2,
-                      series: <ChartSeries>[
-                        LineSeries<DengueData, int>(
-                            dataSource: chart2,
-                            xValueMapper: (DengueData data, _) => data.x,
-                            yValueMapper: (DengueData data, _) => data.y,
-                            name: 'Active Cases',
-                            markerSettings:
-                                const MarkerSettings(isVisible: true)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 2,
-                      blurRadius: 2,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    SfCartesianChart(
-                      title: ChartTitle(
-                          text: "Number of Active Cases Per Year",
-                          textStyle: GoogleFonts.poppins(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      enableAxisAnimation: true,
-                      primaryXAxis: NumericAxis(
-                          title: AxisTitle(
-                              text: "Morbidity Yearly",
-                              textStyle: GoogleFonts.poppins(fontSize: 20)),
-                          minimum: minYear,
-                          maximum: maxYear,
-                          interval: 1),
-                      primaryYAxis: NumericAxis(
-                          title: AxisTitle(
-                              text: "Number of Active Cases",
-                              textStyle: GoogleFonts.poppins(fontSize: 20))),
-                      tooltipBehavior: _tooltipBehavior3,
-                      series: <ChartSeries>[
-                        LineSeries<DengueData, int>(
-                            dataSource: chart3,
-                            xValueMapper: (DengueData data, _) => data.x,
-                            yValueMapper: (DengueData data, _) => data.y,
-                            name: 'Active Cases',
-                            markerSettings:
-                                const MarkerSettings(isVisible: true)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 2,
-                      blurRadius: 2,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    SfCartesianChart(
-                      title: ChartTitle(
-                        text:
-                            "Number of Active Cases Per Month - Multiple Years",
-                        textStyle: GoogleFonts.poppins(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      enableAxisAnimation: true,
-                      primaryXAxis: NumericAxis(
-                        title: AxisTitle(
-                          text: "Morbidity Month",
-                          textStyle: GoogleFonts.poppins(fontSize: 20),
+                              a1 = 0;
+                              a2 = 0;
+                              a3 = 0;
+                              a4 = 0;
+                            });
+                            showLoadingDialog();
+                            await deleteAllDocumentsInCollection(
+                                'denguelinelist');
+                            dismissLoadingDialog();
+                          },
+                          child: Text('Clear Data',
+                              style: GoogleFonts.poppins(fontSize: 20)),
                         ),
-                        minimum: 0,
-                        maximum: 12,
-                        interval: 1,
-                      ),
-                      primaryYAxis: NumericAxis(
-                        title: AxisTitle(
-                          text: "Number of Active Cases",
-                          textStyle: GoogleFonts.poppins(fontSize: 20),
-                        ),
-                      ),
-                      tooltipBehavior: _tooltipBehavior4,
-                      series: yearlySeries,
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 2,
-                      blurRadius: 2,
-                      offset: Offset(2, 2),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            offset: Offset(2, 2),
+                          ),
+                        ],
+                      ),
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          SfCartesianChart(
+                            title: ChartTitle(
+                                text: "Number of Active Cases Per Month",
+                                textStyle: GoogleFonts.poppins(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                            enableAxisAnimation: true,
+                            primaryXAxis: NumericAxis(
+                                title: AxisTitle(
+                                    text: "Morbidity Month",
+                                    textStyle:
+                                        GoogleFonts.poppins(fontSize: 20)),
+                                minimum: 0,
+                                maximum: 12,
+                                interval: 1),
+                            primaryYAxis: NumericAxis(
+                                title: AxisTitle(
+                                    text: "Number of Active Cases",
+                                    textStyle:
+                                        GoogleFonts.poppins(fontSize: 20))),
+                            tooltipBehavior: _tooltipBehavior,
+                            series: <ChartSeries>[
+                              LineSeries<DengueData, int>(
+                                  dataSource: chart,
+                                  xValueMapper: (DengueData data, _) => data.x,
+                                  yValueMapper: (DengueData data, _) => data.y,
+                                  name: 'Active Cases',
+                                  markerSettings:
+                                      const MarkerSettings(isVisible: true)),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-                width: double.infinity,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: SfCircularChart(
-                        title: ChartTitle(
-                            text: 'Active Cases Age Group',
-                            textStyle: GoogleFonts.poppins(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        series: <CircularSeries>[
-                          PieSeries<piechartData, String>(
-                            dataSource: pieChart,
-                            pointColorMapper: (piechartData data, _) =>
-                                data.color,
-                            xValueMapper: (piechartData data, _) =>
-                                data.ageGroup,
-                            yValueMapper: (piechartData data, _) => data.number,
-                            dataLabelMapper: (piechartData data, _) =>
-                                '${data.ageGroup}:${data.number}',
-                            dataLabelSettings: const DataLabelSettings(
-                              isVisible: true,
-                              labelPosition: ChartDataLabelPosition.outside,
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            offset: Offset(2, 2),
+                          ),
+                        ],
+                      ),
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          SfCartesianChart(
+                            title: ChartTitle(
+                                text: "Number of Active Cases Per Week",
+                                textStyle: GoogleFonts.poppins(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                            enableAxisAnimation: true,
+                            primaryXAxis: NumericAxis(
+                                title: AxisTitle(
+                                    text: "Morbidity Week",
+                                    textStyle:
+                                        GoogleFonts.poppins(fontSize: 20)),
+                                minimum: 0,
+                                maximum: 48,
+                                interval: 1),
+                            primaryYAxis: NumericAxis(
+                                title: AxisTitle(
+                                    text: "Number of Active Cases",
+                                    textStyle:
+                                        GoogleFonts.poppins(fontSize: 20))),
+                            tooltipBehavior: _tooltipBehavior2,
+                            series: <ChartSeries>[
+                              LineSeries<DengueData, int>(
+                                  dataSource: chart2,
+                                  xValueMapper: (DengueData data, _) => data.x,
+                                  yValueMapper: (DengueData data, _) => data.y,
+                                  name: 'Active Cases',
+                                  markerSettings:
+                                      const MarkerSettings(isVisible: true)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            offset: Offset(2, 2),
+                          ),
+                        ],
+                      ),
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          SfCartesianChart(
+                            title: ChartTitle(
+                                text: "Number of Active Cases Per Year",
+                                textStyle: GoogleFonts.poppins(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                            enableAxisAnimation: true,
+                            primaryXAxis: NumericAxis(
+                                title: AxisTitle(
+                                    text: "Morbidity Yearly",
+                                    textStyle:
+                                        GoogleFonts.poppins(fontSize: 20)),
+                                minimum: minYear,
+                                maximum: maxYear,
+                                interval: 1),
+                            primaryYAxis: NumericAxis(
+                                title: AxisTitle(
+                                    text: "Number of Active Cases",
+                                    textStyle:
+                                        GoogleFonts.poppins(fontSize: 20))),
+                            tooltipBehavior: _tooltipBehavior3,
+                            series: <ChartSeries>[
+                              LineSeries<DengueData, int>(
+                                  dataSource: chart3,
+                                  xValueMapper: (DengueData data, _) => data.x,
+                                  yValueMapper: (DengueData data, _) => data.y,
+                                  name: 'Active Cases',
+                                  markerSettings:
+                                      const MarkerSettings(isVisible: true)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            offset: Offset(2, 2),
+                          ),
+                        ],
+                      ),
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          SfCartesianChart(
+                            title: ChartTitle(
+                              text:
+                                  "Number of Active Cases Per Month - Multiple Years",
+                              textStyle: GoogleFonts.poppins(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            enableAxisAnimation: true,
+                            primaryXAxis: NumericAxis(
+                              title: AxisTitle(
+                                text: "Morbidity Month",
+                                textStyle: GoogleFonts.poppins(fontSize: 20),
+                              ),
+                              minimum: 0,
+                              maximum: 12,
+                              interval: 1,
+                            ),
+                            primaryYAxis: NumericAxis(
+                              title: AxisTitle(
+                                text: "Number of Active Cases",
+                                textStyle: GoogleFonts.poppins(fontSize: 20),
+                              ),
+                            ),
+                            tooltipBehavior: _tooltipBehavior4,
+                            series: yearlySeries,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            offset: Offset(2, 2),
+                          ),
+                        ],
+                      ),
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: SfCircularChart(
+                              title: ChartTitle(
+                                  text: 'Active Cases Age Group',
+                                  textStyle: GoogleFonts.poppins(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                              series: <CircularSeries>[
+                                PieSeries<piechartData, String>(
+                                  dataSource: pieChart,
+                                  pointColorMapper: (piechartData data, _) =>
+                                      data.color,
+                                  xValueMapper: (piechartData data, _) =>
+                                      data.ageGroup,
+                                  yValueMapper: (piechartData data, _) =>
+                                      data.number,
+                                  dataLabelMapper: (piechartData data, _) =>
+                                      '${data.ageGroup}:${data.number}',
+                                  dataLabelSettings: const DataLabelSettings(
+                                    isVisible: true,
+                                    labelPosition:
+                                        ChartDataLabelPosition.outside,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Child(0-16): $a1',
+                                    style: GoogleFonts.poppins(fontSize: 20)),
+                                Text('Young Adult(17-30): $a2',
+                                    style: GoogleFonts.poppins(fontSize: 20)),
+                                Text('Middle Adult(31-45): $a3',
+                                    style: GoogleFonts.poppins(fontSize: 20)),
+                                Text('Old Adult(45 above): $a4',
+                                    style: GoogleFonts.poppins(fontSize: 20)),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Child(0-16): $a1',
-                              style: GoogleFonts.poppins(fontSize: 20)),
-                          Text('Young Adult(17-30): $a2',
-                              style: GoogleFonts.poppins(fontSize: 20)),
-                          Text('Middle Adult(31-45): $a3',
-                              style: GoogleFonts.poppins(fontSize: 20)),
-                          Text('Old Adult(45 above): $a4',
-                              style: GoogleFonts.poppins(fontSize: 20)),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            offset: Offset(2, 2),
+                          ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 2,
-                      blurRadius: 2,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 750,
-                      child: SfCartesianChart(
-                        //zoomPanBehavior: _zoomPanBehavior,
-                        title: ChartTitle(
-                            text: 'Active Cases Per Street/Purok',
-                            textStyle: GoogleFonts.poppins(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        series: <ChartSeries>[
-                          BarSeries<StreetPurokData, String>(
-                            dataSource: barChart,
-                            xValueMapper: (StreetPurokData data, _) =>
-                                data.purok,
-                            yValueMapper: (StreetPurokData data, _) =>
-                                data.cases,
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 750,
+                            child: SfCartesianChart(
+                              //zoomPanBehavior: _zoomPanBehavior,
+                              title: ChartTitle(
+                                  text: 'Active Cases Per Street/Purok',
+                                  textStyle: GoogleFonts.poppins(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                              series: <ChartSeries>[
+                                BarSeries<StreetPurokData, String>(
+                                  dataSource: barChart,
+                                  xValueMapper: (StreetPurokData data, _) =>
+                                      data.purok,
+                                  yValueMapper: (StreetPurokData data, _) =>
+                                      data.cases,
 
-                            //borderWidth: 3,
+                                  //borderWidth: 3,
+                                )
+                              ],
+                              primaryXAxis: CategoryAxis(
+                                labelStyle: const TextStyle(fontSize: 10),
+                              ),
+                              primaryYAxis: NumericAxis(
+                                  title: AxisTitle(
+                                      text: 'Number of Active Cases',
+                                      textStyle:
+                                          GoogleFonts.poppins(fontSize: 20)),
+                                  interval: 1),
+                            ),
                           )
                         ],
-                        primaryXAxis: CategoryAxis(
-                          labelStyle: TextStyle(fontSize: 10),
-                        ),
-                        primaryYAxis: NumericAxis(
-                            title: AxisTitle(
-                                text: 'Number of Active Cases',
-                                textStyle: GoogleFonts.poppins(fontSize: 20)),
-                            interval: 1),
                       ),
-                    )
-                  ],
-                ),
-              ),
-            ]),
+                    ),
+                  ]),
+            ),
           ),
         );
       },
@@ -599,7 +616,7 @@ Future<List<int>> getListYear() async {
 
     return listYear;
   } catch (e) {
-    print('Error: ${e}');
+    print('Error: $e');
     return Future.value([]);
   }
 }
@@ -806,7 +823,7 @@ Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
       xValueMapper: (DengueData data, _) => data.x,
       yValueMapper: (DengueData data, _) => data.y,
       name: 'Year: $year',
-      markerSettings: MarkerSettings(isVisible: true),
+      markerSettings: const MarkerSettings(isVisible: true),
     ));
   }
 
