@@ -108,95 +108,92 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-            backgroundColor: Colors.green,
-            title: const Text('Admin Announcements'),
-            leading: BackButton(
-              onPressed: () {
-                Get.offAll(() => const AdminMainPage());
-              },
-            )),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              child: Form(
-                key: _formKey,
-                child: Container(
-                  padding: const EdgeInsets.all(32),
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/images/logo-no-background.png'),
-                      const SizedBox(height: 20),
-                      Text(
-                        'SEND ANNOUNCEMENTS',
-                        style: GoogleFonts.poppins(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+    return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Colors.green,
+          title: const Text('Admin Announcements'),
+          leading: BackButton(
+            onPressed: () {
+              Get.offAll(() => const AdminMainPage());
+            },
+          )),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            child: Form(
+              key: _formKey,
+              child: Container(
+                padding: const EdgeInsets.all(32),
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/logo-no-background.png'),
+                    const SizedBox(height: 20),
+                    Text(
+                      'SEND ANNOUNCEMENTS',
+                      style: GoogleFonts.poppins(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField<String>(
+                      value: _selectedPurok,
+                      items: puroklist.map((purok) {
+                        return DropdownMenuItem(
+                          value: purok,
+                          child: Text(purok),
+                        );
+                      }).toList(),
+                      onChanged: (String? val) =>
+                          setState(() => _selectedPurok = val ?? ''),
+                      decoration: const InputDecoration(
+                        labelText: 'Select Purok',
                       ),
-                      const SizedBox(height: 20),
-                      const SizedBox(height: 20),
-                      DropdownButtonFormField<String>(
-                        value: _selectedPurok,
-                        items: puroklist.map((purok) {
-                          return DropdownMenuItem(
-                            value: purok,
-                            child: Text(purok),
-                          );
-                        }).toList(),
-                        onChanged: (String? val) =>
-                            setState(() => _selectedPurok = val ?? ''),
-                        decoration: const InputDecoration(
-                          labelText: 'Select Purok',
+                    ),
+                    const SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: announcementController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 6,
+                      decoration: const InputDecoration(
+                        labelText: 'Announcement',
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: announcementController,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 6,
-                        decoration: const InputDecoration(
-                          labelText: 'Announcement',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 50,
-                                vertical: 15,
-                              ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 50,
+                              vertical: 15,
                             ),
-                            onPressed: () async {
-                              // Show a confirmation dialog
-                              bool? confirmSend =
-                                  await _showConfirmationDialog(context);
-                              if (confirmSend == true) {
-                                sendBulk();
-                                // ignore: use_build_context_synchronously
-                                Navigator.of(context)
-                                    .popUntil((route) => route.isFirst);
-                              }
-                            },
-                            child: Text(
-                              'Send',
-                              style: GoogleFonts.poppins(fontSize: 20),
-                            )),
-                      ),
-                    ],
-                  ),
+                          ),
+                          onPressed: () async {
+                            // Show a confirmation dialog
+                            bool? confirmSend =
+                                await _showConfirmationDialog(context);
+                            if (confirmSend == true) {
+                              sendBulk();
+                              // ignore: use_build_context_synchronously
+                              Navigator.of(context)
+                                  .popUntil((route) => route.isFirst);
+                            }
+                          },
+                          child: Text(
+                            'Send',
+                            style: GoogleFonts.poppins(fontSize: 20),
+                          )),
+                    ),
+                  ],
                 ),
               ),
             ),
