@@ -4,6 +4,7 @@ import 'package:denguecare_firebase/views/widgets/input_contact_number.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:uuid/uuid.dart';
 import '../widgets/input_address_widget.dart';
@@ -46,6 +47,13 @@ class _UserReportPageState extends State<UserReportPage> {
   final TextEditingController _contactnumberController =
       TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  bool isEnglish = true;
+
+  void toggleLanguage() {
+    setState(() {
+      isEnglish = !isEnglish;
+    });
+  }
 
   bool _headache = false;
   bool _bodymalaise = false;
@@ -139,6 +147,11 @@ class _UserReportPageState extends State<UserReportPage> {
             Get.back();
           },
         ),
+        actions: [
+          IconButton(
+              onPressed: toggleLanguage,
+              icon: const Icon(Icons.translate_rounded))
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -210,6 +223,7 @@ class _UserReportPageState extends State<UserReportPage> {
                                   borderRadius: BorderRadius.circular(8.0)),
                               child: DropdownButtonHideUnderline(
                                 child: DropdownButton<String>(
+                                  isExpanded: true,
                                   items: sex.map(buildMenuItem).toList(),
                                   value: value,
                                   hint: const Text('Sex'),
@@ -243,6 +257,7 @@ class _UserReportPageState extends State<UserReportPage> {
                             borderRadius: BorderRadius.circular(8.0)),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
+                            isExpanded: true,
                             items: puroklist.keys.map((String purok) {
                               return DropdownMenuItem<String>(
                                 value: purok,
@@ -258,8 +273,8 @@ class _UserReportPageState extends State<UserReportPage> {
                       _gap(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text("Symptoms",
-                            style: Theme.of(context).textTheme.headlineSmall),
+                        child: Text(isEnglish ? "Symptoms" : 'Sintomas',
+                            style: GoogleFonts.poppins(fontSize: 30)),
                       ),
                       _gap(),
                       Row(
@@ -274,7 +289,10 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _headache = value;
                                 });
                               },
-                              title: const Text('Headache'),
+                              title: Text(
+                                isEnglish ? 'Headache' : 'Sakit ng Ulo',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -289,7 +307,10 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _bodymalaise = value;
                                 });
                               },
-                              title: const Text('Body Malaise'),
+                              title: Text(
+                                isEnglish ? 'Body Malaise' : 'Sakit ng katawan',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -309,7 +330,10 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _myalgia = value;
                                 });
                               },
-                              title: const Text('Myalgia'),
+                              title: Text(
+                                isEnglish ? 'Myalgia' : 'Pananakit ng kalamnan',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -324,7 +348,10 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _arthralgia = value;
                                 });
                               },
-                              title: const Text('Arthralgia'),
+                              title: Text(
+                                isEnglish ? 'Arthralgia' : 'Rayuma',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -344,7 +371,12 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _retroOrbitalPain = value;
                                 });
                               },
-                              title: const Text('Retro Orbital Pain'),
+                              title: Text(
+                                isEnglish
+                                    ? 'Retro Orbital Pain'
+                                    : 'Pananakit sa likod ng mata',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -359,7 +391,10 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _anorexia = value;
                                 });
                               },
-                              title: const Text('Anorexia'),
+                              title: Text(
+                                isEnglish ? 'Anorexia' : 'Walang ganang kumain',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -379,7 +414,10 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _nausea = value;
                                 });
                               },
-                              title: const Text('Nausea'),
+                              title: Text(
+                                isEnglish ? 'Nausea' : 'Pagkahilo',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -394,7 +432,10 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _vomiting = value;
                                 });
                               },
-                              title: const Text('Vomiting'),
+                              title: Text(
+                                isEnglish ? 'Vomiting' : 'Pagsusuka',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -414,7 +455,8 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _diarrhea = value;
                                 });
                               },
-                              title: const Text('Diarrhea'),
+                              title: Text(isEnglish ? 'Diarrhea' : 'Pagtatae',
+                                  style: GoogleFonts.poppins(fontSize: 14)),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -429,7 +471,11 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _flushedSkin = value;
                                 });
                               },
-                              title: const Text('Rashes'),
+                              title: Text(
+                                  isEnglish
+                                      ? 'Rashes'
+                                      : 'Pantal-pantal sa katawan',
+                                  style: GoogleFonts.poppins(fontSize: 14)),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -449,7 +495,9 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _fever = value;
                                 });
                               },
-                              title: const Text('On and Off Fever'),
+                              title: Text(
+                                  isEnglish ? 'On and Off Fever' : 'Nilalagnat',
+                                  style: GoogleFonts.poppins(fontSize: 14)),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -464,7 +512,11 @@ class _UserReportPageState extends State<UserReportPage> {
                                   _lowPlateLet = value;
                                 });
                               },
-                              title: const Text('Low platelet count'),
+                              title: Text(
+                                  isEnglish
+                                      ? 'Low platelet count'
+                                      : 'Mababang bilang ng platelet',
+                                  style: GoogleFonts.poppins(fontSize: 14)),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -480,13 +532,11 @@ class _UserReportPageState extends State<UserReportPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4)),
                           ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child: Text(
-                              'Submit',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text('Submit',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
                           ),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -527,8 +577,8 @@ class _UserReportPageState extends State<UserReportPage> {
       LatLng selectedLatLng =
           puroklist[selectedPurok] ?? const LatLng(0.0, 0.0);
       await reports.add({
-        'firstname': _firstnameController.text,
-        'lastname': _lastnameController.text,
+        'firstName': _firstnameController.text,
+        'lastName': _lastnameController.text,
         'age': _ageController.text,
         'sex': value,
         'contact_number': _contactnumberController.text,

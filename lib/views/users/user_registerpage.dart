@@ -25,7 +25,9 @@ class UserRegisterPage extends StatefulWidget {
 
 class _UserRegisterPageState extends State<UserRegisterPage> {
   final _auth = FirebaseAuth.instance;
-  final TextEditingController _nameController = TextEditingController();
+
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _contactNumberController =
       TextEditingController();
@@ -144,7 +146,9 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _nameController.dispose();
+
+    _firstnameController.dispose();
+    _lastnameController.dispose();
     _ageController.dispose();
     value = 'Male';
     purokvalue = 'Select Purok';
@@ -178,10 +182,24 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                           style: GoogleFonts.poppins(fontSize: 18),
                         ),
                         const SizedBox(height: 20),
-                        InputWidget(
-                          hintText: "Name",
-                          controller: _nameController,
-                          obscureText: false,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InputWidget(
+                                hintText: "First Name",
+                                controller: _firstnameController,
+                                obscureText: false,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: InputWidget(
+                                hintText: "Last Name",
+                                controller: _lastnameController,
+                                obscureText: false,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20),
                         Row(
@@ -220,25 +238,33 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                             controller: _contactNumberController,
                             obscureText: false),
                         const SizedBox(height: 20),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(8.0)),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              items: puroklist.keys.map((String purok) {
-                                return DropdownMenuItem<String>(
-                                  value: purok,
-                                  child: Text(purok),
-                                );
-                              }).toList(),
-                              value: purokvalue,
-                              onChanged: (val) =>
-                                  setState(() => purokvalue = val),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 4),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(8.0)),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    padding: const EdgeInsets.all(0),
+                                    isExpanded: true,
+                                    items: puroklist.keys.map((String purok) {
+                                      return DropdownMenuItem<String>(
+                                        value: purok,
+                                        child: Text(purok),
+                                      );
+                                    }).toList(),
+                                    value: purokvalue,
+                                    onChanged: (val) =>
+                                        setState(() => purokvalue = val),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                         const SizedBox(height: 20),
                         InputEmailWidget(
@@ -401,7 +427,8 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                               signUp(
                                   _emailController.text.trim(),
                                   _confirmPasswordController.text.trim(),
-                                  _nameController.text.trim(),
+                                  _firstnameController.text.trim(),
+                                  _lastnameController.text.trim(),
                                   _ageController.text.trim(),
                                   value?.trim(),
                                   _contactNumberController.text.trim(),
@@ -441,8 +468,16 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
 //! SHOWDIALOG POP UP
 
 //! SIGN UP
-  void signUp(String email, String password, String name, String age,
-      String? sex, String contactnumber, String? purok, String userType) async {
+  void signUp(
+      String email,
+      String password,
+      String firstname,
+      String lastname,
+      String age,
+      String? sex,
+      String contactnumber,
+      String? purok,
+      String userType) async {
     try {
       showDialog(
           context: context,
@@ -453,8 +488,8 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) => {
-                postDetailsToFirestore(
-                    email, name, age, sex!, contactnumber, purok, userType)
+                postDetailsToFirestore(email, firstname, lastname, age, sex!,
+                    contactnumber, purok, userType)
               })
           .catchError((e) {
         return _showSnackbarError(context, e.message.toString());
@@ -465,13 +500,21 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     }
   }
 
-  postDetailsToFirestore(String email, String name, String age, String sex,
-      String contactnumber, String? purok, String userType) async {
+  postDetailsToFirestore(
+      String email,
+      String firstname,
+      String lastname,
+      String age,
+      String sex,
+      String contactnumber,
+      String? purok,
+      String userType) async {
     var user = _auth.currentUser;
     CollectionReference ref = FirebaseFirestore.instance.collection('users');
     ref.doc(user!.uid).set({
       'email': _emailController.text,
-      'name': _nameController.text,
+      'firstname': _firstnameController.text,
+      'lastname': _lastnameController.text,
       'age': _ageController.text,
       'sex': value,
       'contact_number': _contactNumberController.text,

@@ -5,13 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 class InputEmailWidget extends StatelessWidget {
   const InputEmailWidget({
     super.key,
-    required this.hintText,
+    this.hintText,
     required this.controller,
     required this.obscureText,
     this.labelText,
   });
 
-  final String hintText;
+  final String? hintText;
   final TextEditingController controller;
   final bool obscureText;
   final String? labelText;
