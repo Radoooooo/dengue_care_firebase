@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
 import 'package:denguecare_firebase/views/widgets/input_contact_number.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -539,8 +538,12 @@ class _UserReportPageState extends State<UserReportPage> {
                                     fontSize: 20, fontWeight: FontWeight.bold)),
                           ),
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {
+                            if (_formKey.currentState!.validate() &&
+                                purokvalue != 'Select Purok') {
                               uploadDataToFirebase();
+                            } else {
+                              _showSnackbarError(
+                                  context, "Please complete the form.");
                             }
                           },
                         ),
