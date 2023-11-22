@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:denguecare_firebase/views/admins/admin_homepage.dart';
+import 'package:denguecare_firebase/views/admins/admin_register.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ManageAdmin extends StatefulWidget {
   const ManageAdmin({super.key});
@@ -19,12 +21,23 @@ class _ManageAdminState extends State<ManageAdmin> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 118, 162, 120),
       appBar: AppBar(
-        title: const Text("Admin List"),
+        title: Text("Admin List", style: GoogleFonts.poppins(fontSize: 20)),
         leading: BackButton(
           onPressed: () {
             Get.offAll(() => const AdminMainPage());
           },
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Get.offAll(const AdminRegisterPage());
+            },
+            icon: const Icon(Icons.person_add),
+          ),
+          const SizedBox(
+            width: 5,
+          )
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: user.where('role', isEqualTo: 'Admin').snapshots(),
@@ -42,8 +55,10 @@ class _ManageAdminState extends State<ManageAdmin> {
                 final DocumentSnapshot ds = snapshot.data!.docs[index];
                 return Card(
                   child: ListTile(
-                    title: Text(ds['name']),
-                    subtitle: Text(ds['contact_number']),
+                    title: Text("${ds['firstName']} ${ds['lastName']}",
+                        style: GoogleFonts.poppins(fontSize: 16)),
+                    subtitle: Text(ds['contact_number'],
+                        style: GoogleFonts.poppins(fontSize: 14)),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {

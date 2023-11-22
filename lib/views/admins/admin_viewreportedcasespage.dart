@@ -276,6 +276,8 @@ class _AdminViewReportedCasesPageState
                             borderRadius: BorderRadius.circular(8.0)),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
+                            padding: const EdgeInsets.all(0),
+                            isExpanded: true,
                             items: puroklist.map(buildMenuItem).toList(),
                             value: widget.reportedCaseData['purok'],
                             hint: const Text('Purok'),
@@ -514,18 +516,22 @@ class _AdminViewReportedCasesPageState
                         child: Column(
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  "Date of first symptom:",
-                                  style: GoogleFonts.poppins(fontSize: 18),
-                                ),
-                                const SizedBox(width: 16),
-                                Text(
-                                  widget.reportedCaseData[
-                                          'first_symptom_date'] ??
-                                      formattedDateOnly,
-                                  style: GoogleFonts.poppins(fontSize: 16),
+                                RichText(
+                                  text: TextSpan(
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 12, color: Colors.black),
+                                    children: [
+                                      const TextSpan(
+                                        text: "Date of first symptom: ",
+                                      ),
+                                      TextSpan(
+                                          text: widget.reportedCaseData[
+                                                  'first_symptom_date'] ??
+                                              formattedDateOnly),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -629,33 +635,37 @@ class _AdminViewReportedCasesPageState
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey),
-                                        borderRadius:
-                                            BorderRadius.circular(8.0)),
-                                    child: DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        items: hospitalList
-                                            .map(buildMenuItemHospital)
-                                            .toList(),
-                                        value: valueHospital ??
-                                            widget.reportedCaseData[
-                                                'hospital_name'],
-                                        hint: Text(widget.reportedCaseData[
-                                                'hospital_name'] ??
-                                            valueHospital),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            // Update valueAdmitted only if the user selects a new value
-                                            valueHospital = value;
-                                          });
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0)),
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                          isExpanded: true,
+                                          items: hospitalList
+                                              .map(buildMenuItemHospital)
+                                              .toList(),
+                                          value: valueHospital ??
+                                              widget.reportedCaseData[
+                                                  'hospital_name'],
+                                          hint: Text(widget.reportedCaseData[
+                                                  'hospital_name'] ??
+                                              valueHospital),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              // Update valueAdmitted only if the user selects a new value
+                                              valueHospital = value;
+                                            });
 
-                                          // print it to the console
-                                          print("Selected value: $value");
-                                        },
+                                            // print it to the console
+                                            print("Selected value: $value");
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -768,11 +778,10 @@ class _AdminViewReportedCasesPageState
   void updateStatusData(String selectedValue) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     String docID = await fetchDocumentID();
-    // Assuming you have a 'your_collection' collection and a document with 'your_document_id'
+
     DocumentReference documentReference =
         firestore.collection('reports').doc(docID);
 
-    // Update the specific field with the selected value
     await documentReference.update({'status': selectedValue});
   }
 
@@ -814,7 +823,6 @@ class _AdminViewReportedCasesPageState
         reports.doc(documentID); // Use the document_id here
 
     _buildProgressIndicator();
-    // // Get the current date
 
     Map<String, dynamic> updateData = {
       'first_symptom_date': formattedDateOnly,
@@ -856,7 +864,6 @@ class _AdminViewReportedCasesPageState
     // Format the date and time as a string
     String formattedDateTime = "${currentDateTime.toLocal()}";
 
-    // Create a log entry
     Map<String, dynamic> logEntry = {
       'admin_email': user?.email,
       'action': action,
@@ -864,7 +871,6 @@ class _AdminViewReportedCasesPageState
       'timestamp': formattedDateTime,
     };
 
-    // Add the log entry to the 'admin_logs' collection
     await adminLogs.add(logEntry);
   }
 }

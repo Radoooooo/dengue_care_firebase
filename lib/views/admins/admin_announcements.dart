@@ -34,6 +34,71 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController announcementController = TextEditingController();
   final reference = FirebaseFirestore.instance.collection('users');
+  final puroklist = <String>{
+    'Select Purok',
+    'Bread Village',
+    'Carnation St.',
+    'Hillside Sibdivision',
+    'Ladislawa Village',
+    'NCCC Village',
+    'NHA Buhangin',
+    'Purok Anahaw',
+    'Purok Apollo',
+    'Purok Bagong Lipunan',
+    'Purok Balite 1 and 2',
+    'Purok Birsaba',
+    'Purok Blk. 10',
+    'Purok Buhangin Hills',
+    'Purok Cubcub',
+    'Purok Damayan',
+    'Purok Dumanlas Proper',
+    'Purok Engan Village',
+    'Purok Kalayaan',
+    'Purok Lopzcom',
+    'Purok Lourdes',
+    'Purok Lower St Jude',
+    'Purok Maglana',
+    'Purok Mahayag',
+    'Purok Margarita',
+    'Purok Medalla Melagrosa',
+    'Purok Molave',
+    'Purok Mt. Carmel',
+    'Purok New San Isidro',
+    'Purok NIC',
+    'Purok Old San Isidro',
+    'Purok Orchids',
+    'Purok Palm Drive',
+    'Purok Panorama Village',
+    'Purok Pioneer Village',
+    'Purok Purok Pine Tree',
+    'Purok Sampaguita',
+    'Purok San Antonio',
+    'Purok Sandawa',
+    'Purok San Jose',
+    'Purok San Lorenzo',
+    'Purok San Miguel Lower and Upper',
+    'Purok San Nicolas',
+    'Purok San Pedro Village',
+    'Purok San Vicente',
+    'Purok Spring Valley 1 and 2',
+    'Purok Sta. Cruz',
+    'Purok Sta. Maria',
+    'Purok Sta. Teresita',
+    'Purok Sto. Niño',
+    'Purok Sto. Rosario',
+    'Purok Sunflower',
+    'Purok Talisay',
+    'Purok Upper St. Jude',
+    'Purok Waling-waling',
+    'Purok Watusi',
+  };
+  late String _selectedPurok;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedPurok = puroklist.first; // Initialize with the first purok
+  }
 
   @override
   void dispose() {
@@ -72,6 +137,22 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
                         'SEND ANNOUNCEMENTS',
                         style: GoogleFonts.poppins(
                             fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 20),
+                      const SizedBox(height: 20),
+                      DropdownButtonFormField<String>(
+                        value: _selectedPurok,
+                        items: puroklist.map((purok) {
+                          return DropdownMenuItem(
+                            value: purok,
+                            child: Text(purok),
+                          );
+                        }).toList(),
+                        onChanged: (String? val) =>
+                            setState(() => _selectedPurok = val ?? ''),
+                        decoration: const InputDecoration(
+                          labelText: 'Select Purok',
+                        ),
                       ),
                       const SizedBox(height: 20),
                       const SizedBox(height: 20),
@@ -128,7 +209,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
   Future<void> sendBulk() async {
     final apikey = dotenv.env['apikey'] ?? '';
     try {
-      List<String> numbers = await getPhoneNumbers();
+      List<String> numbers = await getPhoneNumbers(_selectedPurok);
 
       List<Future<void>> smsFutures = numbers
           .map((String number) =>
@@ -143,9 +224,11 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
     }
   }
 
-  Future<List<String>> getPhoneNumbers() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('users').get();
+  Future<List<String>> getPhoneNumbers(String selectedPurok) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('purok', isEqualTo: selectedPurok)
+        .get();
     List<String> numbers = [];
 
     for (QueryDocumentSnapshot doc in querySnapshot.docs) {
@@ -186,23 +269,28 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
   }
 
   Future<void> sendSMS(String apikey, String number, String message) async {
-    final parameters = {
-      'apikey': apikey,
-      'number': number,
-      'message': message,
-    };
-    final response = await http.post(
-      Uri.parse('https://api.semaphore.co/api/v4/messages'),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: parameters,
-    );
+    try {
+      final parameters = {
+        'apikey': apikey,
+        'number': number,
+        'message': message,
+      };
+      final response = await http.post(
+        Uri.parse('https://api.semaphore.co/api/v4/messages'),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: parameters,
+      );
 
-    if (response.statusCode == 200) {
-      _showSnackbarSuccess('SMS sent successfully');
-    } else {
-      _showSnackbarError('Failed to send SMS');
+      if (response.statusCode == 200) {
+        _showSnackbarSuccess('SMS sent successfully');
+      } else {
+        _showSnackbarError('Failed to send SMS');
+      }
+    } catch (e) {
+      print(e.toString());
+      _showSnackbarError(e.toString());
     }
 
     // phoneController.clear();

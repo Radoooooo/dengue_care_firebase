@@ -47,7 +47,8 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
       body: Column(
         children: [
           ListTile(
-            title: const Text('Account Settings'),
+            title: Text('Account Settings',
+                style: GoogleFonts.poppins(fontSize: 18)),
             leading: const Icon(
               Icons.person,
               color: Colors.black,
@@ -57,17 +58,9 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
             },
           ),
           ListTile(
-            title: const Text('Prefereneces'),
-            leading: const Icon(
-              Icons.checklist,
-              color: Colors.black,
-            ),
-            onTap: () {},
-          ),
-          ListTile(
             title: Text(
               "Logout",
-              style: GoogleFonts.poppins(color: Colors.red),
+              style: GoogleFonts.poppins(color: Colors.red, fontSize: 18),
             ),
             leading: const Icon(
               Icons.logout_rounded,
