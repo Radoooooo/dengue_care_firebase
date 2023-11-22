@@ -453,56 +453,55 @@ class _testChartState extends State<testChart> {
                 ),
               ),
               Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Colors.white,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        spreadRadius: 2,
-                        blurRadius: 2,
-                        offset: Offset(2, 2),
-                      ),
-                    ],
-                  ),
-                  width: double.infinity,
-                  child: Expanded(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 1000,
-                          child: SfCartesianChart(
-                            //zoomPanBehavior: _zoomPanBehavior,
-                            title: ChartTitle(
-                                text: 'Active Cases Per Street/Purok',
-                                textStyle: GoogleFonts.poppins(
-                                    fontSize: 20, fontWeight: FontWeight.bold)),
-                            series: <ChartSeries>[
-                              BarSeries<StreetPurokData, String>(
-                                dataSource: barChart,
-                                xValueMapper: (StreetPurokData data, _) =>
-                                    data.purok,
-                                yValueMapper: (StreetPurokData data, _) =>
-                                    data.cases,
-
-                                //borderWidth: 3,
-                              )
-                            ],
-                            primaryXAxis: CategoryAxis(
-                                labelStyle: const TextStyle(fontSize: 10)),
-                            primaryYAxis: NumericAxis(
-                                title: AxisTitle(
-                                    text: 'Number of Active Cases',
-                                    textStyle:
-                                        GoogleFonts.poppins(fontSize: 20)),
-                                interval: 1),
-                          ),
-                        )
-                      ],
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      spreadRadius: 2,
+                      blurRadius: 2,
+                      offset: Offset(2, 2),
                     ),
-                  )),
+                  ],
+                ),
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 750,
+                      child: SfCartesianChart(
+                        //zoomPanBehavior: _zoomPanBehavior,
+                        title: ChartTitle(
+                            text: 'Active Cases Per Street/Purok',
+                            textStyle: GoogleFonts.poppins(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        series: <ChartSeries>[
+                          BarSeries<StreetPurokData, String>(
+                            dataSource: barChart,
+                            xValueMapper: (StreetPurokData data, _) =>
+                                data.purok,
+                            yValueMapper: (StreetPurokData data, _) =>
+                                data.cases,
+
+                            //borderWidth: 3,
+                          )
+                        ],
+                        primaryXAxis: CategoryAxis(
+                          labelStyle: TextStyle(fontSize: 10),
+                        ),
+                        primaryYAxis: NumericAxis(
+                            title: AxisTitle(
+                                text: 'Number of Active Cases',
+                                textStyle: GoogleFonts.poppins(fontSize: 20)),
+                            interval: 1),
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ]),
           ),
         );
