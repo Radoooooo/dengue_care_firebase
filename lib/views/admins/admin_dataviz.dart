@@ -41,7 +41,8 @@ class _AdminDataVizPageState extends State<AdminDataVizPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       backgroundColor: Colors.white10,
       body: const testChart(),
       floatingActionButton: FloatingActionButton(
@@ -54,7 +55,7 @@ class _AdminDataVizPageState extends State<AdminDataVizPage> {
         tooltip: 'Pick A File',
         child: const Icon(Icons.add),
       ),
-    );
+    ));
   }
 
   void logAdminAction(String action, String documentId) async {
