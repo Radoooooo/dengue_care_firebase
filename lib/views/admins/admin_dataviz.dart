@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:denguecare_firebase/charts/testchart.dart';
 
 List<List<dynamic>> data = [];
 
@@ -119,6 +120,7 @@ class _AdminDataVizPageState extends State<AdminDataVizPage> {
   }
 
   Future<void> process(List<List<dynamic>> data) async {
+    await deleteAllDocumentsInCollection('denguelinelist');
     final CollectionReference addDLL =
         FirebaseFirestore.instance.collection('denguelinelist');
     for (var i = 1; i < data.length; i++) {

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -103,10 +104,10 @@ class _testChartState extends State<testChart> {
           //chart3.sort((a, b) => a.x.compareTo(b.x));
           barChart.sort((a, b) => a.cases.compareTo(b.cases));
           //listYear.sort((a, b) => a.compareTo(b));
-          a1 = pieChart[pieChart.length - 4].number;
-          a2 = pieChart[pieChart.length - 3].number;
-          a3 = pieChart[pieChart.length - 2].number;
-          a4 = pieChart[pieChart.length - 1].number;
+          //a1 = pieChart[pieChart.length - 4].number;
+          //a2 = pieChart[pieChart.length - 3].number;
+          //a3 = pieChart[pieChart.length - 2].number;
+          //a4 = pieChart[pieChart.length - 1].number;
           minYear = listYear.first - 1;
           maxYear = listYear.last + 1;
         } else {}
@@ -178,7 +179,9 @@ class _testChartState extends State<testChart> {
                         chart3 = [];
                         barChart = [];
                         pieChart = [];
+                        yearlyData = [];
                         yearlySeries = [];
+
                         a1 = 0;
                         a2 = 0;
                         a3 = 0;
@@ -565,6 +568,11 @@ Future<List<piechartData>> queryAgeGroupsCount(int year) async {
     ageGroupCount4 = querySnapshot4.size.toDouble();
     pieChart.add(piechartData('Old Adult', ageGroupCount4, Colors.yellow));
 
+    a1 = ageGroupCount;
+    a2 = ageGroupCount2;
+    a3 = ageGroupCount3;
+    a4 = ageGroupCount4;
+
     return pieChart;
   } catch (e) {
     return Future.value([]);
@@ -768,6 +776,7 @@ void logAdminAction(String action, String documentId) async {
 }
 
 Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
+  yearlySeries = [];
   List<int> listYear = await getListYear();
 
   for (int year in listYear) {
