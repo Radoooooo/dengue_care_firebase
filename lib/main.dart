@@ -19,6 +19,7 @@ Future main() async {
   // FirebaseFirestore.instance.settings =
   //     const Settings(persistenceEnabled: true);
   SemaphoreAPI();
+  const LengthIndicator();
   runApp(const MyApp());
 }
 
@@ -105,34 +106,67 @@ class RouterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: getUserRole(),
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // You can return a loading indicator here if needed
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
-        } else {
-          final role = snapshot.data?.get('role') ?? '';
+        } else if (snapshot.hasData) {
+          return FutureBuilder<DocumentSnapshot>(
+            future: getUserRole(),
+            builder: (context, userSnapshot) {
+              if (userSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (userSnapshot.hasError) {
+                return Text('Error: ${userSnapshot.error}');
+              } else {
+                final role = userSnapshot.data?.get('role') ?? '';
 
-          switch (role) {
-            case 'Admin':
-              return const AdminMainPage();
-            case 'superadmin':
-              return const AdminMainPage();
-            case 'User':
-              return const UserMainPage();
-            default:
-              return const LoginPage();
-          }
+                switch (role) {
+                  case 'Admin':
+                    return const AdminMainPage();
+                  case 'superadmin':
+                    return const AdminMainPage();
+                  case 'User':
+                    return const UserMainPage();
+                  default:
+                    return const LoginPage();
+                }
+              }
+            },
+          );
+        } else {
+          return const LoginPage();
         }
       },
     );
   }
 
   Future<DocumentSnapshot> getUserRole() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    return FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        DocumentSnapshot document = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (document.exists) {
+          return document;
+        } else {
+          // Handle the case where the document doesn't exist
+          throw Exception("User document does not exist");
+        }
+      } else {
+        // Handle the case where the user is not authenticated
+        throw Exception("User not authenticated");
+      }
+    } catch (e) {
+      print(e.toString());
+      return Future.error(e.toString());
+    }
   }
 }

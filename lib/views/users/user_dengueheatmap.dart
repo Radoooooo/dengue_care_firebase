@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -34,6 +35,22 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
     super.initState();
     fetchPurokData();
     fetchData();
+    _controller = StreamController<void>();
+    subscription = _controller.stream.listen((_) {
+      fetchDataForSelectedPurok();
+    });
+    _controller.add(null);
+  }
+
+  bool _isMounted = true;
+  late StreamSubscription<void> subscription;
+  late StreamController<void> _controller;
+
+  @override
+  void dispose() {
+    _isMounted = false;
+    subscription.cancel(); // cancel any subscriptions
+    super.dispose();
   }
 
   //! For Map Purok Data
@@ -61,14 +78,15 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
     try {
       final result = await fetchPurokData();
       Map<String, LatLng> dataMap = result;
-
-      setState(() {
-        purokList = dataMap;
-      });
-
+      if (_isMounted) {
+        setState(() {
+          purokList = dataMap;
+        });
+      }
       // Now you can use dataMap and uniquePurokCount as needed
       print('Data Map: $dataMap');
       fetchDataForSelectedPurok();
+      _controller.add(null);
     } catch (e) {
       // Handle errors
       print('Error fetching data: $e');
@@ -111,20 +129,21 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
           .get();
 
       int confSize = queryConf.size;
+      if (_isMounted) {
+        setState(() {
+          size = querySnapshot.size;
+          len = size;
 
-      setState(() {
-        size = querySnapshot.size;
-        len = size;
+          susSize = querySus.size;
+          suslen = susSize;
 
-        susSize = querySus.size;
-        suslen = susSize;
+          probSize = queryProb.size;
+          problen = probSize;
 
-        probSize = queryProb.size;
-        problen = probSize;
-
-        confSize = queryConf.size;
-        conflen = confSize;
-      });
+          confSize = queryConf.size;
+          conflen = confSize;
+        });
+      }
       return size;
     } catch (e) {
       // Handle any potential errors, e.g., network issues or Firestore exceptions
@@ -144,10 +163,12 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
     for (var purok in purokList.keys) {
       int fetchedData = await getCountForPurok(purok);
 
-      if (fetchedData != -1) {
-        print('Count for $purok: $fetchedData');
-      } else {
-        print('Error getting count for $purok');
+      if (_isMounted) {
+        if (fetchedData != -1) {
+          print('Count for $purok: $fetchedData');
+        } else {
+          print('Error getting count for $purok');
+        }
       }
     }
   }

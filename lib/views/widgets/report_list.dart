@@ -17,12 +17,14 @@ class _ReportListWidgetState extends State<ReportListWidget> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> reports = [];
   List<Map<String, dynamic>> filteredReports = [];
+  String selectedSortOption = 'Unchecked';
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(4.0),
           child: TextField(
             controller: _searchController,
             onChanged: (query) {
@@ -44,12 +46,61 @@ class _ReportListWidgetState extends State<ReportListWidget> {
             ),
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                'All',
+                'Unchecked',
+                'Suspected',
+                'Probable',
+                'Confirmed',
+              ].map((option) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedSortOption = option;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedSortOption == option
+                          ? Colors
+                              .blue // Change the color for the selected button
+                          : Colors.green, // Default color for other buttons
+                    ),
+                    child: Text(
+                      option,
+                      style: GoogleFonts.poppins(),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
         Expanded(
           child: StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('reports')
-                .orderBy('date', descending: true)
-                .snapshots(),
+            stream: selectedSortOption == 'All'
+                ? FirebaseFirestore.instance
+                    .collection('reports')
+                    .orderBy(_getOrderByField(), descending: true)
+                    .snapshots()
+                : selectedSortOption == 'Unchecked'
+                    ? FirebaseFirestore.instance
+                        .collection('reports')
+                        .orderBy(_getOrderByField(), descending: true)
+                        .where('checked', isEqualTo: 'No')
+                        .snapshots()
+                    : FirebaseFirestore.instance
+                        .collection('reports')
+                        .orderBy(_getOrderByField(), descending: true)
+                        .where('status', isEqualTo: selectedSortOption)
+                        .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {
@@ -209,6 +260,7 @@ class _ReportListWidgetState extends State<ReportListWidget> {
                                   icon: const Icon(
                                     Icons.edit_note_rounded,
                                     color: Colors.white,
+                                    size: 30,
                                   ),
                                 ),
                               ],
@@ -228,6 +280,50 @@ class _ReportListWidgetState extends State<ReportListWidget> {
         ),
       ],
     );
+  }
+
+  void _setSortOption(String option) {
+    setState(() {
+      selectedSortOption = option;
+      _filterReports();
+    });
+  }
+
+  String _getOrderByField() {
+    switch (selectedSortOption) {
+      case 'All':
+        return 'date';
+      case 'Unchecked':
+        return 'checked';
+      case 'Suspected':
+      case 'Probable':
+      case 'Confirmed':
+        return 'status';
+      default:
+        return 'date';
+    }
+  }
+
+  void _filterReports() {
+    filteredReports = reports.where((report) {
+      return (report['firstName']
+                  .toLowerCase()
+                  .contains(_searchController.text.toLowerCase()) ||
+              report['lastName']
+                  .toLowerCase()
+                  .contains(_searchController.text.toLowerCase())) &&
+          _checkStatusFilter(report);
+    }).toList();
+  }
+
+  bool _checkStatusFilter(Map<String, dynamic> report) {
+    if (selectedSortOption == 'All') {
+      return true;
+    } else if (selectedSortOption == 'Unchecked') {
+      return report['checked'] == 'No';
+    } else {
+      return report['status'] == selectedSortOption;
+    }
   }
 }
 

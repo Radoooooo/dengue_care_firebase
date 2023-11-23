@@ -11,6 +11,8 @@ class InputWidget extends StatelessWidget {
     this.initialVal,
     this.enableTextInput,
     this.labelText,
+    this.onChanged,
+    this.onTapOutside,
   });
 
   final String? hintText;
@@ -19,6 +21,8 @@ class InputWidget extends StatelessWidget {
   final String? initialVal;
   final bool? enableTextInput;
   final String? labelText;
+  final void Function(String)? onChanged;
+  final void Function(PointerDownEvent)? onTapOutside;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +41,8 @@ class InputWidget extends StatelessWidget {
           return null;
         },
         obscureText: obscureText,
+        onChanged: onChanged,
+        onTapOutside: onTapOutside,
         controller: controller,
         enabled: enableTextInput,
         initialValue: initialVal,

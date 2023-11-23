@@ -556,6 +556,8 @@ class _AdminViewReportedCasesPageState
                                         widget.reportedCaseData[
                                                 'first_symptom_date'] =
                                             formattedDateOnly;
+                                        updateFirstDateOfSymptomsData(
+                                            formattedDateOnly);
                                       });
                                     }
                                   },
@@ -604,8 +606,8 @@ class _AdminViewReportedCasesPageState
                                               'patient_admitted'] ??
                                           valueAdmitted),
                                       onChanged: (value) {
+                                        updatePatientAdmittedData(value!);
                                         setState(() {
-                                          // Update valueAdmitted only if the user selects a new value
                                           valueAdmitted = value;
                                         });
 
@@ -657,12 +659,10 @@ class _AdminViewReportedCasesPageState
                                                   'hospital_name'] ??
                                               valueHospital),
                                           onChanged: (value) {
+                                            updateHostpitalData(value!);
                                             setState(() {
-                                              // Update valueAdmitted only if the user selects a new value
                                               valueHospital = value;
                                             });
-
-                                            // print it to the console
                                             print("Selected value: $value");
                                           },
                                         ),
@@ -687,20 +687,33 @@ class _AdminViewReportedCasesPageState
                                 )),
                             const SizedBox(height: 8),
                             Visibility(
-                                visible: valueHospital == 'Other' &&
-                                    valueAdmitted == 'Yes',
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: InputWidget(
-                                        obscureText: false,
-                                        controller: _otherHospitalController,
-                                        labelText: 'Hospital Name',
-                                      ),
-                                    )
-                                  ],
-                                )),
+                              visible: valueHospital == 'Other' &&
+                                  valueAdmitted == 'Yes',
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: InputWidget(
+                                      obscureText: false,
+                                      controller: _otherHospitalController,
+                                      labelText: 'Hospital Name',
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      updateHostpitalData(
+                                          _otherHospitalController.text);
+                                    },
+                                    icon: const Icon(
+                                      Icons.save,
+                                      color: Colors.green,
+                                      size: 30,
+                                    ),
+                                    tooltip: 'Save',
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -730,6 +743,7 @@ class _AdminViewReportedCasesPageState
                                         'patient_recovered'] ??
                                     valueRecovered),
                                 onChanged: (value) {
+                                  updatePatientRecoveredData(value!);
                                   setState(() {
                                     // Update valueAdmitted only if the user selects a new value
                                     valueRecovered = value;
@@ -744,26 +758,6 @@ class _AdminViewReportedCasesPageState
                         ],
                       ),
                       _gap(),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                              'Submit',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          onPressed: () {
-                            updateDataToFirebase();
-                          },
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -783,6 +777,83 @@ class _AdminViewReportedCasesPageState
         firestore.collection('reports').doc(docID);
 
     await documentReference.update({'status': selectedValue});
+  }
+
+  void updateFirstDateOfSymptomsData(String newDate) async {
+    // Assuming you have a Firestore collection named 'reportedCases'
+    CollectionReference reportedCases =
+        FirebaseFirestore.instance.collection('reports');
+
+    // Assuming you have a document ID for the specific case
+    String documentID = await fetchDocumentID();
+
+    // Update the document with the new date value
+    await reportedCases.doc(documentID).update({
+      'first_symptom_date': newDate,
+    }).then((value) {
+      print("Firestore data updated successfully!");
+    }).catchError((error) {
+      print("Error updating Firestore data: $error");
+    });
+  }
+
+  void updatePatientAdmittedData(String selectedValue) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    String docID = await fetchDocumentID();
+
+    DocumentReference documentReference =
+        firestore.collection('reports').doc(docID);
+
+    await documentReference.update({
+      'patient_admitted': valueAdmitted == 'Yes'
+          ? valueAdmitted
+          : (() {
+              valueHospital = hospitalList[0];
+              _otherHospitalController.text = '';
+              return valueAdmitted;
+            })(),
+      'other_hospital': valueHospital == 'Other' ? 'Yes' : 'No',
+    }).then((value) {
+      print("Firestore data updated successfully!");
+    }).catchError((error) {
+      print("Error updating Firestore data: $error");
+    });
+  }
+
+  void updateHostpitalData(String selectedValue) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    String docID = await fetchDocumentID();
+
+    DocumentReference documentReference =
+        firestore.collection('reports').doc(docID);
+
+    await documentReference.update({
+      'hospital_name': valueHospital == hospitalList[0]
+          ? ''
+          : valueHospital == 'Other'
+              ? _otherHospitalController.text
+              : valueHospital,
+      'other_hospital': valueHospital == 'Other' ? 'Yes' : 'No',
+    }).then((value) {
+      print("Firestore data updated successfully!");
+    }).catchError((error) {
+      print("Error updating Firestore data: $error");
+    });
+  }
+
+  void updatePatientRecoveredData(String selectedValue) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    String docID = await fetchDocumentID();
+
+    DocumentReference documentReference =
+        firestore.collection('reports').doc(docID);
+
+    await documentReference
+        .update({'patient_recovered': selectedValue}).then((value) {
+      _showSnackbarSuccess(context, "Patient Cleared");
+    }).catchError((error) {
+      print("Error updating Firestore data: $error");
+    });
   }
 
   Future<String> getDocumentID() async {
@@ -825,7 +896,6 @@ class _AdminViewReportedCasesPageState
     _buildProgressIndicator();
 
     Map<String, dynamic> updateData = {
-      'first_symptom_date': formattedDateOnly,
       'patient_admitted': valueAdmitted,
       'hospital_name': valueHospital == hospitalList[0]
           ? ''
