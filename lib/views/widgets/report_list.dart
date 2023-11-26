@@ -46,10 +46,10 @@ class _ReportListWidgetState extends State<ReportListWidget> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -58,6 +58,7 @@ class _ReportListWidgetState extends State<ReportListWidget> {
                 'Suspected',
                 'Probable',
                 'Confirmed',
+                'Recovered',
               ].map((option) {
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -298,6 +299,7 @@ class _ReportListWidgetState extends State<ReportListWidget> {
       case 'Suspected':
       case 'Probable':
       case 'Confirmed':
+      case 'Recovered':
         return 'status';
       default:
         return 'date';
@@ -335,6 +337,8 @@ Color _getColorForStatus(String status) {
       return Colors.orange;
     case 'Confirmed':
       return Colors.red;
+    case 'Recovered':
+      return Colors.green;
     default:
       return Colors.white;
   }

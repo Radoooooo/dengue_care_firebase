@@ -7,9 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:cross_file_image/cross_file_image.dart';
 import 'package:uuid/uuid.dart';
 import 'admin_homepage.dart';
 
@@ -27,6 +24,8 @@ File? image;
 List<Uint8List> pickedImagesInBytes = [];
 XFile? imagefromWeb;
 Uint8List? bytes;
+String downloadURL = '';
+bool isLoading = false;
 
 Uint8List convertListToUint8List(List<int> list) {
   return Uint8List.fromList(list);
@@ -40,63 +39,12 @@ class AdminPostPage extends StatefulWidget {
 }
 
 class _AdminPostPageState extends State<AdminPostPage> {
-  String downloadURL = '';
   final uuid = const Uuid();
   String uniqueDocId = '';
   void generateUniqueId() {
     setState(() {
       uniqueDocId = uuid.v4(); // Generates a new unique ID
     });
-  }
-
-  Future<void> _pickImageWeb() async {
-    try {
-      ImagePicker picker = ImagePicker();
-      imagefromWeb = await picker.pickImage(source: ImageSource.gallery);
-
-      if (imagefromWeb != null) {
-        bytes = await imagefromWeb!.readAsBytes();
-        setState(() {
-          bytes;
-        });
-
-        _showSnackbarSuccess(context, "Image Selected");
-      }
-    } catch (e) {
-      _showSnackbarError(context, e.toString());
-    }
-  }
-
-  void uploadimgWeb() async {
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    final user = auth.currentUser;
-    try {
-      final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child('images/${imagefromWeb!.name}');
-
-      await imageRef.putData(
-          bytes!, SettableMetadata(contentType: 'image/jpeg'));
-
-      final String downloadURL = await imageRef.getDownloadURL();
-
-      setState(() {
-        this.downloadURL = downloadURL;
-      });
-      FirebaseFirestore.instance.collection('posts').add({
-        'imageUrl': downloadURL,
-        'caption': _titleController.text.trim(),
-        'postDetails': _contentController.text.trim(),
-        'uploaderEmail':
-            user!.email, // Assuming the displayName is set for Firebase user.
-        'uploaderUID': user.uid,
-        'post_id': uniqueDocId,
-        'date': FieldValue.serverTimestamp(),
-      });
-      logAdminAction('Created Post', user.uid);
-      _showSnackbarSuccess(context, 'Success');
-    } catch (e) {
-      _showSnackbarError(context, e.toString());
-    }
   }
 
   @override
@@ -118,15 +66,26 @@ class _AdminPostPageState extends State<AdminPostPage> {
           },
         ),
         actions: [
-          IconButton(
-              onPressed: () async {
-                if (kIsWeb) {
-                  uploadimgWeb();
-                } else if (Platform.isAndroid) {
-                  postUpload();
-                }
-              },
-              icon: const Icon(Icons.check))
+          isLoading
+              ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(),
+                )
+              : IconButton(
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true; // Set loading state to true
+                    });
+                    if (kIsWeb) {
+                      uploadimgWeb();
+                    } else if (Platform.isAndroid) {
+                      postUpload();
+                    }
+                    setState(() {
+                      isLoading = false; // Set loading state to false
+                    });
+                  },
+                  icon: const Icon(Icons.check))
         ],
       ),
       body: SingleChildScrollView(
@@ -136,7 +95,7 @@ class _AdminPostPageState extends State<AdminPostPage> {
             child: Center(
               child: Column(
                 children: [
-                  _selectedImage != null || bytes != null
+                  bytes != null || _selectedImage != null
                       ? kIsWeb
                           ? Image.memory(
                               bytes!,
@@ -219,15 +178,17 @@ class _AdminPostPageState extends State<AdminPostPage> {
 
   void imgPickUpload() async {
     final ImagePicker picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     try {
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         image = File(pickedFile.path);
 
         setState(() {
           _selectedImage = image;
         });
+      } else {
+        _showSnackbarError(context, 'No image selected');
       }
     } catch (e) {
       _showSnackbarError(context, e.toString());
@@ -273,10 +234,73 @@ class _AdminPostPageState extends State<AdminPostPage> {
         UploadTask uploadTask = ref.putFile(image!);
         TaskSnapshot snapshot = await uploadTask.whenComplete(() => {});
         imageUrl = await snapshot.ref.getDownloadURL();
+      } else if (image == null) {
+        imageUrl = '';
       }
 
       FirebaseFirestore.instance.collection('posts').add({
         if (imageUrl != null) 'imageUrl': imageUrl,
+        if (imageUrl == null) 'imageUrl': '',
+        'caption': _titleController.text.trim(),
+        'postDetails': _contentController.text.trim(),
+        'uploaderEmail':
+            user!.email, // Assuming the displayName is set for Firebase user.
+        'uploaderUID': user.uid,
+        'post_id': uniqueDocId,
+        'date': FieldValue.serverTimestamp(),
+      });
+
+      logAdminAction('Created Post', user.uid);
+      _showSnackbarSuccess(context, 'Success');
+    } catch (e) {
+      print(e);
+      _showSnackbarError(context, e.toString());
+    } finally {
+      // Set loading state to false in the finally block to handle both success and error cases
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _pickImageWeb() async {
+    try {
+      ImagePicker picker = ImagePicker();
+      imagefromWeb = await picker.pickImage(source: ImageSource.gallery);
+
+      if (imagefromWeb != null) {
+        bytes = await imagefromWeb!.readAsBytes();
+        setState(() {
+          bytes;
+        });
+
+        _showSnackbarSuccess(context, "Image Selected");
+      }
+    } catch (e) {
+      _showSnackbarError(context, e.toString());
+    }
+  }
+
+  void uploadimgWeb() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
+    try {
+      String? downloadURL;
+      if (imagefromWeb != null) {
+        final storageRef = FirebaseStorage.instance.ref();
+        final imageRef = storageRef.child('images/${imagefromWeb!.name}');
+
+        await imageRef.putData(
+            bytes!, SettableMetadata(contentType: 'image/jpeg'));
+
+        downloadURL = await imageRef.getDownloadURL();
+      } else if (imagefromWeb == null) {
+        downloadURL = '';
+      }
+
+      FirebaseFirestore.instance.collection('posts').add({
+        if (downloadURL != null) 'imageUrl': downloadURL,
+        if (downloadURL == null) 'imageUrl': '',
         'caption': _titleController.text.trim(),
         'postDetails': _contentController.text.trim(),
         'uploaderEmail':
@@ -288,7 +312,19 @@ class _AdminPostPageState extends State<AdminPostPage> {
       logAdminAction('Created Post', user.uid);
       _showSnackbarSuccess(context, 'Success');
     } catch (e) {
+      print(downloadURL);
+      print(_titleController.text);
+      print(_contentController.text);
+      print(user!.email);
+      print(user.uid);
+      print(uniqueDocId);
+      print(e);
       _showSnackbarError(context, e.toString());
+    } finally {
+      // Set loading state to false in the finally block to handle both success and error cases
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 }

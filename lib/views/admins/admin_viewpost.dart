@@ -18,7 +18,6 @@ File? _selectedImage;
 //! WEB
 List<Uint8List> pickedImagesInBytes = [];
 XFile? imagefromWeb;
-Uint8List? bytes;
 
 class AdminViewPost extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -34,6 +33,7 @@ class _AdminViewPostState extends State<AdminViewPost> {
   late TextEditingController postDetailsController;
   bool isEditing = false;
   String downloadURL = '';
+  Uint8List? bytes;
   @override
   void initState() {
     super.initState();
@@ -49,17 +49,19 @@ class _AdminViewPostState extends State<AdminViewPost> {
         title: const Text('Post Details'),
         leading: BackButton(
           onPressed: () {
+            clearAllInputs();
             Get.offAll(() => const AdminMainPage());
           },
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                setState(() {
-                  isEditing = !isEditing;
-                });
-              },
-              icon: const Icon(Icons.edit_square))
+            onPressed: () {
+              setState(() {
+                isEditing = !isEditing;
+              });
+            },
+            icon: const Icon(Icons.edit_square),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -121,7 +123,7 @@ class _AdminViewPostState extends State<AdminViewPost> {
                       ),
                     )
                   : SizedBox(
-                      width: double.infinity,
+                      width: 600,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Card(
@@ -158,16 +160,39 @@ class _AdminViewPostState extends State<AdminViewPost> {
                       ),
                     ),
               if (isEditing)
-                ElevatedButton(
-                  onPressed: () async {
-                    if (kIsWeb) {
-                      uploadimgWeb();
-                    } else if (Platform.isAndroid) {
-                      postUpload();
-                    }
-                  },
-                  child: const Text('Save Changes'),
-                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.save_rounded),
+                      onPressed: () async {
+                        if (kIsWeb) {
+                          uploadimgWeb();
+                        } else if (Platform.isAndroid) {
+                          postUpload();
+                        }
+                      },
+                      label: const Text('Save Changes'),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.delete_forever_outlined),
+                      onPressed: () async {
+                        if (widget.post['uploaderUID'] ==
+                            FirebaseAuth.instance.currentUser!.uid) {
+                          deleteFileByURL(widget.post['imageUrl']);
+                          _confirmDelete(context);
+                        } else {
+                          _showSnackbarError(context, 'Unauthorized Action');
+                        }
+                      },
+                      style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.red)),
+                      label: const Text('Delete Post'),
+                    ),
+                  ],
+                )
             ],
           ),
         ),
@@ -175,17 +200,65 @@ class _AdminViewPostState extends State<AdminViewPost> {
     );
   }
 
+  void clearAllInputs() {
+    setState(() {
+      bytes = null;
+      _selectedImage = null;
+      downloadURL = '';
+    });
+  }
+
+  Future<String> getDocumentID() async {
+    CollectionReference collectionRef =
+        FirebaseFirestore.instance.collection('posts');
+
+    QuerySnapshot querySnapshot = await collectionRef
+        .where('post_id', isEqualTo: widget.post['post_id'])
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      QueryDocumentSnapshot document = querySnapshot.docs[0];
+      String documentID = document.id;
+      return documentID;
+    } else {
+      return "No matching documents found";
+    }
+  }
+
+  Future<String> fetchDocumentID() async {
+    return await getDocumentID();
+  }
+
+  Future<void> deletePost() async {
+    try {
+      String postIDRef = await fetchDocumentID();
+      CollectionReference reports =
+          FirebaseFirestore.instance.collection('posts');
+      DocumentReference userDocRef = reports.doc(postIDRef);
+
+      userDocRef.delete();
+
+      _showSnackbarSuccess(context, 'Post Deleted');
+    } catch (e) {
+      _showSnackbarError(context, e.toString());
+    }
+  }
+
   Future<void> deleteFileByURL(String imgUrl) async {
     try {
-      // Create a reference to the file based on the download URL
-      Reference storageReference = FirebaseStorage.instance.refFromURL(imgUrl);
+      if (imgUrl.isNotEmpty) {
+        // Create a reference to the file based on the download URL
+        Reference storageReference =
+            FirebaseStorage.instance.refFromURL(imgUrl);
 
-      // Delete the file
-      await storageReference.delete();
+        // Delete the file
+        await storageReference.delete();
 
-      print('File deleted successfully');
-
-      // _showSnackbarSuccess(context, 'File deleted successfully');
+        print('File deleted successfully');
+      } else {
+        print('Image URL is empty. No file deleted.');
+      }
     } catch (e) {
       print('Error deleting file: $e');
       _showSnackbarError(context, e.toString());
@@ -196,6 +269,7 @@ class _AdminViewPostState extends State<AdminViewPost> {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final user = auth.currentUser;
     String postID = await fetchPostID();
+
     try {
       String? imageUrl;
 
@@ -327,6 +401,34 @@ class _AdminViewPostState extends State<AdminViewPost> {
 
   Future<String> fetchPostID() async {
     return await getPostID();
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Post'),
+          content: const Text('Are you sure you want to delete this post?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                deletePost();
+                Navigator.of(context).pop();
+                Get.offAll(() => const AdminMainPage());
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showSnackbarError(BuildContext context, String message) {

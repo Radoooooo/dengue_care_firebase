@@ -182,7 +182,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
                             bool? confirmSend =
                                 await _showConfirmationDialog(context);
                             if (confirmSend == true) {
-                              sendBulk();
+                              sendSMSInBulk();
                               // ignore: use_build_context_synchronously
                               Navigator.of(context)
                                   .popUntil((route) => route.isFirst);
@@ -201,24 +201,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
         ),
       ),
     );
-  }
-
-  Future<void> sendBulk() async {
-    final apikey = dotenv.env['apikey'] ?? '';
-    try {
-      List<String> numbers = await getPhoneNumbers(_selectedPurok);
-
-      List<Future<void>> smsFutures = numbers
-          .map((String number) =>
-              sendSMS(apikey, number, announcementController.text))
-          .toList();
-
-      // Wait for all SMS futures to complete
-      await Future.wait(smsFutures);
-      _formKey.currentState!.reset();
-    } catch (e) {
-      _showSnackbarError('Failed to send SMS');
-    }
   }
 
   Future<List<String>> getPhoneNumbers(String selectedPurok) async {
@@ -265,7 +247,29 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
     );
   }
 
-  Future<void> sendSMS(String apikey, String number, String message) async {
+  void sendSMSInBulk() async {
+    try {
+      bool isSuccess = true;
+      List<String> numbers = await getPhoneNumbers(_selectedPurok);
+      for (String number in numbers) {
+        isSuccess = await sendSMS(apikey, number, announcementController.text);
+        if (!isSuccess) {
+          break;
+        }
+      }
+
+      if (isSuccess) {
+        _showSnackbarSuccess('All SMS sent successfully');
+        Get.offAll(() => const AdminMainPage());
+      } else {
+        _showSnackbarError('Failed to send SMS');
+      }
+    } catch (e) {
+      _showSnackbarError('Failed to send SMS');
+    }
+  }
+
+  Future<bool> sendSMS(String apikey, String number, String message) async {
     try {
       final parameters = {
         'apikey': apikey,
@@ -281,17 +285,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
       );
 
       if (response.statusCode == 200) {
-        _showSnackbarSuccess('SMS sent successfully');
+        return true;
       } else {
-        _showSnackbarError('Failed to send SMS');
+        return false;
       }
     } catch (e) {
       print(e.toString());
-      _showSnackbarError(e.toString());
+      return false;
     }
-
-    // phoneController.clear();
-    announcementController.clear();
   }
 
   void _showSnackbarSuccess(String message) {
@@ -310,3 +311,56 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 }
+
+
+
+
+
+
+// Future<void> sendBulk() async {
+  //   final apikey = dotenv.env['apikey'] ?? '';
+  //   try {
+  //     List<String> numbers = await getPhoneNumbers(_selectedPurok);
+
+  //     List<Future<void>> smsFutures = numbers
+  //         .map((String number) =>
+  //             sendSMS(apikey, number, announcementController.text))
+  //         .toList();
+
+  //     // Wait for all SMS futures to complete
+  //     await Future.wait(smsFutures);
+  //     _formKey.currentState!.reset();
+  //   } catch (e) {
+  //     _showSnackbarError('Failed to send SMS');
+  //   }
+  // }
+
+  // Future<void> sendSMS(String apikey, String number, String message) async {
+  //   try {
+  //     final parameters = {
+  //       'apikey': apikey,
+  //       'number': number,
+  //       'message': message,
+  //     };
+  //     final response = await http.post(
+  //       Uri.parse('https://api.semaphore.co/api/v4/messages'),
+  //       headers: {
+  //         'Content-Type': 'application/x-www-form-urlencoded',
+  //       },
+  //       body: parameters,
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       _showSnackbarSuccess('SMS sent successfully');
+  //       Get.offAll(() => const AdminMainPage());
+  //     } else {
+  //       _showSnackbarError('Failed to send SMS');
+  //     }
+  //   } catch (e) {
+  //     print(e.toString());
+  //     _showSnackbarError(e.toString());
+  //   }
+
+  //   // phoneController.clear();
+  //   announcementController.clear();
+  // }

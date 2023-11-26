@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:denguecare_firebase/views/widgets/real_timedatetime.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
@@ -9,6 +8,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 final PanelController _panelController = PanelController();
 final mapController = MapController();
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class UserDengueHeatMapPage extends StatefulWidget {
   const UserDengueHeatMapPage({super.key});
@@ -28,6 +28,8 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
   int? suslen;
   int? problen;
   int? conflen;
+  int? recovlen;
+  int forMap = 0;
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
   @override
@@ -35,29 +37,16 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
     super.initState();
     fetchPurokData();
     fetchData();
-    _controller = StreamController<void>();
-    subscription = _controller.stream.listen((_) {
-      fetchDataForSelectedPurok();
-    });
-    _controller.add(null);
-  }
-
-  bool _isMounted = true;
-  late StreamSubscription<void> subscription;
-  late StreamController<void> _controller;
-
-  @override
-  void dispose() {
-    _isMounted = false;
-    subscription.cancel(); // cancel any subscriptions
-    super.dispose();
   }
 
   //! For Map Purok Data
   Future<Map<String, LatLng>> fetchPurokData() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('reports').get();
+          await FirebaseFirestore.instance
+              .collection('reports')
+              .where('patient_recovered', isEqualTo: 'No')
+              .get();
 
       return Map.fromEntries(querySnapshot.docs
           .map((DocumentSnapshot<Map<String, dynamic>> document) {
@@ -78,15 +67,14 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
     try {
       final result = await fetchPurokData();
       Map<String, LatLng> dataMap = result;
-      if (_isMounted) {
-        setState(() {
-          purokList = dataMap;
-        });
-      }
+
+      setState(() {
+        purokList = dataMap;
+      });
+
       // Now you can use dataMap and uniquePurokCount as needed
       print('Data Map: $dataMap');
       fetchDataForSelectedPurok();
-      _controller.add(null);
     } catch (e) {
       // Handle errors
       print('Error fetching data: $e');
@@ -100,6 +88,7 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
           await FirebaseFirestore.instance
               .collection('reports')
               .where('purok', isEqualTo: selectedPurok)
+              .where('patient_recovered', isEqualTo: 'No')
               .get();
       int size = querySnapshot.size;
 
@@ -108,6 +97,7 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
           .collection('reports')
           .where('purok', isEqualTo: selectedPurok)
           .where('status', isEqualTo: 'Suspected')
+          .where('patient_recovered', isEqualTo: 'No')
           .get();
 
       int susSize = querySus.size;
@@ -117,6 +107,7 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
           .collection('reports')
           .where('purok', isEqualTo: selectedPurok)
           .where('status', isEqualTo: 'Probable')
+          .where('patient_recovered', isEqualTo: 'No')
           .get();
 
       int probSize = queryProb.size;
@@ -126,24 +117,38 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
           .collection('reports')
           .where('purok', isEqualTo: selectedPurok)
           .where('status', isEqualTo: 'Confirmed')
+          .where('patient_recovered', isEqualTo: 'No')
           .get();
 
       int confSize = queryConf.size;
-      if (_isMounted) {
-        setState(() {
-          size = querySnapshot.size;
-          len = size;
 
-          susSize = querySus.size;
-          suslen = susSize;
+      QuerySnapshot<Map<String, dynamic>> queryRecov = await FirebaseFirestore
+          .instance
+          .collection('reports')
+          .where('purok', isEqualTo: selectedPurok)
+          .where('status', isEqualTo: 'Recovered')
+          .where('patient_recovered', isEqualTo: 'Yes')
+          .get();
 
-          probSize = queryProb.size;
-          problen = probSize;
+      int recovSize = queryRecov.size;
 
-          confSize = queryConf.size;
-          conflen = confSize;
-        });
-      }
+      setState(() {
+        size = querySnapshot.size;
+        len = size;
+        forMap = size;
+
+        susSize = querySus.size;
+        suslen = susSize;
+
+        probSize = queryProb.size;
+        problen = probSize;
+
+        confSize = queryConf.size;
+        conflen = confSize;
+
+        recovSize = queryRecov.size;
+        recovlen = recovSize;
+      });
       return size;
     } catch (e) {
       // Handle any potential errors, e.g., network issues or Firestore exceptions
@@ -153,84 +158,98 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
   }
 
   Future<void> fetchDataForSelectedPurok() async {
-    // int fetchedData = await getCountForPurok(selectPurok);
+    //!! NEW CODE
+    List<Future<int>> futures = [];
 
-    // if (fetchedData != -1) {
-    //   print('Count for $selectPurok: $fetchedData');
-    // } else {
-    //   print('Error getting count for $selectPurok');
-    // }
     for (var purok in purokList.keys) {
-      int fetchedData = await getCountForPurok(purok);
-
-      if (_isMounted) {
-        if (fetchedData != -1) {
-          print('Count for $purok: $fetchedData');
-        } else {
-          print('Error getting count for $purok');
-        }
-      }
+      futures.add(getCountForPurok(purok));
     }
+
+    List<int> results = await Future.wait(futures);
+
+    // Now results contains the count for each purok
+    // Update the UI or handle the data as needed
+    for (int i = 0; i < purokList.length; i++) {
+      print('Count for ${purokList.keys.elementAt(i)}: ${results[i]}');
+    }
+
+    //!! OLD CODE
+    // for (var purok in purokList.keys) {
+    //   int fetchedData = await getCountForPurok(purok);
+    //   if (fetchedData != -1) {
+    //     print('Count for $purok: $fetchedData');
+    //   } else {
+    //     print('Error getting count for $purok');
+    //   }
+    // }
   }
 
-  void _showDialog(BuildContext context, LatLng point, String purokName) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            'Details',
-            style: GoogleFonts.poppins(fontSize: 24),
-          ),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Case Reported: $len',
-                style: GoogleFonts.poppins(
-                    fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Purok: $purokName ',
-                style: GoogleFonts.poppins(
-                    fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Suspected Cases: $suslen',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              Text(
-                'Probable Cases: $problen',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              Text(
-                'Confirmed Cases: $conflen',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              // const SizedBox(height: 10),
-              // Text(
-              //   'Latitude: ${point.latitude}, Longitude: ${point.longitude}',
-              // ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+  void _showDialog(BuildContext context, LatLng point, String purokName) async {
+    int fetchedData = await getCountForPurok(purokName);
+
+    if (fetchedData != -1) {
+      showDialog(
+        context: _scaffoldKey.currentContext!,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Details',
+              style: GoogleFonts.poppins(fontSize: 24),
             ),
-          ],
-        );
-      },
-    );
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const RealTimeDateTime(),
+                Text(
+                  'Case Reported: $len',
+                  style: GoogleFonts.poppins(
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Purok: $purokName ',
+                  style: GoogleFonts.poppins(
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Suspected Cases: $suslen',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+                Text(
+                  'Probable Cases: $problen',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+                Text(
+                  'Confirmed Cases: $conflen',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+                Text(
+                  'Recovered Cases: $recovlen',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      print('Error getting count for $purokName');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: FlutterMap(
         mapController: mapController,
         options: const MapOptions(
@@ -250,8 +269,6 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
                   onTap: () {
                     _showDialog(context, entry.value, entry.key);
                     getCountForPurok(entry.key);
-                    // print('len $len');
-                    // print(entry.key);
                     setState(() {
                       selectPurok = entry.key;
                     });
@@ -261,8 +278,8 @@ class _UserDengueHeatMapPageState extends State<UserDengueHeatMapPage> {
                     color: Colors.red[400],
                   ),
                 ),
-                width: 30.0,
-                height: 30.0,
+                width: 40.0,
+                height: 40.0,
                 point: entry.value,
               );
             }).toList(),

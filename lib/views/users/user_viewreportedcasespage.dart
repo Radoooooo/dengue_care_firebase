@@ -34,7 +34,7 @@ class _UserViewReportedCasesPageState extends State<UserViewReportedCasesPage> {
   String? value;
   final sex = ['Male', 'Female'];
   String? valueStatus;
-  final status = ['Suspected', 'Probable', 'Confirmed'];
+  final status = ['Suspected', 'Probable', 'Confirmed', 'Recovered'];
   String? valueAdmitted;
   final admitted = ["Yes", "No"];
   String? valueRecovered;

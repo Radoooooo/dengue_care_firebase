@@ -5,6 +5,7 @@ import 'package:denguecare_firebase/views/users/user_settings_page.dart';
 import 'package:denguecare_firebase/views/widgets/post_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class UserHomePage extends StatelessWidget {
   const UserHomePage({super.key});
@@ -60,7 +61,10 @@ class _UserMainPageState extends State<UserMainPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('DengueCare'),
+        title: Text(
+          'DengueCare',
+          style: GoogleFonts.poppins(fontSize: 20),
+        ),
         actions: <Widget>[
           PopupMenuButton<int>(
             padding: EdgeInsets.zero,

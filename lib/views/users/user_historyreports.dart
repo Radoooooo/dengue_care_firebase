@@ -71,19 +71,28 @@ class _ReportsHistoryState extends State<ReportsHistory> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 RichText(
-                                  text: TextSpan(children: [
-                                    const WidgetSpan(
-                                      child: Icon(
-                                        Icons.person,
-                                        color: Colors.white,
+                                  text: TextSpan(
+                                    children: [
+                                      const WidgetSpan(
+                                        child: Icon(
+                                          Icons.person,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                    const TextSpan(text: ' '),
-                                    TextSpan(
-                                        text: data['name'],
+                                      const TextSpan(text: ' '),
+                                      TextSpan(
+                                        text: data['firstName'],
                                         style: GoogleFonts.poppins(
-                                            fontSize: 14, color: Colors.white)),
-                                  ]),
+                                            fontSize: 14, color: Colors.white),
+                                      ),
+                                      const TextSpan(text: ' '),
+                                      TextSpan(
+                                        text: data['lastName'],
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14, color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 RichText(
                                   text: TextSpan(children: [
@@ -120,12 +129,10 @@ class _ReportsHistoryState extends State<ReportsHistory> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Text(
-                                //   'Status',
-                                //   style: GoogleFonts.poppins(fontSize: 14),
-                                //   overflow: TextOverflow.ellipsis,
-                                //   maxLines: 1,
-                                // ),
+                                Text(
+                                  data['status'],
+                                  style: GoogleFonts.poppins(fontSize: 14),
+                                ),
                                 const SizedBox(
                                   width: 8,
                                 ),
@@ -146,18 +153,6 @@ class _ReportsHistoryState extends State<ReportsHistory> {
                                 ),
                                 const SizedBox(
                                   width: 24,
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    // Get.offAll(() => AdminViewReportedCasesPage(
-                                    //     reportedCaseData: data));
-                                    Get.to(() => AdminViewReportedCasesPage(
-                                        reportedCaseData: data));
-                                  },
-                                  icon: const Icon(
-                                    Icons.edit_note_rounded,
-                                    color: Colors.white,
-                                  ),
                                 ),
                               ],
                             ),
@@ -185,6 +180,8 @@ Color _getColorForStatus(String status) {
       return Colors.orange;
     case 'Confirmed':
       return Colors.red;
+    case 'Recovered':
+      return Colors.green;
     default:
       return Colors.white;
   }

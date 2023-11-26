@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:denguecare_firebase/views/widgets/real_timedatetime.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -42,7 +42,10 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
   Future<Map<String, LatLng>> fetchPurokData() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('reports').get();
+          await FirebaseFirestore.instance
+              .collection('reports')
+              .where('patient_recovered', isEqualTo: 'No')
+              .get();
 
       return Map.fromEntries(querySnapshot.docs
           .map((DocumentSnapshot<Map<String, dynamic>> document) {
@@ -84,6 +87,7 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
           await FirebaseFirestore.instance
               .collection('reports')
               .where('purok', isEqualTo: selectedPurok)
+              .where('patient_recovered', isEqualTo: 'No')
               .get();
       int size = querySnapshot.size;
 
@@ -92,6 +96,7 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
           .collection('reports')
           .where('purok', isEqualTo: selectedPurok)
           .where('status', isEqualTo: 'Suspected')
+          .where('patient_recovered', isEqualTo: 'No')
           .get();
 
       int susSize = querySus.size;
@@ -101,6 +106,7 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
           .collection('reports')
           .where('purok', isEqualTo: selectedPurok)
           .where('status', isEqualTo: 'Probable')
+          .where('patient_recovered', isEqualTo: 'No')
           .get();
 
       int probSize = queryProb.size;
@@ -110,6 +116,7 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
           .collection('reports')
           .where('purok', isEqualTo: selectedPurok)
           .where('status', isEqualTo: 'Confirmed')
+          .where('patient_recovered', isEqualTo: 'No')
           .get();
 
       int confSize = queryConf.size;
@@ -179,6 +186,7 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
+                const RealTimeDateTime(),
                 Text(
                   'Case Reported: $len',
                   style: GoogleFonts.poppins(
@@ -202,10 +210,6 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
                   'Confirmed Cases: $conflen',
                   style: GoogleFonts.poppins(fontSize: 16),
                 ),
-                // const SizedBox(height: 10),
-                // Text(
-                //   'Latitude: ${point.latitude}, Longitude: ${point.longitude}',
-                // ),
               ],
             ),
             actions: <Widget>[

@@ -146,11 +146,6 @@ class _UserReportPageState extends State<UserReportPage> {
             Get.back();
           },
         ),
-        actions: [
-          IconButton(
-              onPressed: toggleLanguage,
-              icon: const Icon(Icons.translate_rounded))
-        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -270,10 +265,34 @@ class _UserReportPageState extends State<UserReportPage> {
                         ),
                       ),
                       _gap(),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(isEnglish ? "Symptoms" : 'Sintomas',
-                            style: GoogleFonts.poppins(fontSize: 30)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(isEnglish ? "Symptoms" : 'Sintomas',
+                                style: GoogleFonts.poppins(fontSize: 30)),
+                          ),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          InkWell(
+                            onTap: toggleLanguage,
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: toggleLanguage,
+                                  icon: const Icon(Icons.translate_rounded),
+                                ),
+                                Text(
+                                  'Translate',
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
                       ),
                       _gap(),
                       Row(

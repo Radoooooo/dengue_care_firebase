@@ -9,7 +9,6 @@ import 'package:badges/badges.dart' as badges;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../login_page.dart';
@@ -200,8 +199,6 @@ class _AdminMainPageState extends State<AdminMainPage>
   }
 
   Text? textForAdmin(String role) {
-    Text? widget;
-
     if (role == "Admin") {
       return const Text(
         'Welcome Admin',

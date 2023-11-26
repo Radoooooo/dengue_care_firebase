@@ -21,22 +21,68 @@ class PostsList extends StatefulWidget {
 Widget conditionalImage(String? imageUrl) {
   if (imageUrl == null || imageUrl.isEmpty) {
     // Show a placeholder or any other widget when there's no image
-    return const Icon(Icons.image_not_supported,
-        size: 50.0); // Example placeholder
+    return Container(
+      width: double.maxFinite,
+      // height: isLargeScreen ? 200.0 : 150.0, // Adjust the height as needed
+      color: Colors.grey, // Placeholder color
+      child: const Icon(
+        Icons.image_not_supported,
+        size: 50.0,
+        color: Colors.white, // Placeholder icon color
+      ),
+    );
   }
   if (kIsWeb) {
     // If the platform is web
-    return Image(
-      image: NetworkImage(imageUrl),
-      fit: BoxFit.contain,
-      width: double.maxFinite,
+    return Image.network(
+      imageUrl,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          width: double.maxFinite,
+          color: Colors.grey,
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                    (loadingProgress.expectedTotalBytes ?? 1)
+                : null,
+          ),
+        );
+      },
     );
   } else if (Platform.isAndroid) {
     // If the platform is Android
     return CachedNetworkImage(
       imageUrl: imageUrl,
       placeholder: (context, url) => const CircularProgressIndicator(),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
+      errorWidget: (context, url, error) {
+        // Check if the error is due to the image not being found
+        if (error is Error) {
+          String errorString = error.toString().toLowerCase();
+          if (errorString.contains('404') ||
+              errorString.contains('not found')) {
+            return Container(
+              width: double.maxFinite,
+              color: Colors.grey,
+              child: const Icon(
+                Icons.error,
+                size: 50.0,
+                color: Colors.white,
+              ),
+            );
+          }
+        }
+        // If it's a different error, you can handle it accordingly
+        return Container(
+          width: double.maxFinite,
+          color: Colors.grey,
+          child: const Icon(
+            Icons.error,
+            size: 50.0,
+            color: Colors.white,
+          ),
+        );
+      },
     );
   } else {
     // For other platforms (like iOS)
@@ -71,7 +117,7 @@ class _PostsListState extends State<PostsList> {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    var isLargeScreen = screenSize.width > 1600;
+    var isLargeScreen = screenSize.width > 1200;
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('posts')

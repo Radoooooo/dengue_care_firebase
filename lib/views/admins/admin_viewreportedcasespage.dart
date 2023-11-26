@@ -52,7 +52,7 @@ class _AdminViewReportedCasesPageState
   String? value;
   final sex = ['Male', 'Female'];
   String? valueStatus;
-  final status = ['Suspected', 'Probable', 'Confirmed'];
+  final status = ['Suspected', 'Probable', 'Confirmed', 'Recovered'];
   String? valueAdmitted;
   final admitted = ["Yes", "No"];
   String? valueRecovered;
@@ -776,7 +776,21 @@ class _AdminViewReportedCasesPageState
     DocumentReference documentReference =
         firestore.collection('reports').doc(docID);
 
-    await documentReference.update({'status': selectedValue});
+    valueRecovered = selectedValue == 'Recovered' ? 'Yes' : 'No';
+
+    await documentReference.update({
+      'status': selectedValue,
+      'checked': 'Yes',
+      'patient_recovered': valueRecovered,
+    }).then((value) {
+      print("Firestore data updated successfully!");
+    }).catchError((error) {
+      print("Error updating Firestore data: $error");
+    });
+    setState(() {
+      valueRecovered;
+      valueStatus;
+    });
   }
 
   void updateFirstDateOfSymptomsData(String newDate) async {
@@ -788,9 +802,8 @@ class _AdminViewReportedCasesPageState
     String documentID = await fetchDocumentID();
 
     // Update the document with the new date value
-    await reportedCases.doc(documentID).update({
-      'first_symptom_date': newDate,
-    }).then((value) {
+    await reportedCases.doc(documentID).update(
+        {'first_symptom_date': newDate, 'checked': 'Yes'}).then((value) {
       print("Firestore data updated successfully!");
     }).catchError((error) {
       print("Error updating Firestore data: $error");
@@ -813,6 +826,7 @@ class _AdminViewReportedCasesPageState
               return valueAdmitted;
             })(),
       'other_hospital': valueHospital == 'Other' ? 'Yes' : 'No',
+      'checked': 'Yes'
     }).then((value) {
       print("Firestore data updated successfully!");
     }).catchError((error) {
@@ -834,6 +848,7 @@ class _AdminViewReportedCasesPageState
               ? _otherHospitalController.text
               : valueHospital,
       'other_hospital': valueHospital == 'Other' ? 'Yes' : 'No',
+      'checked': 'Yes'
     }).then((value) {
       print("Firestore data updated successfully!");
     }).catchError((error) {
@@ -847,12 +862,21 @@ class _AdminViewReportedCasesPageState
 
     DocumentReference documentReference =
         firestore.collection('reports').doc(docID);
-
-    await documentReference
-        .update({'patient_recovered': selectedValue}).then((value) {
-      _showSnackbarSuccess(context, "Patient Cleared");
+    valueStatus = selectedValue == 'Yes' ? 'Recovered' : 'Probable';
+    await documentReference.update({
+      'patient_recovered': selectedValue,
+      'status': valueStatus,
+      'checked': 'Yes',
+    }).then((value) {
+      if (selectedValue == 'Yes') {
+        _showSnackbarSuccess(context, "Patient Cleared");
+      }
     }).catchError((error) {
       print("Error updating Firestore data: $error");
+    });
+    setState(() {
+      valueStatus;
+      valueRecovered;
     });
   }
 
