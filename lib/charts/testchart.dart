@@ -99,15 +99,8 @@ class _testChartState extends State<testChart> {
       ]),
       builder: (context, snapshot) {
         if (chart.isNotEmpty) {
-          //chart.sort((a, b) => a.x.compareTo(b.x));
-          //chart2.sort((a, b) => a.x.compareTo(b.x));
-          //chart3.sort((a, b) => a.x.compareTo(b.x));
           barChart.sort((a, b) => a.cases.compareTo(b.cases));
-          //listYear.sort((a, b) => a.compareTo(b));
-          //a1 = pieChart[pieChart.length - 4].number;
-          //a2 = pieChart[pieChart.length - 3].number;
-          //a3 = pieChart[pieChart.length - 2].number;
-          //a4 = pieChart[pieChart.length - 1].number;
+
           minYear = listYear.first - 1;
           maxYear = listYear.last + 1;
         } else {}
@@ -221,13 +214,13 @@ class _testChartState extends State<testChart> {
                         children: [
                           SfCartesianChart(
                             title: ChartTitle(
-                                text: "Number of Active Cases Per Month",
+                                text: "Monthly Active Cases",
                                 textStyle: GoogleFonts.poppins(
                                     fontSize: 20, fontWeight: FontWeight.bold)),
                             enableAxisAnimation: true,
                             primaryXAxis: NumericAxis(
                                 title: AxisTitle(
-                                    text: "Morbidity Month",
+                                    text: "Month",
                                     textStyle:
                                         GoogleFonts.poppins(fontSize: 20)),
                                 minimum: 0,
@@ -249,6 +242,15 @@ class _testChartState extends State<testChart> {
                                       const MarkerSettings(isVisible: true)),
                             ],
                           ),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCases(chart)}\nLowest Active Cases(Month): ${findMonthWithLowestCases(chart)}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -272,13 +274,13 @@ class _testChartState extends State<testChart> {
                         children: [
                           SfCartesianChart(
                             title: ChartTitle(
-                                text: "Number of Active Cases Per Week",
+                                text: "Weekly Active Cases",
                                 textStyle: GoogleFonts.poppins(
                                     fontSize: 20, fontWeight: FontWeight.bold)),
                             enableAxisAnimation: true,
                             primaryXAxis: NumericAxis(
                                 title: AxisTitle(
-                                    text: "Morbidity Week",
+                                    text: "Week",
                                     textStyle:
                                         GoogleFonts.poppins(fontSize: 20)),
                                 minimum: 0,
@@ -300,6 +302,15 @@ class _testChartState extends State<testChart> {
                                       const MarkerSettings(isVisible: true)),
                             ],
                           ),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Analysis: This chart shows the number of active cases per week for the selected year.\nHighest Active Cases(Week): ${findHighestCase(chart2)}\nLowest Active Cases(Week): ${findLowestCase(chart2)}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -323,13 +334,13 @@ class _testChartState extends State<testChart> {
                         children: [
                           SfCartesianChart(
                             title: ChartTitle(
-                                text: "Number of Active Cases Per Year",
+                                text: "Yearly Morbidity",
                                 textStyle: GoogleFonts.poppins(
                                     fontSize: 20, fontWeight: FontWeight.bold)),
                             enableAxisAnimation: true,
                             primaryXAxis: NumericAxis(
                                 title: AxisTitle(
-                                    text: "Morbidity Yearly",
+                                    text: "Year",
                                     textStyle:
                                         GoogleFonts.poppins(fontSize: 20)),
                                 minimum: minYear,
@@ -339,7 +350,8 @@ class _testChartState extends State<testChart> {
                                 title: AxisTitle(
                                     text: "Number of Active Cases",
                                     textStyle:
-                                        GoogleFonts.poppins(fontSize: 20))),
+                                        GoogleFonts.poppins(fontSize: 20)),
+                                interval: 1),
                             tooltipBehavior: _tooltipBehavior3,
                             series: <ChartSeries>[
                               LineSeries<DengueData, int>(
@@ -351,6 +363,15 @@ class _testChartState extends State<testChart> {
                                       const MarkerSettings(isVisible: true)),
                             ],
                           ),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Analysis: This chart shows the number of active cases per year.\nHighest Active Cases(Year): ${findHighestCase(chart3)}\nLowest Active Cases(Year): ${findLowestCase(chart3)}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -374,15 +395,14 @@ class _testChartState extends State<testChart> {
                         children: [
                           SfCartesianChart(
                             title: ChartTitle(
-                              text:
-                                  "Number of Active Cases Per Month - Multiple Years",
+                              text: "Monthly Morbidity - Multiple Years",
                               textStyle: GoogleFonts.poppins(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             enableAxisAnimation: true,
                             primaryXAxis: NumericAxis(
                               title: AxisTitle(
-                                text: "Morbidity Month",
+                                text: "Month",
                                 textStyle: GoogleFonts.poppins(fontSize: 20),
                               ),
                               minimum: 0,
@@ -398,6 +418,15 @@ class _testChartState extends State<testChart> {
                             tooltipBehavior: _tooltipBehavior4,
                             series: yearlySeries,
                           ),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Analysis: This chart shows the number of active cases per year\nMonths that has same active cases(Recurring): ${findMonthsWithSameCases(yearlySeries)}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -452,13 +481,13 @@ class _testChartState extends State<testChart> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Child(0-16): $a1',
+                                Text('Child(0-16): ${a1.toInt()}',
                                     style: GoogleFonts.poppins(fontSize: 20)),
-                                Text('Young Adult(17-30): $a2',
+                                Text('Young Adult(17-30): ${a2.toInt()}',
                                     style: GoogleFonts.poppins(fontSize: 20)),
-                                Text('Middle Adult(31-45): $a3',
+                                Text('Middle Adult(31-45): ${a3.toInt()}',
                                     style: GoogleFonts.poppins(fontSize: 20)),
-                                Text('Old Adult(45 above): $a4',
+                                Text('Old Adult(45 above): ${a4.toInt()}',
                                     style: GoogleFonts.poppins(fontSize: 20)),
                               ],
                             ),
@@ -641,7 +670,7 @@ Future<List<DengueData>> getYearlyDataMonth(int year) async {
 
     chart = [];
     Map<int, int> counts = valueL;
-    print(valueL);
+
     counts.forEach((x, y) {
       chart.add(DengueData(x, y));
     });
@@ -814,7 +843,7 @@ Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
 
     yearlyData = [];
     Map<int, int> counts = valueL;
-    print(valueL);
+
     counts.forEach((x, y) {
       yearlyData.add(DengueData(x, y));
     });
@@ -828,6 +857,188 @@ Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
   }
 
   return yearlySeries;
+}
+
+String findMonthWithHighestCases(List<DengueData> data) {
+  String highM = '';
+  String getHighM = '';
+  int maxCases = 0;
+  int maxMonth = 0;
+
+  for (DengueData entry in data) {
+    if (entry.y > maxCases) {
+      maxCases = entry.y;
+      maxMonth = entry.x;
+      //getHighM = getMonthName(maxMonth);
+      //highM = highM + ' ' + getHighM;
+    }
+  }
+
+  for (DengueData entry in data) {
+    if (entry.y == maxCases) {
+      maxCases = entry.y;
+      maxMonth = entry.x;
+      getHighM = getMonthName(maxMonth);
+      highM = highM + ' ' + getHighM;
+    }
+  }
+
+  return highM;
+}
+
+String findMonthWithLowestCases(List<DengueData> data) {
+  String lowM = '';
+  String getLowM = '';
+  int minCases = data[0].y; // Set it to the maximum possible value initially
+  int minMonth = 0;
+
+  for (DengueData entry in data) {
+    if (entry.y < minCases) {
+      minCases = entry.y;
+      minMonth = entry.x;
+    }
+  }
+
+  for (DengueData entry in data) {
+    if (entry.y == minCases) {
+      minCases = entry.y;
+      minMonth = entry.x;
+      getLowM = getMonthName(minMonth);
+      lowM = lowM + ' ' + getLowM;
+    }
+  }
+
+  return lowM;
+}
+
+String getMonthName(int month) {
+  switch (month) {
+    case 1:
+      return 'January';
+    case 2:
+      return 'February';
+    case 3:
+      return 'March';
+    case 4:
+      return 'April';
+    case 5:
+      return 'May';
+    case 6:
+      return 'June';
+    case 7:
+      return 'July';
+    case 8:
+      return 'August';
+    case 9:
+      return 'September';
+    case 10:
+      return 'October';
+    case 11:
+      return 'November';
+    case 12:
+      return 'December';
+    default:
+      return '';
+  }
+}
+
+String findHighestCase(List<DengueData> data) {
+  String getHighW = '';
+  int maxWeek = 0;
+  int maxCases = 0;
+  String highW = '';
+
+  for (DengueData entry in data) {
+    if (entry.y > maxCases) {
+      maxCases = entry.y;
+      maxWeek = entry.x;
+      //getHighW = highW;
+      //highW = highW + ' ' + getHighW;
+    }
+  }
+
+  for (DengueData entry in data) {
+    if (entry.y == maxCases) {
+      maxCases = entry.y;
+      maxWeek = entry.x;
+      getHighW = maxWeek.toString();
+      highW = highW + ' ' + getHighW;
+    }
+  }
+
+  return highW;
+}
+
+String findLowestCase(List<DengueData> data) {
+  String getLowW = '';
+  int minWeek = 0;
+  int minCases = data[0].y;
+  String lowW = '';
+
+  for (DengueData entry in data) {
+    if (entry.y <= minCases) {
+      minCases = entry.y;
+      minWeek = entry.x;
+    }
+  }
+
+  for (DengueData entry in data) {
+    if (entry.y == minCases) {
+      minCases = entry.y;
+      minWeek = entry.x;
+      getLowW = minWeek.toString();
+      lowW = lowW + ' ' + getLowW;
+    }
+  }
+
+  return lowW;
+}
+
+List<String> findMonthsWithSameCases(
+    List<ChartSeries<DengueData, int>> yearlySeries) {
+  List<String> monthsWithSameCases = [];
+
+  // Combine data from all years into a single list
+  List<DengueData> combinedData = [];
+  for (var series in yearlySeries) {
+    combinedData.addAll(series.dataSource as Iterable<DengueData>);
+  }
+
+  // Create a map to store counts for each month
+  Map<int, List<int>> countsByMonth = {};
+
+  // Populate the map
+  for (var data in combinedData) {
+    if (!countsByMonth.containsKey(data.x)) {
+      countsByMonth[data.x] = [];
+    }
+    countsByMonth[data.x]!.add(data.y);
+  }
+  print(countsByMonth);
+  // Find months with the same number of active cases
+  countsByMonth.forEach((month, counts) {
+    print(counts.toSet().length);
+    if (counts.toSet().length == 1 && counts.length == listYear.length) {
+      // All counts for this month are the same
+      monthsWithSameCases.add(getMonthName(month));
+    }
+  });
+
+  return monthsWithSameCases;
+}
+
+void findHightoLowCasesAgeGroup(List<piechartData> data) {
+  int maxCases = 0;
+  String ageGroup = '';
+
+  for (piechartData entry in data) {
+    if (entry.number > maxCases) {
+      maxCases = entry.number.toInt();
+      ageGroup = entry.ageGroup;
+      //getHighM = getMonthName(maxMonth);
+      //highM = highM + ' ' + getHighM;
+    }
+  }
 }
 
 Widget _gap() => const SizedBox(height: 8);
