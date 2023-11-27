@@ -446,54 +446,65 @@ class _testChartState extends State<testChart> {
                         ],
                       ),
                       width: double.infinity,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Expanded(
-                            child: SfCircularChart(
-                              title: ChartTitle(
-                                  text: 'Active Cases Age Group',
-                                  textStyle: GoogleFonts.poppins(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold)),
-                              series: <CircularSeries>[
-                                PieSeries<piechartData, String>(
-                                  dataSource: pieChart,
-                                  pointColorMapper: (piechartData data, _) =>
-                                      data.color,
-                                  xValueMapper: (piechartData data, _) =>
-                                      data.ageGroup,
-                                  yValueMapper: (piechartData data, _) =>
-                                      data.number,
-                                  dataLabelMapper: (piechartData data, _) =>
-                                      '${data.ageGroup}:${data.number}',
-                                  dataLabelSettings: const DataLabelSettings(
-                                    isVisible: true,
-                                    labelPosition:
-                                        ChartDataLabelPosition.outside,
+                      child: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: SfCircularChart(
+                                title: ChartTitle(
+                                    text: 'Active Cases Age Group',
+                                    textStyle: GoogleFonts.poppins(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold)),
+                                series: <CircularSeries>[
+                                  PieSeries<piechartData, String>(
+                                    dataSource: pieChart,
+                                    pointColorMapper: (piechartData data, _) =>
+                                        data.color,
+                                    xValueMapper: (piechartData data, _) =>
+                                        data.ageGroup,
+                                    yValueMapper: (piechartData data, _) =>
+                                        data.number,
+                                    dataLabelMapper: (piechartData data, _) =>
+                                        '${data.ageGroup}:${data.number}',
+                                    dataLabelSettings: const DataLabelSettings(
+                                      isVisible: true,
+                                      labelPosition:
+                                          ChartDataLabelPosition.outside,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Child(0-16): ${a1.toInt()}',
+                                      style: GoogleFonts.poppins(fontSize: 20)),
+                                  Text('Young Adult(17-30): ${a2.toInt()}',
+                                      style: GoogleFonts.poppins(fontSize: 20)),
+                                  Text('Middle Adult(31-45): ${a3.toInt()}',
+                                      style: GoogleFonts.poppins(fontSize: 20)),
+                                  Text('Old Adult(45 above): ${a4.toInt()}',
+                                      style: GoogleFonts.poppins(fontSize: 20)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Analysis: This chart shows the number of active cases per age group\nAge group that have highest cases: ${findHighCasesAgeGroup(pieChart)}\nAge group that have highest cases: ${findLowCasesAgeGroup(pieChart)}',
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Child(0-16): ${a1.toInt()}',
-                                    style: GoogleFonts.poppins(fontSize: 20)),
-                                Text('Young Adult(17-30): ${a2.toInt()}',
-                                    style: GoogleFonts.poppins(fontSize: 20)),
-                                Text('Middle Adult(31-45): ${a3.toInt()}',
-                                    style: GoogleFonts.poppins(fontSize: 20)),
-                                Text('Old Adult(45 above): ${a4.toInt()}',
-                                    style: GoogleFonts.poppins(fontSize: 20)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        )
+                      ]),
                     ),
                     Container(
                       margin: const EdgeInsets.symmetric(
@@ -542,6 +553,15 @@ class _testChartState extends State<testChart> {
                                       textStyle:
                                           GoogleFonts.poppins(fontSize: 20)),
                                   interval: 1),
+                            ),
+                          ),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Analysis: This chart shows the number of active cases per Street/Purok\nStreet/Purok that have highest cases: ${findHighestCaseSP(barChart)}',
+                                style: TextStyle(fontSize: 16),
+                              ),
                             ),
                           )
                         ],
@@ -1014,10 +1034,9 @@ List<String> findMonthsWithSameCases(
     }
     countsByMonth[data.x]!.add(data.y);
   }
-  print(countsByMonth);
+
   // Find months with the same number of active cases
   countsByMonth.forEach((month, counts) {
-    print(counts.toSet().length);
     if (counts.toSet().length == 1 && counts.length == listYear.length) {
       // All counts for this month are the same
       monthsWithSameCases.add(getMonthName(month));
@@ -1027,18 +1046,81 @@ List<String> findMonthsWithSameCases(
   return monthsWithSameCases;
 }
 
-void findHightoLowCasesAgeGroup(List<piechartData> data) {
-  int maxCases = 0;
-  String ageGroup = '';
+String findHighCasesAgeGroup(List<piechartData> data) {
+  double Cases = 0;
+  String getAgeGroup = '';
+  String hAgeGroup = '';
 
+  String ageGroup = '';
   for (piechartData entry in data) {
-    if (entry.number > maxCases) {
-      maxCases = entry.number.toInt();
+    if (entry.number > Cases) {
+      Cases = entry.number;
       ageGroup = entry.ageGroup;
-      //getHighM = getMonthName(maxMonth);
-      //highM = highM + ' ' + getHighM;
     }
   }
+
+  for (piechartData entry in data) {
+    if (entry.number == Cases) {
+      Cases = entry.number;
+      ageGroup = entry.ageGroup;
+      getAgeGroup = ageGroup;
+      hAgeGroup = hAgeGroup + ' ' + getAgeGroup;
+    }
+  }
+
+  return ageGroup;
+}
+
+String findLowCasesAgeGroup(List<piechartData> data) {
+  double Cases = data[0].number;
+
+  String getAgeGroup = '';
+  String lAgeGroup = '';
+
+  String ageGroup = '';
+  for (piechartData entry in data) {
+    if (entry.number <= Cases) {
+      Cases = entry.number;
+      ageGroup = entry.ageGroup;
+    }
+  }
+  ;
+  for (piechartData entry in data) {
+    if (entry.number == Cases) {
+      ageGroup = entry.ageGroup;
+      getAgeGroup = ageGroup;
+      lAgeGroup = lAgeGroup + ' ' + getAgeGroup;
+    }
+  }
+
+  return lAgeGroup;
 }
 
 Widget _gap() => const SizedBox(height: 8);
+
+String findHighestCaseSP(List<StreetPurokData> data) {
+  String getHighSP = '';
+  String sPurok = '';
+  int maxCases = 0;
+  String highSP = '';
+
+  for (StreetPurokData entry in data) {
+    if (entry.cases > maxCases) {
+      maxCases = entry.cases;
+      sPurok = entry.purok;
+      //getHighW = highW;
+      //highW = highW + ' ' + getHighW;
+    }
+  }
+
+  for (StreetPurokData entry in data) {
+    if (entry.cases == maxCases) {
+      maxCases = entry.cases;
+      sPurok = entry.purok;
+      getHighSP = sPurok;
+      highSP = highSP + ' ' + getHighSP;
+    }
+  }
+
+  return highSP;
+}
