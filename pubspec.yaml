@@ -67,7 +67,7 @@ dependencies:
   cross_file_image: ^1.1.0
   floating_action_bubble: 1.1.4
   infinite_scroll_pagination: ^4.0.0
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -78,6 +78,16 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/play_store_512.png"
+  web:
+    generate: true
+    image_path: "assets/images/play_store_512.png"
+ 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

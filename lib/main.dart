@@ -7,11 +7,8 @@ import 'package:denguecare_firebase/views/users/user_homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
-
-import 'package:flutter/services.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,31 +18,6 @@ Future main() async {
   SemaphoreAPI();
   const LengthIndicator();
   runApp(const MyApp());
-}
-
-class CustomDotEnv extends DotEnv {
-  void addAll(Map<String, String> other) {
-    env.addAll(other);
-  }
-}
-
-final customDotenv = CustomDotEnv();
-
-Future<void> loadDotenv() async {
-  final envString = await rootBundle.loadString('.env');
-  final Map<String, String> envVars = <String, String>{};
-
-  final lines = envString.split('\n');
-  for (final line in lines) {
-    final index = line.indexOf('=');
-    if (index != -1) {
-      final name = line.substring(0, index).trim();
-      final value = line.substring(index + 1).trim();
-      envVars[name] = value;
-    }
-  }
-
-  customDotenv.addAll(envVars);
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -59,7 +31,7 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         theme: ThemeData(primarySwatch: Colors.green),
         debugShowCheckedModeBanner: false,
-        title: 'Dengue Care App',
+        title: 'DengueCare',
         home: const MainPage(),
       );
 }
