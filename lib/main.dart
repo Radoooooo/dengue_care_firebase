@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:denguecare_firebase/views/admins/admin_announcements.dart';
-
 import 'package:denguecare_firebase/views/admins/admin_homepage.dart';
 import 'package:denguecare_firebase/views/login_page.dart';
 import 'package:denguecare_firebase/views/users/user_homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
 
@@ -15,7 +14,8 @@ Future main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // FirebaseFirestore.instance.settings =
   //     const Settings(persistenceEnabled: true);
-  SemaphoreAPI();
+  // SemaphoreAPI();
+  await dotenv.load(fileName: 'assets/dotenv.env');
   const LengthIndicator();
   runApp(const MyApp());
 }

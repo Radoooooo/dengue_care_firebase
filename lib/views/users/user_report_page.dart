@@ -270,12 +270,12 @@ class _UserReportPageState extends State<UserReportPage> {
                         children: [
                           Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
+                                const EdgeInsets.symmetric(horizontal: 8.0),
                             child: Text(isEnglish ? "Symptoms" : 'Sintomas',
                                 style: GoogleFonts.poppins(fontSize: 30)),
                           ),
                           const SizedBox(
-                            width: 16,
+                            width: 4,
                           ),
                           InkWell(
                             onTap: toggleLanguage,
@@ -284,11 +284,12 @@ class _UserReportPageState extends State<UserReportPage> {
                                 IconButton(
                                   onPressed: toggleLanguage,
                                   icon: const Icon(Icons.translate_rounded),
+                                  splashColor: Colors.green[300],
                                 ),
-                                Text(
-                                  'Translate',
-                                  style: GoogleFonts.poppins(fontSize: 12),
-                                ),
+                                // Text(
+                                //   'Translate',
+                                //   style: GoogleFonts.poppins(fontSize: 12),
+                                // ),
                               ],
                             ),
                           )

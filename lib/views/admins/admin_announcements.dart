@@ -6,18 +6,18 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SemaphoreAPI {
-  late String apikey;
+// class SemaphoreAPI {
+//   late String apikey;
 
-  SemaphoreAPI() {
-    _loadEnvironmentVariables();
-  }
+//   SemaphoreAPI() {
+//     _loadEnvironmentVariables();
+//   }
 
-  Future<void> _loadEnvironmentVariables() async {
-    await dotenv.load();
-    apikey = dotenv.env['apikey'] ?? '';
-  }
-}
+//   Future<void> _loadEnvironmentVariables() async {
+//     await dotenv.load();
+//     apikey = dotenv.env['apikey'] ?? '';
+//   }
+// }
 
 class AdminAnnouncementPage extends StatefulWidget {
   const AdminAnnouncementPage({super.key});
@@ -137,6 +137,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
                       const SizedBox(height: 20),
                       const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         value: _selectedPurok,
                         items: puroklist.map((purok) {
                           return DropdownMenuItem(
@@ -276,7 +277,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> {
         'message': message,
       };
       final response = await http.post(
-        Uri.parse('https://api.semaphore.co/api/v4/messages'),
+        Uri.parse(
+            'https://corsproxy.io/?https://api.semaphore.co/api/v4/messages'),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },

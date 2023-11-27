@@ -40,7 +40,11 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        //main.java.srcDirs += 'src/main/kotlin'
+        main {
+            java.srcDirs += 'src/main/kotlin'
+            assets.srcDirs += 'src/main/assets'
+        }
     }
 
     defaultConfig {
