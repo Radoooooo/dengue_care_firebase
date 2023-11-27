@@ -554,6 +554,15 @@ class _testChartState extends State<testChart> {
                                           GoogleFonts.poppins(fontSize: 20)),
                                   interval: 1),
                             ),
+                          ),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Analysis: This chart shows the number of active cases per Street/Purok\nStreet/Purok that have highest cases: ${findHighestCaseSP(barChart)}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
                           )
                         ],
                       ),
@@ -1025,10 +1034,9 @@ List<String> findMonthsWithSameCases(
     }
     countsByMonth[data.x]!.add(data.y);
   }
-  print(countsByMonth);
+
   // Find months with the same number of active cases
   countsByMonth.forEach((month, counts) {
-    print(counts.toSet().length);
     if (counts.toSet().length == 1 && counts.length == listYear.length) {
       // All counts for this month are the same
       monthsWithSameCases.add(getMonthName(month));
@@ -1076,17 +1084,43 @@ String findLowCasesAgeGroup(List<piechartData> data) {
       ageGroup = entry.ageGroup;
     }
   }
-
+  ;
   for (piechartData entry in data) {
     if (entry.number == Cases) {
-      Cases = entry.number;
       ageGroup = entry.ageGroup;
       getAgeGroup = ageGroup;
       lAgeGroup = lAgeGroup + ' ' + getAgeGroup;
     }
   }
 
-  return ageGroup;
+  return lAgeGroup;
 }
 
 Widget _gap() => const SizedBox(height: 8);
+
+String findHighestCaseSP(List<StreetPurokData> data) {
+  String getHighSP = '';
+  String sPurok = '';
+  int maxCases = 0;
+  String highSP = '';
+
+  for (StreetPurokData entry in data) {
+    if (entry.cases > maxCases) {
+      maxCases = entry.cases;
+      sPurok = entry.purok;
+      //getHighW = highW;
+      //highW = highW + ' ' + getHighW;
+    }
+  }
+
+  for (StreetPurokData entry in data) {
+    if (entry.cases == maxCases) {
+      maxCases = entry.cases;
+      sPurok = entry.purok;
+      getHighSP = sPurok;
+      highSP = highSP + ' ' + getHighSP;
+    }
+  }
+
+  return highSP;
+}
