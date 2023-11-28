@@ -30,9 +30,9 @@ class _UserReportPageMenuState extends State<UserReportPageMenu> {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
-                  'Submit a New Case',
+                  'Submit a Case',
                   style: GoogleFonts.poppins(
-                      fontSize: 22, fontWeight: FontWeight.bold),
+                      fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -48,7 +48,7 @@ class _UserReportPageMenuState extends State<UserReportPageMenu> {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
-                  '      View History      ',
+                  '  View History   ',
                   style: GoogleFonts.poppins(
                       fontSize: 24, fontWeight: FontWeight.bold),
                 ),
