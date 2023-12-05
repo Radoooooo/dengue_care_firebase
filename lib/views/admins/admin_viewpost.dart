@@ -290,6 +290,7 @@ class _AdminViewPostState extends State<AdminViewPost> {
         'uploaderUID': user.uid,
         'date': FieldValue.serverTimestamp(),
       });
+      logAdminAction('Edit Post', user.uid);
       _showSnackbarSuccess(context, 'Success');
       setState(() {
         widget.post['caption'] = captionController.text.trim();
@@ -374,6 +375,7 @@ class _AdminViewPostState extends State<AdminViewPost> {
         widget.post['postDetails'] = postDetailsController.text.trim();
         isEditing = false;
       });
+      logAdminAction('Edit Post', user.uid);
 
       _showSnackbarSuccess(context, 'Success');
     } catch (e) {

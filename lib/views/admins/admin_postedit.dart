@@ -146,6 +146,8 @@ class _AdminEditPostState extends State<AdminEditPost> {
   void postUpload() async {
     try {
       String? imageUrl;
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final user = auth.currentUser;
 
       if (image != null) {
         String imageName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
@@ -162,7 +164,7 @@ class _AdminEditPostState extends State<AdminEditPost> {
         'caption': _newtitleController.text.trim(),
         'postDetails': _newcontentController.text.trim(),
       });
-
+      //logAdminAction('Edit Post', user!.uid);
       // Clear inputs after successful update
       clearAllInputs();
 

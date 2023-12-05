@@ -277,7 +277,7 @@ class _AdminEditState extends State<AdminEdit> {
         'purok': _selectedPurok!,
       });
       await user.reload();
-
+      logAdminAction('Edit Account Settings', user.uid);
       // ignore: use_build_context_synchronously
       _showSnackbarSuccess(context, "User Information updated successfully");
     } catch (error) {
