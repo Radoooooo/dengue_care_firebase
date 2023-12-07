@@ -11,9 +11,11 @@ List<DengueData> chart3 = [];
 List<DengueData> yearlyData = [];
 List<LineSeries<DengueData, int>> yearlySeries = [];
 List<piechartData> pieChart = [];
-
 List<StreetPurokData> barChart = [];
 List<int> listYear = [];
+String ageGroup = '';
+String hAgeGroup = '';
+String lAgeGroup = '';
 
 int selectedYear = DateTime.now().year;
 double minYear = 0;
@@ -178,6 +180,8 @@ class _testChartState extends State<testChart> {
                               pieChart = [];
                               yearlyData = [];
                               yearlySeries = [];
+                              hAgeGroup = '';
+                              lAgeGroup = '';
 
                               a1 = 0;
                               a2 = 0;
@@ -499,7 +503,7 @@ class _testChartState extends State<testChart> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Analysis: This chart shows the number of active cases per age group\nAge group that have highest cases: ${findHighCasesAgeGroup(pieChart)}\nAge group that have highest cases: ${findLowCasesAgeGroup(pieChart)}',
+                              'Analysis: This chart shows the number of active cases per age group\nAge group that have highest cases: ${findHighCasesAgeGroup(pieChart)}\nAge group that have lowest cases: ${findLowCasesAgeGroup(pieChart)}',
                               style: TextStyle(fontSize: 16),
                             ),
                           ),
@@ -640,6 +644,7 @@ Future<List<piechartData>> queryAgeGroupsCount(int year) async {
 
     return pieChart;
   } catch (e) {
+    print('Piechart Error');
     return Future.value([]);
   }
 }
@@ -665,7 +670,7 @@ Future<List<int>> getListYear() async {
 
     return listYear;
   } catch (e) {
-    print('Error: $e');
+    print('ListYear Error');
     return Future.value([]);
   }
 }
@@ -699,7 +704,7 @@ Future<List<DengueData>> getYearlyDataMonth(int year) async {
       return chart;
     });
   } catch (e) {
-    print('Empty Chart');
+    print('Chart Error');
     return Future.value([]);
   }
 }
@@ -732,7 +737,7 @@ Future<List<DengueData>> getYearlyDataWeek(int year) async {
       return chart2;
     });
   } catch (e) {
-    print('Empty Chart2');
+    print('Chart2 Error');
     return Future.value([]);
   }
 }
@@ -763,7 +768,7 @@ Future<List<DengueData>> getDataYear() async {
 
     return chart3;
   } catch (e) {
-    print('Empty Chart3');
+    print('Chart3 Error');
     return Future.value([]);
   }
 }
@@ -794,7 +799,7 @@ Future<List<StreetPurokData>> getPurokCases(int year) async {
       return barChart;
     });
   } catch (e) {
-    print('Empty BarChart');
+    print('BarChart Error');
     return Future.value([]);
   }
 }
@@ -804,6 +809,11 @@ Future<void> deleteAllDocumentsInCollection(String collectionPath) async {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   try {
+    print('nigana ko');
+    print(pieChart);
+    pieChart = [];
+    print(pieChart);
+
     final QuerySnapshot querySnapshot =
         await firestore.collection(collectionPath).get();
     final List<QueryDocumentSnapshot> documents = querySnapshot.docs;
@@ -909,26 +919,30 @@ String findMonthWithHighestCases(List<DengueData> data) {
 String findMonthWithLowestCases(List<DengueData> data) {
   String lowM = '';
   String getLowM = '';
-  int minCases = data[0].y; // Set it to the maximum possible value initially
+  int minCases = data.isNotEmpty ? data[0].y : 0;
   int minMonth = 0;
 
-  for (DengueData entry in data) {
-    if (entry.y < minCases) {
-      minCases = entry.y;
-      minMonth = entry.x;
+  if (minCases == null) {
+    print('null');
+    return lowM;
+  } else {
+    for (DengueData entry in data) {
+      if (entry.y < minCases) {
+        minCases = entry.y;
+        minMonth = entry.x;
+      }
     }
-  }
 
-  for (DengueData entry in data) {
-    if (entry.y == minCases) {
-      minCases = entry.y;
-      minMonth = entry.x;
-      getLowM = getMonthName(minMonth);
-      lowM = lowM + ' ' + getLowM;
+    for (DengueData entry in data) {
+      if (entry.y == minCases) {
+        minCases = entry.y;
+        minMonth = entry.x;
+        getLowM = getMonthName(minMonth);
+        lowM = lowM + ' ' + getLowM;
+      }
     }
+    return lowM;
   }
-
-  return lowM;
 }
 
 String getMonthName(int month) {
@@ -992,26 +1006,30 @@ String findHighestCase(List<DengueData> data) {
 String findLowestCase(List<DengueData> data) {
   String getLowW = '';
   int minWeek = 0;
-  int minCases = data[0].y;
+  int minCases = data.isNotEmpty ? data[0].y : 0;
   String lowW = '';
 
-  for (DengueData entry in data) {
-    if (entry.y <= minCases) {
-      minCases = entry.y;
-      minWeek = entry.x;
+  if (minCases == null) {
+    print('null');
+    return lowW;
+  } else {
+    for (DengueData entry in data) {
+      if (entry.y <= minCases) {
+        minCases = entry.y;
+        minWeek = entry.x;
+      }
     }
-  }
 
-  for (DengueData entry in data) {
-    if (entry.y == minCases) {
-      minCases = entry.y;
-      minWeek = entry.x;
-      getLowW = minWeek.toString();
-      lowW = lowW + ' ' + getLowW;
+    for (DengueData entry in data) {
+      if (entry.y == minCases) {
+        minCases = entry.y;
+        minWeek = entry.x;
+        getLowW = minWeek.toString();
+        lowW = lowW + ' ' + getLowW;
+      }
     }
+    return lowW;
   }
-
-  return lowW;
 }
 
 List<String> findMonthsWithSameCases(
@@ -1049,51 +1067,56 @@ List<String> findMonthsWithSameCases(
 String findHighCasesAgeGroup(List<piechartData> data) {
   double Cases = 0;
   String getAgeGroup = '';
-  String hAgeGroup = '';
 
-  String ageGroup = '';
-  for (piechartData entry in data) {
-    if (entry.number > Cases) {
-      Cases = entry.number;
-      ageGroup = entry.ageGroup;
+  if (pieChart.isEmpty) {
+    print('data is empty');
+    return hAgeGroup;
+  } else {
+    for (piechartData entry in data) {
+      if (entry.number > Cases) {
+        Cases = entry.number;
+        ageGroup = entry.ageGroup;
+      }
     }
-  }
 
-  for (piechartData entry in data) {
-    if (entry.number == Cases) {
-      Cases = entry.number;
-      ageGroup = entry.ageGroup;
-      getAgeGroup = ageGroup;
-      hAgeGroup = hAgeGroup + ' ' + getAgeGroup;
+    for (piechartData entry in data) {
+      if (entry.number == Cases) {
+        Cases = entry.number;
+        ageGroup = entry.ageGroup;
+        getAgeGroup = ageGroup;
+        hAgeGroup = hAgeGroup + ' ' + getAgeGroup;
+      }
     }
+    return hAgeGroup;
   }
-
-  return ageGroup;
 }
 
 String findLowCasesAgeGroup(List<piechartData> data) {
-  double Cases = data[0].number;
+  double cases = data.isNotEmpty ? data[0].number : 0;
 
   String getAgeGroup = '';
-  String lAgeGroup = '';
 
   String ageGroup = '';
-  for (piechartData entry in data) {
-    if (entry.number <= Cases) {
-      Cases = entry.number;
-      ageGroup = entry.ageGroup;
-    }
-  }
-  ;
-  for (piechartData entry in data) {
-    if (entry.number == Cases) {
-      ageGroup = entry.ageGroup;
-      getAgeGroup = ageGroup;
-      lAgeGroup = lAgeGroup + ' ' + getAgeGroup;
-    }
-  }
+  if (pieChart.isEmpty) {
+    print('data is empty');
 
-  return lAgeGroup;
+    return lAgeGroup;
+  } else {
+    for (piechartData entry in data) {
+      if (entry.number <= cases) {
+        cases = entry.number;
+        ageGroup = entry.ageGroup;
+      }
+    }
+    for (piechartData entry in data) {
+      if (entry.number == cases) {
+        ageGroup = entry.ageGroup;
+        getAgeGroup = ageGroup;
+        lAgeGroup = lAgeGroup + ' ' + getAgeGroup;
+      }
+    }
+    return lAgeGroup;
+  }
 }
 
 Widget _gap() => const SizedBox(height: 8);
@@ -1101,21 +1124,18 @@ Widget _gap() => const SizedBox(height: 8);
 String findHighestCaseSP(List<StreetPurokData> data) {
   String getHighSP = '';
   String sPurok = '';
-  int maxCases = 0;
+  int maxCases = data.isNotEmpty ? data[0].cases : 0;
   String highSP = '';
 
   for (StreetPurokData entry in data) {
     if (entry.cases > maxCases) {
       maxCases = entry.cases;
       sPurok = entry.purok;
-      //getHighW = highW;
-      //highW = highW + ' ' + getHighW;
     }
   }
 
   for (StreetPurokData entry in data) {
     if (entry.cases == maxCases) {
-      maxCases = entry.cases;
       sPurok = entry.purok;
       getHighSP = sPurok;
       highSP = highSP + ' ' + getHighSP;
