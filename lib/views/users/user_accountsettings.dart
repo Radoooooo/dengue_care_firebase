@@ -111,6 +111,20 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
   void initState() {
     super.initState();
     // Initialize with the first purok
+    User? user = FirebaseAuth.instance.currentUser;
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get()
+        .then((snapshot) {
+      if (snapshot.exists) {
+        Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          // Update _selectedPurok if the 'purok' key exists in userData
+          _selectedPurok = userData['purok'] ?? _selectedPurok;
+        });
+      }
+    });
   }
 
   @override

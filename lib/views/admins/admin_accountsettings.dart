@@ -112,6 +112,20 @@ class _AdminEditState extends State<AdminEdit> {
   @override
   void initState() {
     super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get()
+        .then((snapshot) {
+      if (snapshot.exists) {
+        Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          // Update _selectedPurok if the 'purok' key exists in userData
+          _selectedPurok = userData['purok'] ?? _selectedPurok;
+        });
+      }
+    });
   }
 
   @override
