@@ -108,7 +108,7 @@ class _AdminEditState extends State<AdminEdit> {
     'Purok Watusi',
   };
   String? _selectedPurok;
-
+  bool _updating = false;
   @override
   void initState() {
     super.initState();
@@ -246,12 +246,16 @@ class _AdminEditState extends State<AdminEdit> {
                           onPressed: () async {
                             _updateUserInfo();
                           },
-                          child: Text(
-                            'Update',
-                            style: GoogleFonts.poppins(
-                              fontSize: 20,
-                            ),
-                          ),
+                          child: _updating == true
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : Text(
+                                  'Update',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 20,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -274,6 +278,9 @@ class _AdminEditState extends State<AdminEdit> {
     String newlastName = _newlastnameController.text;
     String newAge = _newageController.text;
     String newEmail = _newemailController.text;
+    setState(() {
+      _updating = true;
+    });
     try {
       await user!.updateDisplayName(newName);
       await user.updateEmail(newEmail);
@@ -291,6 +298,9 @@ class _AdminEditState extends State<AdminEdit> {
         'purok': _selectedPurok!,
       });
       await user.reload();
+      setState(() {
+        _updating = false;
+      });
       logAdminAction('Edit Account Settings', user.uid);
       // ignore: use_build_context_synchronously
       _showSnackbarSuccess(context, "User Information updated successfully");

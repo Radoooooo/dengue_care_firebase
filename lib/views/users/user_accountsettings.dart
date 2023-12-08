@@ -107,6 +107,8 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
   };
   String? _selectedPurok;
 
+  bool _updating = false;
+
   @override
   void initState() {
     super.initState();
@@ -244,12 +246,16 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
                           onPressed: () async {
                             _updateUserInfo();
                           },
-                          child: Text(
-                            'Update',
-                            style: GoogleFonts.poppins(
-                              fontSize: 20,
-                            ),
-                          ),
+                          child: _updating == true
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : Text(
+                                  'Update',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 20,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -272,6 +278,9 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
     String newlastName = _newlastnameController.text;
     String newAge = _newageController.text;
     String newEmail = _newemailController.text;
+    setState(() {
+      _updating = true;
+    });
     try {
       await user!.updateDisplayName(newName);
       await user.updateEmail(newEmail);
@@ -289,7 +298,9 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
         'purok': _selectedPurok!,
       });
       await user.reload();
-
+      setState(() {
+        _updating = false;
+      });
       // ignore: use_build_context_synchronously
       _showSnackbarSuccess(context, "User Information updated successfully");
     } catch (error) {
