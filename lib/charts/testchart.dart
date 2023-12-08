@@ -582,70 +582,74 @@ class _testChartState extends State<testChart> {
 
 Future<List<piechartData>> queryAgeGroupsCount(int year) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  try {
-    double ageGroupCount = 0;
-    double ageGroupCount2 = 0;
-    double ageGroupCount3 = 0;
-    double ageGroupCount4 = 0;
-
-    int childAgeMax = 16;
-
-    QuerySnapshot querySnapshot = await firestore
-        .collection('denguelinelist')
-        .where('AgeYears', isLessThanOrEqualTo: childAgeMax)
-        .where('Year', isEqualTo: year)
-        .get();
-
-    ageGroupCount = querySnapshot.size.toDouble();
-    pieChart = [];
-    pieChart.add(piechartData('Child', ageGroupCount, Colors.blue));
-
-    int yAdultAgeMin = 17;
-    int yAdultAgeMax = 30;
-
-    QuerySnapshot querySnapshot2 = await firestore
-        .collection('denguelinelist')
-        .where('AgeYears', isGreaterThanOrEqualTo: yAdultAgeMin)
-        .where('AgeYears', isLessThanOrEqualTo: yAdultAgeMax)
-        .where('Year', isEqualTo: year)
-        .get();
-
-    ageGroupCount2 = querySnapshot2.size.toDouble();
-    pieChart.add(piechartData('Young Adult', ageGroupCount2, Colors.red));
-
-    int mAdultAgeMin = 31;
-    int mAdultAgeMax = 45;
-
-    QuerySnapshot querySnapshot3 = await firestore
-        .collection('denguelinelist')
-        .where('AgeYears', isGreaterThanOrEqualTo: mAdultAgeMin)
-        .where('AgeYears', isLessThanOrEqualTo: mAdultAgeMax)
-        .where('Year', isEqualTo: year)
-        .get();
-
-    ageGroupCount3 = querySnapshot3.size.toDouble();
-    pieChart.add(piechartData('Middle Adult', ageGroupCount3, Colors.green));
-
-    int oAdultAgeMin = 45;
-
-    QuerySnapshot querySnapshot4 = await firestore
-        .collection('denguelinelist')
-        .where('AgeYears', isGreaterThan: oAdultAgeMin)
-        .where('Year', isEqualTo: year)
-        .get();
-
-    ageGroupCount4 = querySnapshot4.size.toDouble();
-    pieChart.add(piechartData('Old Adult', ageGroupCount4, Colors.yellow));
-
-    a1 = ageGroupCount;
-    a2 = ageGroupCount2;
-    a3 = ageGroupCount3;
-    a4 = ageGroupCount4;
-
-    return pieChart;
-  } catch (e) {
-    print('Piechart Error');
+  if (chart.isEmpty) {
     return Future.value([]);
+  } else {
+    try {
+      double ageGroupCount = 0;
+      double ageGroupCount2 = 0;
+      double ageGroupCount3 = 0;
+      double ageGroupCount4 = 0;
+
+      int childAgeMax = 16;
+
+      QuerySnapshot querySnapshot = await firestore
+          .collection('denguelinelist')
+          .where('AgeYears', isLessThanOrEqualTo: childAgeMax)
+          .where('Year', isEqualTo: year)
+          .get();
+
+      ageGroupCount = querySnapshot.size.toDouble();
+      pieChart = [];
+      pieChart.add(piechartData('Child', ageGroupCount, Colors.blue));
+
+      int yAdultAgeMin = 17;
+      int yAdultAgeMax = 30;
+
+      QuerySnapshot querySnapshot2 = await firestore
+          .collection('denguelinelist')
+          .where('AgeYears', isGreaterThanOrEqualTo: yAdultAgeMin)
+          .where('AgeYears', isLessThanOrEqualTo: yAdultAgeMax)
+          .where('Year', isEqualTo: year)
+          .get();
+
+      ageGroupCount2 = querySnapshot2.size.toDouble();
+      pieChart.add(piechartData('Young Adult', ageGroupCount2, Colors.red));
+
+      int mAdultAgeMin = 31;
+      int mAdultAgeMax = 45;
+
+      QuerySnapshot querySnapshot3 = await firestore
+          .collection('denguelinelist')
+          .where('AgeYears', isGreaterThanOrEqualTo: mAdultAgeMin)
+          .where('AgeYears', isLessThanOrEqualTo: mAdultAgeMax)
+          .where('Year', isEqualTo: year)
+          .get();
+
+      ageGroupCount3 = querySnapshot3.size.toDouble();
+      pieChart.add(piechartData('Middle Adult', ageGroupCount3, Colors.green));
+
+      int oAdultAgeMin = 45;
+
+      QuerySnapshot querySnapshot4 = await firestore
+          .collection('denguelinelist')
+          .where('AgeYears', isGreaterThan: oAdultAgeMin)
+          .where('Year', isEqualTo: year)
+          .get();
+
+      ageGroupCount4 = querySnapshot4.size.toDouble();
+      pieChart.add(piechartData('Old Adult', ageGroupCount4, Colors.yellow));
+
+      a1 = ageGroupCount;
+      a2 = ageGroupCount2;
+      a3 = ageGroupCount3;
+      a4 = ageGroupCount4;
+
+      return pieChart;
+    } catch (e) {
+      print('Piechart Error');
+      return Future.value([]);
+    }
   }
 }
 
