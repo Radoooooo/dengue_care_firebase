@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uuid/uuid.dart';
 
 class AdminRegisterPage extends StatefulWidget {
   const AdminRegisterPage({super.key});
@@ -38,6 +39,14 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
   String? value;
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordNotVisible = true;
+  final uuid = const Uuid();
+  String uniqueDocId = '';
+
+  @override
+  void initState() {
+    super.initState();
+    generateUniqueId();
+  }
 
   @override
   void dispose() {
@@ -217,6 +226,12 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
     );
   }
 
+  void generateUniqueId() {
+    setState(() {
+      uniqueDocId = uuid.v4(); // Generates a new unique ID
+    });
+  }
+
   void signUp(String email, String password, String firstname, String lastname,
       String age, String? sex, String contactnumber, String userType) async {
     try {
@@ -247,6 +262,8 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
     CollectionReference ref = FirebaseFirestore.instance.collection('users');
     ref.doc(user!.uid).set({
       'email': _emailController.text,
+      'document_id': uniqueDocId,
+      'user_uid': user.uid,
       'firstName': _firstnameController.text,
       'lastName': _lastnameController.text,
       'age': _ageController.text,
@@ -255,7 +272,7 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
       'role': userType,
     });
 
-    Get.offAll(() => const ManageAdmin());
+    // Get.offAll(() => const ManageAdmin());
   }
 }
 

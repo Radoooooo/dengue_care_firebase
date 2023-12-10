@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:denguecare_firebase/views/admins/admin_homepage.dart';
 import 'package:denguecare_firebase/views/admins/admin_register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,6 +16,57 @@ class ManageAdmin extends StatefulWidget {
 class _ManageAdminState extends State<ManageAdmin> {
   final CollectionReference user =
       FirebaseFirestore.instance.collection('users');
+
+  Future<void> deleteUserData(String email) async {
+    try {
+      // Step 1: Query Firestore to get the document associated with the email
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        print("Error: No user found in Firestore with email $email");
+        return;
+      }
+
+      DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+      String documentId = documentSnapshot.id;
+
+      // Step 2: Get UID from Firestore data
+      String? uid = documentSnapshot['document_id'];
+
+      if (uid == null) {
+        print(
+            "Error: 'uid' is null or does not exist for the user with email $email");
+        return;
+      }
+
+      // Step 3: Delete User from Firebase Authentication
+      try {
+        User? currentUser = FirebaseAuth.instance.currentUser;
+
+        if (currentUser != null && currentUser.uid == uid) {
+          await currentUser.delete();
+          print("User deleted from Authentication");
+        } else {
+          print("Error: Current user not matching the user to be deleted");
+        }
+      } catch (e) {
+        print("Error deleting user from Authentication: $e");
+      }
+
+      // Step 4: Delete User Data from Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(documentId)
+          .delete();
+
+      print("Admin with email $email deleted successfully");
+    } catch (e) {
+      print("Error deleting admin: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +130,7 @@ class _ManageAdminState extends State<ManageAdmin> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    ds.reference.delete();
+                                    deleteUserData(ds['email']);
                                     Navigator.of(context).pop();
                                   },
                                   child: const Text("Delete"),
@@ -98,4 +150,20 @@ class _ManageAdminState extends State<ManageAdmin> {
       ),
     );
   }
+}
+
+void _showSnackbarError(BuildContext context, String message) {
+  final snackbar = SnackBar(
+    content: Text(message),
+    backgroundColor: Colors.red,
+  );
+  ScaffoldMessenger.of(context).showSnackBar(snackbar);
+}
+
+void _showSnackbarSuccess(BuildContext context, String message) {
+  final snackbar = SnackBar(
+    content: Text(message),
+    backgroundColor: Colors.green,
+  );
+  ScaffoldMessenger.of(context).showSnackBar(snackbar);
 }
