@@ -119,25 +119,107 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _showCircularProgressIndicator() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
   Future signIn(BuildContext context) async {
     try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      _showCircularProgressIndicator();
 
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      // Check if the user's email exists in Firestore
+      bool isEmailExists = await checkEmailExists(emailController.text.trim());
+
+      if (isEmailExists) {
+        // If email exists in Firestore, proceed with Firebase Authentication
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text.trim(),
-          password: passwordController.text.trim());
+          password: passwordController.text.trim(),
+        );
 
-      route(context);
-      Navigator.of(context).pop();
+        route(context);
+      } else {
+        // If email does not exist in Firestore, show an error
+        _showSnackbarError(context, 'Email does not exist in the database.');
+      }
     } on FirebaseAuthException catch (e) {
       _showSnackbarError(context, e.message.toString());
-      Navigator.of(context).pop();
+      Get.offAll(() => const LoginPage());
+      FirebaseAuth.instance.signOut();
+    } finally {
+      Navigator.of(context, rootNavigator: true)
+          .pop(); // Hide CircularProgressIndicator
+    }
+  }
+
+  Future<bool> checkEmailExists(String email) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('email', isEqualTo: email)
+              .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (error) {
+      // Handle any potential error while querying Firestore
+      print('Error checking email existence: $error');
+      return false;
+    }
+  }
+
+  void route(BuildContext context) async {
+    if (mounted) {
+      User? user = FirebaseAuth.instance.currentUser;
+      try {
+        DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .get();
+
+        if (!mounted) {
+          return; // Return if the widget is disposed
+        }
+
+        if (documentSnapshot.exists) {
+          if (documentSnapshot.get('approved') == true) {
+            if (documentSnapshot.get('role') == "Admin") {
+              Get.offAll(() => const AdminMainPage());
+              logAdminAction('LOG IN', user.uid);
+            } else if (documentSnapshot.get('role') == "superadmin") {
+              Get.offAll(() => const AdminMainPage());
+              logAdminAction('LOG IN', user.uid);
+            } else if (documentSnapshot.get('role') == "User") {
+              Get.offAll(() => const UserMainPage());
+            } else {
+              FirebaseAuth.instance.signOut();
+              Get.offAll(() => const LoginPage());
+              _showSnackbarError(context, 'Invalid role for the user account.');
+            }
+          } else {
+            FirebaseAuth.instance.signOut();
+            Get.offAll(() => const LoginPage());
+            _showSnackbarError(
+                context, 'Your account has not been approved yet.');
+          }
+        } else {
+          //  FirebaseAuth.instance.signOut();
+          // Get.offAll(() => const LoginPage());
+          _showSnackbarError(
+              context, 'Document does not exist on the database');
+        }
+      } catch (error) {
+        if (!mounted) {
+          return; // Return if the widget is disposed
+        }
+        _showSnackbarError(context, 'An error occurred: $error');
+      }
     }
   }
 }
@@ -167,29 +249,6 @@ void logAdminAction(String action, String documentId) async {
   await adminLogs.add(logEntry);
 }
 
-void route(BuildContext context) {
-  User? user = FirebaseAuth.instance.currentUser;
-  var kk = FirebaseFirestore.instance
-      .collection('users')
-      .doc(user!.uid)
-      .get()
-      .then((DocumentSnapshot documentSnapshot) {
-    if (documentSnapshot.exists) {
-      if (documentSnapshot.get('role') == "Admin") {
-        Get.offAll(() => const AdminMainPage());
-        logAdminAction('LOG IN', user.uid);
-      } else if (documentSnapshot.get('role') == "superadmin") {
-        Get.offAll(() => const AdminMainPage());
-        logAdminAction('LOG IN', user.uid);
-      } else {
-        Get.offAll(() => const UserMainPage());
-      }
-    } else {
-      _showSnackbarError(context, 'Document does not exist on the database');
-    }
-  });
-}
-
 void _showSnackbarError(BuildContext context, String message) {
   final snackbar = SnackBar(
     content: Text(message),
@@ -205,3 +264,78 @@ void _showSnackbarSuccess(BuildContext context, String message) {
   );
   ScaffoldMessenger.of(context).showSnackBar(snackbar);
 }
+  // Future signIn(BuildContext context) async {
+  //   try {
+  //     _showCircularProgressIndicator();
+
+  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //         email: emailController.text.trim(),
+  //         password: passwordController.text.trim());
+
+  //     route(context);
+  //     // Navigator.of(context).pop();
+  //   } on FirebaseAuthException catch (e) {
+  //     _showSnackbarError(context, e.message.toString());
+  //     Get.offAll(() => const LoginPage());
+  //     FirebaseAuth.instance.signOut();
+  //   } finally {
+  //     Navigator.of(context, rootNavigator: true)
+  //         .pop(); // Hide CircularProgressIndicator
+  //   }
+  // }
+
+  // void route(BuildContext context) {
+//   User? user = FirebaseAuth.instance.currentUser;
+//   var kk = FirebaseFirestore.instance
+//       .collection('users')
+//       .doc(user!.uid)
+//       .get()
+//       .then((DocumentSnapshot documentSnapshot) {
+//     if (documentSnapshot.exists) {
+//       if (documentSnapshot.get('role') == "Admin") {
+//         Get.offAll(() => const AdminMainPage());
+//         logAdminAction('LOG IN', user.uid);
+//       } else if (documentSnapshot.get('role') == "superadmin") {
+//         Get.offAll(() => const AdminMainPage());
+//         logAdminAction('LOG IN', user.uid);
+//       } else {
+//         Get.offAll(() => const UserMainPage());
+//       }
+//     } else {
+//       _showSnackbarError(context, 'Document does not exist on the database');
+//     }
+//   });
+// }
+
+// void newRoute(BuildContext context) async {
+//   User? user = FirebaseAuth.instance.currentUser;
+
+//   try {
+//     QuerySnapshot<Map<String, dynamic>> querySnapshot =
+//         await FirebaseFirestore.instance
+//             .collection('users')
+//             // .where('uid', isEqualTo: user!.uid)
+//             .where('approved', isEqualTo: 'true')
+//             .get();
+
+//     if (querySnapshot.docs.isNotEmpty) {
+//       Map<String, dynamic> userData = querySnapshot.docs.first.data();
+
+//       if (userData['role'] == 'Admin' || userData['role'] == 'superadmin') {
+//         Get.offAll(() => const AdminMainPage());
+//         logAdminAction('LOG IN', user!.uid);
+//       } else {
+//         Get.offAll(() => const UserMainPage());
+//       }
+//     } else {
+//       FirebaseAuth.instance.signOut();
+//       Get.offAll(() => const LoginPage());
+//       _showSnackbarError(context, 'Your account has not been approved yet.');
+//     }
+//   } catch (e) {
+//     FirebaseAuth.instance.signOut();
+//     Get.offAll(() => const LoginPage());
+//     _showSnackbarError(
+//         context, 'Failed to get account details from the server');
+//   }
+// }

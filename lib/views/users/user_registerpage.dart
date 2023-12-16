@@ -1,3 +1,4 @@
+import 'package:denguecare_firebase/views/admins/admin_register.dart';
 import 'package:denguecare_firebase/views/users/user_homepage.dart';
 import 'package:denguecare_firebase/views/widgets/input_contact_number.dart';
 import 'package:flutter/material.dart';
@@ -23,9 +24,10 @@ class UserRegisterPage extends StatefulWidget {
   State<UserRegisterPage> createState() => _UserRegisterPageState();
 }
 
-class _UserRegisterPageState extends State<UserRegisterPage> {
+class _UserRegisterPageState extends State<UserRegisterPage>
+    with SingleTickerProviderStateMixin {
   final _auth = FirebaseAuth.instance;
-
+  late TabController _tabController;
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
@@ -122,6 +124,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   @override
   initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _events = StreamController<int>.broadcast();
     _events.add(60);
     purokvalue = 'Select Purok';
@@ -146,13 +149,13 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-
     _firstnameController.dispose();
     _lastnameController.dispose();
     _ageController.dispose();
     value = 'Male';
     purokvalue = 'Select Purok';
     _contactNumberController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -163,177 +166,213 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
         backgroundColor: const Color.fromARGB(255, 118, 162, 120),
         body: SingleChildScrollView(
           child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: Form(
-                key: _formKey,
-                child: Card(
-                  child: Container(
-                    padding: const EdgeInsets.all(32.0),
-                    constraints: const BoxConstraints(maxWidth: 370),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/images/logo-no-background.png'),
-                        const SizedBox(height: 20),
-                        const SizedBox(height: 20),
-                        Text(
-                          "USER REGISTRATION",
-                          style: GoogleFonts.poppins(fontSize: 18),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: InputWidget(
-                                hintText: "First Name",
-                                controller: _firstnameController,
-                                obscureText: false,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: InputWidget(
-                                hintText: "Last Name",
-                                controller: _lastnameController,
-                                obscureText: false,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: InputAgeWidget(
-                                hintText: "Age",
-                                controller: _ageController,
-                                obscureText: false,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 4),
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(8.0)),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    items: sex.map(buildMenuItem).toList(),
-                                    value: value,
-                                    hint: const Text('Sex'),
-                                    onChanged: (value) =>
-                                        setState(() => this.value = value),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        InputContactNumber(
-                            hintText: "Contact Number (10-digit)",
-                            controller: _contactNumberController,
-                            obscureText: false),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 4),
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(8.0)),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    padding: const EdgeInsets.all(0),
-                                    isExpanded: true,
-                                    items: puroklist.keys.map((String purok) {
-                                      return DropdownMenuItem<String>(
-                                        value: purok,
-                                        child: Text(purok),
-                                      );
-                                    }).toList(),
-                                    value: purokvalue,
-                                    onChanged: (val) =>
-                                        setState(() => purokvalue = val),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        InputEmailWidget(
-                          hintText: "Email",
-                          controller: _emailController,
-                          obscureText: false,
-                        ),
-                        const SizedBox(height: 20),
-                        InputConfirmPassWidget(
-                          hintText: "Password",
-                          controller: _passwordController,
-                          confirmController: _confirmPasswordController,
-                          obscureText: _isPasswordNotVisible,
-                          iconButton: IconButton(
-                            icon: Icon(_isPasswordNotVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordNotVisible = !_isPasswordNotVisible;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 50,
-                                vertical: 15,
-                              ),
-                            ),
-                            onPressed: () async {
-                              try {
-                                if (_formKey.currentState!.validate()) {
-                                  String num =
-                                      "+63${_contactNumberController.text}";
-                                  _startTimer();
-                                  _showOTPDialog(context);
-                                  verifyPhone(num);
-                                }
-                              } on FirebaseAuthException catch (e) {
-                                _showSnackbarError(
-                                    context, e.message.toString());
-                              }
-                            },
-                            child: Text("Register",
-                                style: GoogleFonts.poppins(fontSize: 20)),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        InkWell(
-                          onTap: () {
-                            Get.to(() => const LoginPage());
-                          },
-                          child: Text(
-                            "Already have an accont? Sign in!",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12, color: Colors.blue),
-                          ),
-                        ),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 570),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: DefaultTabController(
+                length: 2,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    TabBar(
+                      controller: _tabController,
+                      indicatorColor: Colors.white,
+                      labelColor: Colors.white,
+                      unselectedLabelColor: Colors.black87,
+                      labelStyle: GoogleFonts.poppins(fontSize: 18),
+                      tabs: const [
+                        Tab(text: 'User Registration'),
+                        Tab(text: 'Admin Registration'),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: 370,
+                      height: 800, // Adjust the height as needed
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _buildUserRegistrationTab(),
+                          // _buildAdminRegistrationTab(),
+                          const AdminRegisterPage(),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserRegistrationTab() {
+    return Form(
+      key: _formKey,
+      child: Card(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(32.0),
+            constraints: const BoxConstraints(maxWidth: 270),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/logo-no-background.png'),
+                const SizedBox(height: 20),
+                const SizedBox(height: 20),
+                Text(
+                  "USER REGISTRATION",
+                  style: GoogleFonts.poppins(fontSize: 18),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: InputWidget(
+                        hintText: "First Name",
+                        controller: _firstnameController,
+                        obscureText: false,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: InputWidget(
+                        hintText: "Last Name",
+                        controller: _lastnameController,
+                        obscureText: false,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: InputAgeWidget(
+                        hintText: "Age",
+                        controller: _ageController,
+                        obscureText: false,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8.0)),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            items: sex.map(buildMenuItem).toList(),
+                            value: value,
+                            hint: const Text('Sex'),
+                            onChanged: (value) =>
+                                setState(() => this.value = value),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                InputContactNumber(
+                    hintText: "Contact Number (10-digit)",
+                    controller: _contactNumberController,
+                    obscureText: false),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8.0)),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            padding: const EdgeInsets.all(0),
+                            isExpanded: true,
+                            items: puroklist.keys.map((String purok) {
+                              return DropdownMenuItem<String>(
+                                value: purok,
+                                child: Text(purok),
+                              );
+                            }).toList(),
+                            value: purokvalue,
+                            onChanged: (val) =>
+                                setState(() => purokvalue = val),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                InputEmailWidget(
+                  hintText: "Email",
+                  controller: _emailController,
+                  obscureText: false,
+                ),
+                const SizedBox(height: 20),
+                InputConfirmPassWidget(
+                  hintText: "Password",
+                  controller: _passwordController,
+                  confirmController: _confirmPasswordController,
+                  obscureText: _isPasswordNotVisible,
+                  iconButton: IconButton(
+                    icon: Icon(_isPasswordNotVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordNotVisible = !_isPasswordNotVisible;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 50,
+                        vertical: 15,
+                      ),
+                    ),
+                    onPressed: () async {
+                      try {
+                        if (_formKey.currentState!.validate()) {
+                          String num = "+63${_contactNumberController.text}";
+                          _startTimer();
+                          _showOTPDialog(context);
+                          verifyPhone(num);
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        _showSnackbarError(context, e.message.toString());
+                      }
+                    },
+                    child: Text("Register",
+                        style: GoogleFonts.poppins(fontSize: 20)),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                InkWell(
+                  onTap: () {
+                    Get.to(() => const LoginPage());
+                  },
+                  child: Text(
+                    "Already have an accont? Sign in!",
+                    style:
+                        GoogleFonts.poppins(fontSize: 12, color: Colors.blue),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -519,7 +558,8 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
       'sex': value,
       'contact_number': _contactNumberController.text,
       'purok': purokvalue,
-      'role': userType
+      'role': userType,
+      'approved': true,
     });
 
     Get.offAll(() => const UserMainPage());

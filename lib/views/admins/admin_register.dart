@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:denguecare_firebase/views/admins/admin_manageadmin.dart';
+import 'package:denguecare_firebase/views/login_page.dart';
 import 'package:denguecare_firebase/views/widgets/input_age_widget.dart';
 import 'package:denguecare_firebase/views/widgets/input_confirmpass_widget.dart';
 import 'package:denguecare_firebase/views/widgets/input_contact_number.dart';
@@ -63,162 +64,154 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 118, 162, 120),
-      appBar: AppBar(
-        title: Text('Admin Register', style: GoogleFonts.poppins(fontSize: 20)),
-        leading: BackButton(
-          onPressed: () {
-            Get.offAll(() => const ManageAdmin());
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 20,
+    return Form(
+      key: _formKey,
+      child: Card(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(32),
+            constraints: const BoxConstraints(
+              maxWidth: 370,
             ),
-            child: Form(
-              key: _formKey,
-              child: Card(
-                child: Container(
-                  padding: const EdgeInsets.all(32),
-                  constraints: const BoxConstraints(
-                    maxWidth: 370,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/images/logo-no-background.png'),
-                      const SizedBox(height: 20),
-                      const SizedBox(height: 20),
-                      Text(
-                        "ADMIN REGISTRATION",
-                        style: GoogleFonts.poppins(fontSize: 18),
-                      ),
-                      const SizedBox(height: 20),
-                      //! First Name and Last Name Widget
-                      Row(
-                        children: [
-                          Expanded(
-                            child: InputWidget(
-                              hintText: "First Name",
-                              controller: _firstnameController,
-                              obscureText: false,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: InputWidget(
-                              hintText: "Last Name",
-                              controller: _lastnameController,
-                              obscureText: false,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: InputAgeWidget(
-                              hintText: "Age",
-                              controller: _ageController,
-                              obscureText: false,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 4),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(8.0)),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                    isExpanded: true,
-                                    items: sex.map(buildMenuItem).toList(),
-                                    value: value,
-                                    hint: const Text('Sex'),
-                                    onChanged: (val) {
-                                      print(val);
-                                      setState(() {
-                                        value = val;
-                                      });
-                                    }),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      InputContactNumber(
-                          hintText: "Contact Number (10-digit)",
-                          controller: _contactNumberController,
-                          obscureText: false),
-                      const SizedBox(height: 20),
-                      InputEmailWidget(
-                        hintText: "Email",
-                        controller: _emailController,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/logo-no-background.png'),
+                const SizedBox(height: 20),
+                const SizedBox(height: 20),
+                Text(
+                  "ADMIN REGISTRATION",
+                  style: GoogleFonts.poppins(fontSize: 18),
+                ),
+                const SizedBox(height: 20),
+                //! First Name and Last Name Widget
+                Row(
+                  children: [
+                    Expanded(
+                      child: InputWidget(
+                        hintText: "First Name",
+                        controller: _firstnameController,
                         obscureText: false,
                       ),
-                      const SizedBox(height: 20),
-                      InputConfirmPassWidget(
-                        hintText: "Password",
-                        controller: _passwordController,
-                        confirmController: _confirmPasswordController,
-                        obscureText: _isPasswordNotVisible,
-                        iconButton: IconButton(
-                          icon: Icon(_isPasswordNotVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordNotVisible = !_isPasswordNotVisible;
-                            });
-                          },
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: InputWidget(
+                        hintText: "Last Name",
+                        controller: _lastnameController,
+                        obscureText: false,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: InputAgeWidget(
+                        hintText: "Age",
+                        controller: _ageController,
+                        obscureText: false,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8.0)),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                              isExpanded: true,
+                              items: sex.map(buildMenuItem).toList(),
+                              value: value,
+                              hint: const Text('Sex'),
+                              onChanged: (val) {
+                                print(val);
+                                setState(() {
+                                  value = val;
+                                });
+                              }),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 50,
-                              vertical: 15,
-                            ),
-                          ),
-                          onPressed: () async {
-                            try {
-                              if (_formKey.currentState!.validate()) {
-                                signUp(
-                                    _emailController.text.trim(),
-                                    _confirmPasswordController.text.trim(),
-                                    _firstnameController.text.trim(),
-                                    _lastnameController.text.trim(),
-                                    _ageController.text.trim(),
-                                    value!,
-                                    _contactNumberController.text.trim(),
-                                    userType);
-                              }
-                            } catch (e) {
-                              _showSnackbarError(context, e.toString());
-                              print(e.toString());
-                            }
-                          },
-                          child: Text("Register",
-                              style: GoogleFonts.poppins(fontSize: 20)),
-                        ),
-                      ),
-                    ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                InputContactNumber(
+                    hintText: "Contact Number (10-digit)",
+                    controller: _contactNumberController,
+                    obscureText: false),
+                const SizedBox(height: 20),
+                InputEmailWidget(
+                  hintText: "Email",
+                  controller: _emailController,
+                  obscureText: false,
+                ),
+                const SizedBox(height: 20),
+                InputConfirmPassWidget(
+                  hintText: "Password",
+                  controller: _passwordController,
+                  confirmController: _confirmPasswordController,
+                  obscureText: _isPasswordNotVisible,
+                  iconButton: IconButton(
+                    icon: Icon(_isPasswordNotVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordNotVisible = !_isPasswordNotVisible;
+                      });
+                    },
                   ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 50,
+                        vertical: 15,
+                      ),
+                    ),
+                    onPressed: () async {
+                      try {
+                        if (_formKey.currentState!.validate()) {
+                          signUp(
+                              _emailController.text.trim(),
+                              _confirmPasswordController.text.trim(),
+                              _firstnameController.text.trim(),
+                              _lastnameController.text.trim(),
+                              _ageController.text.trim(),
+                              value!,
+                              _contactNumberController.text.trim(),
+                              userType);
+                        }
+                      } catch (e) {
+                        _showSnackbarError(context, e.toString());
+                        print(e.toString());
+                      }
+                    },
+                    child: Text("Register",
+                        style: GoogleFonts.poppins(fontSize: 20)),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                InkWell(
+                  onTap: () {
+                    Get.to(() => const LoginPage());
+                  },
+                  child: Text(
+                    "Already have an accont? Sign in!",
+                    style:
+                        GoogleFonts.poppins(fontSize: 12, color: Colors.blue),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -270,6 +263,7 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
       'sex': sex,
       'contact_number': _contactNumberController.text,
       'role': userType,
+      'approved': false,
     });
 
     // Get.offAll(() => const ManageAdmin());

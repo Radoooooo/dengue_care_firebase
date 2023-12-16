@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:denguecare_firebase/views/admins/admin_accountapprovalpage.dart';
 import 'package:denguecare_firebase/views/admins/admin_homepage.dart';
 import 'package:denguecare_firebase/views/admins/admin_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -82,9 +83,9 @@ class _ManageAdminState extends State<ManageAdmin> {
         actions: [
           IconButton(
             onPressed: () {
-              Get.offAll(const AdminRegisterPage());
+              Get.offAll(const AdminAccountApprovalPage());
             },
-            icon: const Icon(Icons.person_add),
+            icon: const Icon(Icons.person_add_alt_1),
           ),
           const SizedBox(
             width: 5,
@@ -92,7 +93,10 @@ class _ManageAdminState extends State<ManageAdmin> {
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: user.where('role', isEqualTo: 'Admin').snapshots(),
+        stream: user
+            .where('role', isEqualTo: 'Admin')
+            .where('approved', isEqualTo: true)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
