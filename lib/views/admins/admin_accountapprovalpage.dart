@@ -102,7 +102,8 @@ class _AdminAccountApprovalPageState extends State<AdminAccountApprovalPage> {
                             const TextSpan(text: '   '),
                             TextSpan(
                                 text: ds['email'],
-                                style: GoogleFonts.poppins(fontSize: 14)),
+                                style: GoogleFonts.poppins(
+                                    fontSize: 14, color: Colors.black)),
                           ]),
                         ),
                         RichText(
@@ -116,7 +117,8 @@ class _AdminAccountApprovalPageState extends State<AdminAccountApprovalPage> {
                             const TextSpan(text: '   '),
                             TextSpan(
                                 text: ds['contact_number'],
-                                style: GoogleFonts.poppins(fontSize: 14)),
+                                style: GoogleFonts.poppins(
+                                    fontSize: 14, color: Colors.black)),
                           ]),
                         ),
                       ],
