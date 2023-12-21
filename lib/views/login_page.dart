@@ -134,16 +134,25 @@ class _LoginPageState extends State<LoginPage> {
       _showCircularProgressIndicator();
 
       // Check if the user's email exists in Firestore
-      bool isEmailExists = await checkEmailExists(emailController.text.trim());
+      bool isEmailExists = await checkUser(emailController.text.trim());
 
       if (isEmailExists) {
-        // If email exists in Firestore, proceed with Firebase Authentication
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-        );
+        // Check if the user is approved
+        bool isUserApproved =
+            await checkUser(emailController.text.trim(), checkApproval: true);
 
-        route(context);
+        if (isUserApproved) {
+          // If email exists and user is approved, proceed with Firebase Authentication
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
+
+          route(context);
+        } else {
+          _showSnackbarError(
+              context, 'Your account has not been approved yet.');
+        }
       } else {
         // If email does not exist in Firestore, show an error
         _showSnackbarError(context, 'Email does not exist in the database.');
@@ -158,7 +167,84 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<bool> checkEmailExists(String email) async {
+  // Future signIn(BuildContext context) async {
+  //   try {
+  //     _showCircularProgressIndicator();
+
+  //     print('Before email check');
+  //     bool isUserApproved =
+  //         await checkUserApproval(emailController.text.trim());
+  //     print('After email check: $isUserApproved');
+
+  //     // Check if the user's email exists in Firestore
+  //     print('Before email check');
+  //     bool isEmailExists = await checkEmailExists(emailController.text.trim());
+  //     print('After email check: $isEmailExists');
+
+  //     if (isEmailExists && isUserApproved == true) {
+  //       // If email exists in Firestore, proceed with Firebase Authentication
+  //       await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //         email: emailController.text.trim(),
+  //         password: passwordController.text.trim(),
+  //       );
+
+  //       route(context);
+  //     } else {
+  //       // If email does not exist in Firestore, show an error
+  //       _showSnackbarError(context, 'Email does not exist in the database.');
+  //     }
+  //   } on FirebaseAuthException catch (e) {
+  //     _showSnackbarError(context, e.message.toString());
+  //     Get.offAll(() => const LoginPage());
+  //     FirebaseAuth.instance.signOut();
+  //   } finally {
+  //     Navigator.of(context, rootNavigator: true)
+  //         .pop(); // Hide CircularProgressIndicator
+  //   }
+  // }
+
+  // Future<bool> checkEmailExists(String email) async {
+  //   try {
+  //     QuerySnapshot<Map<String, dynamic>> querySnapshot =
+  //         await FirebaseFirestore.instance
+  //             .collection('users')
+  //             .where('email', isEqualTo: email)
+  //             .get();
+
+  //     return querySnapshot.docs.isNotEmpty;
+  //   } catch (error) {
+  //     // Handle any potential error while querying Firestore
+  //     print('Error checking email existence: $error');
+  //     return false;
+  //   }
+  // }
+
+  // Future<bool> checkUserApproval(String email) async {
+  //   try {
+  //     QuerySnapshot<Map<String, dynamic>> querySnapshot =
+  //         await FirebaseFirestore.instance
+  //             .collection('users')
+  //             .where('email', isEqualTo: email)
+  //             .get();
+
+  //     if (querySnapshot.docs.isNotEmpty) {
+  //       // User with the specified email exists in the database
+  //       var userDocument = querySnapshot.docs.first;
+  //       bool isApproved = userDocument.get('approved') ?? false;
+  //       return isApproved;
+  //     } else {
+  //       // User with the specified email does not exist in the database
+  //       _showSnackbarError(context, 'User not approved. Contact superadmin.');
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     // Handle any potential error while querying Firestore
+  //     print('Error checking user approval: $error');
+  //     return false;
+  //   }
+  // }
+
+  Future<bool> checkUser(String email, {bool checkApproval = false}) async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance
@@ -166,10 +252,31 @@ class _LoginPageState extends State<LoginPage> {
               .where('email', isEqualTo: email)
               .get();
 
-      return querySnapshot.docs.isNotEmpty;
+      if (querySnapshot.docs.isNotEmpty) {
+        // User with the specified email exists in the database
+        var userDocument = querySnapshot.docs.first;
+
+        if (checkApproval) {
+          // Check for user approval
+          bool isApproved = userDocument.get('approved') ?? false;
+          if (!isApproved) {
+            // User not approved
+            _showSnackbarError(
+                context, 'User not approved. Contact superadmin.');
+          }
+          return isApproved;
+        }
+
+        // For email existence check
+        return true;
+      } else {
+        // User with the specified email does not exist in the database
+        _showSnackbarError(context, 'User not found.');
+        return false;
+      }
     } catch (error) {
       // Handle any potential error while querying Firestore
-      print('Error checking email existence: $error');
+      print('Error checking user: $error');
       return false;
     }
   }
