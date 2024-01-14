@@ -1,6 +1,4 @@
-import 'package:denguecare_firebase/charts/chartReports.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -53,14 +51,14 @@ class StreetPurokData {
   int cases;
 }
 
-class testChart extends StatefulWidget {
-  const testChart({super.key});
+class chartReports extends StatefulWidget {
+  const chartReports({super.key});
 
   @override
-  State<testChart> createState() => _testChartState();
+  State<chartReports> createState() => _chartReportsState();
 }
 
-class _testChartState extends State<testChart> {
+class _chartReportsState extends State<chartReports> {
   void showLoadingDialog() {
     showDialog(
       context: context,
@@ -93,13 +91,13 @@ class _testChartState extends State<testChart> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: Future.wait([
-        getListYear(),
+        //getListYear(),
         getYearlyDataMonth(selectedYear),
-        getYearlyDataWeek(selectedYear),
-        getDataYear(),
-        generateYearlySeries(),
+        //getYearlyDataWeek(selectedYear),
+        //getDataYear(),
+        //generateYearlySeries(),
         queryAgeGroupsCount(selectedYear),
-        getPurokCases(selectedYear),
+        //getPurokCases(selectedYear),
       ]),
       builder: (context, snapshot) {
         if (chart.isNotEmpty) {
@@ -127,17 +125,6 @@ class _testChartState extends State<testChart> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _gap(),
-                    /*Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                            onPressed: , child: Text('Reports')),
-                        ElevatedButton(
-                            onPressed: getDataYear,
-                            child: Text('Denguelinelist'))
-                      ],
-                    ),*/
-                    _gap(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -145,7 +132,7 @@ class _testChartState extends State<testChart> {
                         Text('Sort by: ',
                             style: GoogleFonts.poppins(fontSize: 20)),
                         DropdownButton<int>(
-                          value: selectedYear,
+                          value: 2023,
                           items: listYear.map((year) {
                             return DropdownMenuItem<int>(
                               value: year,
@@ -156,25 +143,23 @@ class _testChartState extends State<testChart> {
                           onChanged: (newValue) async {
                             setState(() {
                               selectedYear = newValue!;
-                              hAgeGroup = '';
-                              lAgeGroup = '';
 
                               if (selectedYear == newValue) {
                                 return;
                               } else {
-                                getYearlyDataMonth(selectedYear).then((result) {
+                                /*getYearlyDataMonth(selectedYear).then((result) {
                                   chart = result;
                                 });
                                 getYearlyDataWeek(selectedYear).then((result) {
                                   chart2 = result;
-                                });
+                                });*/
                                 queryAgeGroupsCount(selectedYear)
                                     .then((result) {
                                   pieChart = result;
                                 });
-                                getPurokCases(selectedYear).then((result) {
+                                /*getPurokCases(selectedYear).then((result) {
                                   barChart = result;
-                                });
+                                });*/
                               }
                             });
                           },
@@ -204,8 +189,7 @@ class _testChartState extends State<testChart> {
                               a4 = 0;
                             });
                             showLoadingDialog();
-                            await deleteAllDocumentsInCollection(
-                                'denguelinelist');
+
                             dismissLoadingDialog();
                           },
                           child: Text('Clear Data',
@@ -265,7 +249,7 @@ class _testChartState extends State<testChart> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCases(chart)}\nLowest Active Cases(Month): ${findMonthWithLowestCases(chart)}',
+                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): {findMonthWithHighestCases(chart)}\nLowest Active Cases(Month): {findMonthWithLowestCases(chart)}',
                                 style: TextStyle(fontSize: 16),
                               ),
                             ),
@@ -325,7 +309,7 @@ class _testChartState extends State<testChart> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per week for the selected year.\nHighest Active Cases(Week): ${findHighestCase(chart2)}\nLowest Active Cases(Week): ${findLowestCase(chart2)}',
+                                'Analysis: This chart shows the number of active cases per week for the selected year.\nHighest Active Cases(Week): {findHighestCase(chart2)}\nLowest Active Cases(Week): {findLowestCase(chart2)}',
                                 style: TextStyle(fontSize: 16),
                               ),
                             ),
@@ -359,7 +343,7 @@ class _testChartState extends State<testChart> {
                             enableAxisAnimation: true,
                             primaryXAxis: NumericAxis(
                                 title: AxisTitle(
-                                    text: "Year",
+                                    text: "date",
                                     textStyle:
                                         GoogleFonts.poppins(fontSize: 20)),
                                 minimum: minYear,
@@ -386,7 +370,7 @@ class _testChartState extends State<testChart> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per year.\nHighest Active Cases(Year): ${findHighestCase(chart3)}\nLowest Active Cases(Year): ${findLowestCase(chart3)}',
+                                'Analysis: This chart shows the number of active cases per year.\nHighest Active Cases(date): {findHighestCase(chart3)}\nLowest Active Cases(date): {findLowestCase(chart3)}',
                                 style: TextStyle(fontSize: 16),
                               ),
                             ),
@@ -441,7 +425,7 @@ class _testChartState extends State<testChart> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per year\nMonths that has same active cases(Recurring): ${findMonthsWithSameCases(yearlySeries)}',
+                                'Analysis: This chart shows the number of active cases per year\nMonths that has same active cases(Recurring): {findMonthsWithSameCases(yearlySeries)}',
                                 style: TextStyle(fontSize: 16),
                               ),
                             ),
@@ -518,7 +502,7 @@ class _testChartState extends State<testChart> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Analysis: This chart shows the number of active cases per age group\nAge group that have highest cases: ${findHighCasesAgeGroup(pieChart)}\nAge group that have lowest cases: ${findLowCasesAgeGroup(pieChart)}',
+                              'Analysis: This chart shows the number of active cases per age group\nAge group that have highest cases: {findHighCasesAgeGroup(pieChart)}\nAge group that have lowest cases: {findLowCasesAgeGroup(pieChart)}',
                               style: TextStyle(fontSize: 16),
                             ),
                           ),
@@ -578,7 +562,7 @@ class _testChartState extends State<testChart> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per Street/Purok\nStreet/Purok that have highest cases: ${findHighestCaseSP(barChart)}',
+                                'Analysis: This chart shows the number of active cases per Street/Purok\nStreet/Purok that have highest cases: {findHighestCaseSP(barChart)}',
                                 style: TextStyle(fontSize: 16),
                               ),
                             ),
@@ -596,78 +580,86 @@ class _testChartState extends State<testChart> {
 }
 
 Future<List<piechartData>> queryAgeGroupsCount(int year) async {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  try {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  double ageGroupCount = 0;
-  double ageGroupCount2 = 0;
-  double ageGroupCount3 = 0;
-  double ageGroupCount4 = 0;
+    double ageGroupCount = 0;
+    double ageGroupCount2 = 0;
+    double ageGroupCount3 = 0;
+    double ageGroupCount4 = 0;
 
-  int childAgeMax = 16;
+    int childAgeMax = 16;
 
-  QuerySnapshot querySnapshot = await firestore
-      .collection('denguelinelist')
-      .where('AgeYears', isLessThanOrEqualTo: childAgeMax)
-      .where('Year', isEqualTo: year)
-      .get();
+    QuerySnapshot querySnapshot = await firestore
+        .collection('reports')
+        .where('date', isGreaterThanOrEqualTo: DateTime(year, 1, 1))
+        .where('date', isLessThanOrEqualTo: DateTime(year, 12, 31))
+        .get();
 
-  ageGroupCount = querySnapshot.size.toDouble();
-  pieChart = [];
-  pieChart.add(piechartData('Child', ageGroupCount, Colors.blue));
+    // if mugana ni that means tama ang query
+    querySnapshot.docs.forEach((doc) {
+      print('Data: ${doc.data()}'); // You can print the entire data map
+    });
 
-  int yAdultAgeMin = 17;
-  int yAdultAgeMax = 30;
+    //if empty ang childReports pasabot wla nigana ang kani na line of code
+    List<DocumentSnapshot> childReports =
+        querySnapshot.docs.where((doc) => doc['age'] <= childAgeMax).toList();
+    print('Child Reports Here');
+    print(childReports.length);
 
-  QuerySnapshot querySnapshot2 = await firestore
-      .collection('denguelinelist')
-      .where('AgeYears', isGreaterThanOrEqualTo: yAdultAgeMin)
-      .where('AgeYears', isLessThanOrEqualTo: yAdultAgeMax)
-      .where('Year', isEqualTo: year)
-      .get();
+    ageGroupCount = childReports.length.toDouble();
+    pieChart = [];
+    pieChart.add(piechartData('Child', ageGroupCount, Colors.blue));
 
-  ageGroupCount2 = querySnapshot2.size.toDouble();
-  pieChart.add(piechartData('Young Adult', ageGroupCount2, Colors.red));
+    int yAdultAgeMin = 17;
+    int yAdultAgeMax = 30;
 
-  int mAdultAgeMin = 31;
-  int mAdultAgeMax = 45;
+    List<DocumentSnapshot> youngAdultReports = querySnapshot.docs
+        .where(
+            (doc) => doc['age'] >= yAdultAgeMin && doc['age'] <= yAdultAgeMax)
+        .toList();
 
-  QuerySnapshot querySnapshot3 = await firestore
-      .collection('denguelinelist')
-      .where('AgeYears', isGreaterThanOrEqualTo: mAdultAgeMin)
-      .where('AgeYears', isLessThanOrEqualTo: mAdultAgeMax)
-      .where('Year', isEqualTo: year)
-      .get();
+    ageGroupCount2 = youngAdultReports.length.toDouble();
+    pieChart.add(piechartData('Young Adult', ageGroupCount2, Colors.red));
 
-  ageGroupCount3 = querySnapshot3.size.toDouble();
-  pieChart.add(piechartData('Middle Adult', ageGroupCount3, Colors.green));
+    int mAdultAgeMin = 31;
+    int mAdultAgeMax = 45;
 
-  int oAdultAgeMin = 45;
+    List<DocumentSnapshot> middleAdultReports = querySnapshot.docs
+        .where(
+            (doc) => doc['age'] >= mAdultAgeMin && doc['age'] <= mAdultAgeMax)
+        .toList();
 
-  QuerySnapshot querySnapshot4 = await firestore
-      .collection('denguelinelist')
-      .where('AgeYears', isGreaterThan: oAdultAgeMin)
-      .where('Year', isEqualTo: year)
-      .get();
+    ageGroupCount3 = middleAdultReports.length.toDouble();
+    pieChart.add(piechartData('Middle Adult', ageGroupCount3, Colors.green));
 
-  ageGroupCount4 = querySnapshot4.size.toDouble();
-  pieChart.add(piechartData('Old Adult', ageGroupCount4, Colors.yellow));
+    int oAdultAgeMin = 45;
 
-  a1 = ageGroupCount;
-  a2 = ageGroupCount2;
-  a3 = ageGroupCount3;
-  a4 = ageGroupCount4;
+    List<DocumentSnapshot> oldAdultReports =
+        querySnapshot.docs.where((doc) => doc['age'] > oAdultAgeMin).toList();
+
+    ageGroupCount4 = oldAdultReports.length.toDouble();
+    pieChart.add(piechartData('Old Adult', ageGroupCount4, Colors.yellow));
+
+    a1 = ageGroupCount;
+    a2 = ageGroupCount2;
+    a3 = ageGroupCount3;
+    a4 = ageGroupCount4;
+  } catch (e) {
+    print(e);
+  }
 
   return pieChart;
 }
 
 Future<List<int>> getListYear() async {
   try {
-    String x = 'Year';
+    String x = 'date';
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     QuerySnapshot querySnapshot = await firestore
-        .collection('denguelinelist')
-        .orderBy('Year', descending: false)
+        .collection('reports')
+        .orderBy('date', descending: false)
         .get();
 
     Set<int> uniqueValues = {};
@@ -690,15 +682,17 @@ Future<List<DengueData>> getYearlyDataMonth(int year) async {
   try {
     String x = 'MorbidityMonth';
     CollectionReference collection =
-        FirebaseFirestore.instance.collection('denguelinelist');
-    QuerySnapshot querySnapshot =
-        await collection.orderBy('MorbidityMonth', descending: false).get();
+        FirebaseFirestore.instance.collection('reports');
+    QuerySnapshot querySnapshot = await collection
+        .orderBy('date', descending: false)
+        .where('date', isLessThanOrEqualTo: DateTime(2024, 01, 1))
+        .get();
 
     Map<int, int> valueL = {};
 
     for (var doc in querySnapshot.docs) {
       var data = doc.data() as Map<String, dynamic>;
-      if (data.containsKey(x) && data['Year'] == year) {
+      if (data.containsKey(x) && data['date'] == year) {
         var value = data[x];
         valueL[value] = (valueL[value] ?? 0) + 1;
       }
@@ -720,11 +714,12 @@ Future<List<DengueData>> getYearlyDataMonth(int year) async {
   }
 }
 
+/*
 Future<List<DengueData>> getYearlyDataWeek(int year) async {
   try {
     String x = 'MorbidityWeek';
     CollectionReference collection =
-        FirebaseFirestore.instance.collection('denguelinelist');
+        FirebaseFirestore.instance.collection('reports');
     QuerySnapshot querySnapshot =
         await collection.orderBy('MorbidityWeek', descending: false).get();
 
@@ -732,7 +727,7 @@ Future<List<DengueData>> getYearlyDataWeek(int year) async {
 
     for (var doc in querySnapshot.docs) {
       var data = doc.data() as Map<String, dynamic>;
-      if (data.containsKey(x) && data['Year'] == year) {
+      if (data.containsKey(x) && data['date'] == year) {
         var value = data[x];
         valueL[value] = (valueL[value] ?? 0) + 1;
       }
@@ -755,11 +750,11 @@ Future<List<DengueData>> getYearlyDataWeek(int year) async {
 
 Future<List<DengueData>> getDataYear() async {
   try {
-    String x = 'Year';
+    String x = 'date';
     CollectionReference collection =
-        FirebaseFirestore.instance.collection('denguelinelist');
+        FirebaseFirestore.instance.collection('reports');
     QuerySnapshot querySnapshot =
-        await collection.orderBy('Year', descending: false).get();
+        await collection.orderBy('date', descending: false).get();
 
     Map<int, int> valueL = {};
 
@@ -788,14 +783,14 @@ Future<List<StreetPurokData>> getPurokCases(int year) async {
   try {
     String x = 'Streetpurok';
     CollectionReference collection =
-        FirebaseFirestore.instance.collection('denguelinelist');
+        FirebaseFirestore.instance.collection('reports');
     QuerySnapshot querySnapshot = await collection.get();
 
     Map<String, int> casesByPurok = {};
 
     for (var doc in querySnapshot.docs) {
       var data = doc.data() as Map<String, dynamic>;
-      if (data.containsKey(x) && data['Year'] == year) {
+      if (data.containsKey(x) && data['date'] == year) {
         var value = data[x];
         casesByPurok[value] = (casesByPurok[value] ?? 0) + 1;
       }
@@ -812,33 +807,6 @@ Future<List<StreetPurokData>> getPurokCases(int year) async {
   } catch (e) {
     print('BarChart Error');
     return Future.value([]);
-  }
-}
-
-Future<void> deleteAllDocumentsInCollection(String collectionPath) async {
-  User? user = FirebaseAuth.instance.currentUser;
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  try {
-    print('nigana ko');
-    print(pieChart);
-    pieChart = [];
-    hAgeGroup = '';
-    lAgeGroup = '';
-    print(pieChart);
-
-    final QuerySnapshot querySnapshot =
-        await firestore.collection(collectionPath).get();
-    final List<QueryDocumentSnapshot> documents = querySnapshot.docs;
-
-    for (final document in documents) {
-      await document.reference.delete();
-    }
-    logAdminAction('Clear Data', user!.uid);
-    print(
-        'All documents in the collection "$collectionPath" have been deleted.');
-  } catch (e) {
-    print('Error deleting documents: $e');
   }
 }
 
@@ -870,7 +838,7 @@ Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
   for (int year in listYear) {
     String x = 'MorbidityMonth';
     CollectionReference collection =
-        FirebaseFirestore.instance.collection('denguelinelist');
+        FirebaseFirestore.instance.collection('reports');
     QuerySnapshot querySnapshot =
         await collection.orderBy('MorbidityMonth', descending: false).get();
 
@@ -878,7 +846,7 @@ Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
 
     for (var doc in querySnapshot.docs) {
       var data = doc.data() as Map<String, dynamic>;
-      if (data.containsKey(x) && data['Year'] == year) {
+      if (data.containsKey(x) && data['date'] == year) {
         var value = data[x];
         valueL[value] = (valueL[value] ?? 0) + 1;
       }
@@ -894,7 +862,7 @@ Future<List<ChartSeries<DengueData, int>>> generateYearlySeries() async {
       dataSource: yearlyData,
       xValueMapper: (DengueData data, _) => data.x,
       yValueMapper: (DengueData data, _) => data.y,
-      name: 'Year: $year',
+      name: 'date: $year',
       markerSettings: const MarkerSettings(isVisible: true),
     ));
   }
@@ -1085,7 +1053,7 @@ String findHighCasesAgeGroup(List<piechartData> data) {
     print('data is empty');
     return hAgeGroup;
   } else {
-    if (hAgeGroup == '') {
+    if (hAgeGroup.isEmpty) {
       for (piechartData entry in data) {
         if (entry.number > Cases) {
           Cases = entry.number;
@@ -1118,7 +1086,7 @@ String findLowCasesAgeGroup(List<piechartData> data) {
 
     return lAgeGroup;
   } else {
-    if (lAgeGroup == '') {
+    if (lAgeGroup.isEmpty) {
       for (piechartData entry in data) {
         if (entry.number <= cases) {
           cases = entry.number;
@@ -1136,8 +1104,6 @@ String findLowCasesAgeGroup(List<piechartData> data) {
     return lAgeGroup;
   }
 }
-
-Widget _gap() => const SizedBox(height: 8);
 
 String findHighestCaseSP(List<StreetPurokData> data) {
   String getHighSP = '';
@@ -1162,3 +1128,5 @@ String findHighestCaseSP(List<StreetPurokData> data) {
 
   return highSP;
 }
+*/
+Widget _gap() => const SizedBox(height: 8);

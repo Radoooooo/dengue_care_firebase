@@ -493,6 +493,10 @@ class _AdminViewReportedCasesPageState
                                 hint: Text(widget.reportedCaseData['status'] ??
                                     valueStatus),
                                 onChanged: (newvalue) {
+                                  User? user =
+                                      FirebaseAuth.instance.currentUser;
+                                  logAdminAction(
+                                      'Edit Report - Status', user!.uid);
                                   updateStatusData(newvalue!);
                                   setState(() {
                                     valueStatus = newvalue;
@@ -558,6 +562,11 @@ class _AdminViewReportedCasesPageState
                                             formattedDateOnly;
                                         updateFirstDateOfSymptomsData(
                                             formattedDateOnly);
+                                        User? user =
+                                            FirebaseAuth.instance.currentUser;
+                                        logAdminAction(
+                                            'Edit Report - Date of First Symptom',
+                                            user!.uid);
                                       });
                                     }
                                   },
@@ -607,6 +616,11 @@ class _AdminViewReportedCasesPageState
                                           valueAdmitted),
                                       onChanged: (value) {
                                         updatePatientAdmittedData(value!);
+                                        User? user =
+                                            FirebaseAuth.instance.currentUser;
+                                        logAdminAction(
+                                            'Edit Report - Patient Admitted',
+                                            user!.uid);
                                         setState(() {
                                           valueAdmitted = value;
                                         });
@@ -744,6 +758,11 @@ class _AdminViewReportedCasesPageState
                                     valueRecovered),
                                 onChanged: (value) {
                                   updatePatientRecoveredData(value!);
+                                  User? user =
+                                      FirebaseAuth.instance.currentUser;
+                                  logAdminAction(
+                                      'Edit Report - Patient Recovered',
+                                      user!.uid);
                                   setState(() {
                                     // Update valueAdmitted only if the user selects a new value
                                     valueRecovered = value;
