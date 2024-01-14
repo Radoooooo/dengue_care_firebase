@@ -568,9 +568,10 @@ class _testChartState extends State<testChart> {
                               ),
                               primaryYAxis: NumericAxis(
                                   title: AxisTitle(
-                                      text: 'Number of Active Cases',
-                                      textStyle:
-                                          GoogleFonts.poppins(fontSize: 20)),
+                                    text: 'Number Active Cases',
+                                    textStyle:
+                                        GoogleFonts.poppins(fontSize: 10),
+                                  ),
                                   interval: 1),
                             ),
                           ),
