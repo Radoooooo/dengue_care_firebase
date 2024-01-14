@@ -145,7 +145,7 @@ class _testChartState extends State<testChart> {
                         Text('Sort by: ',
                             style: GoogleFonts.poppins(fontSize: 20)),
                         DropdownButton<int>(
-                          value: 2023,
+                          value: selectedYear,
                           items: listYear.map((year) {
                             return DropdownMenuItem<int>(
                               value: year,
@@ -156,6 +156,8 @@ class _testChartState extends State<testChart> {
                           onChanged: (newValue) async {
                             setState(() {
                               selectedYear = newValue!;
+                              hAgeGroup = '';
+                              lAgeGroup = '';
 
                               if (selectedYear == newValue) {
                                 return;
@@ -1083,7 +1085,7 @@ String findHighCasesAgeGroup(List<piechartData> data) {
     print('data is empty');
     return hAgeGroup;
   } else {
-    if (hAgeGroup.isEmpty) {
+    if (hAgeGroup == '') {
       for (piechartData entry in data) {
         if (entry.number > Cases) {
           Cases = entry.number;
@@ -1116,7 +1118,7 @@ String findLowCasesAgeGroup(List<piechartData> data) {
 
     return lAgeGroup;
   } else {
-    if (lAgeGroup.isEmpty) {
+    if (lAgeGroup == '') {
       for (piechartData entry in data) {
         if (entry.number <= cases) {
           cases = entry.number;
