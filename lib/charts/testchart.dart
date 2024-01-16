@@ -12,6 +12,7 @@ List<DengueData> chart2 = [];
 List<DengueData> chart3 = [];
 List<DengueData> yearlyData = [];
 List<LineSeries<DengueData, int>> yearlySeries = [];
+List<LineSeries<DengueData, int>> yearlySeriesMonth = [];
 List<piechartData> pieChart = [];
 List<StreetPurokData> barChart = [];
 List<int> listYear = [2023];
@@ -20,6 +21,7 @@ String hAgeGroup = '';
 String lAgeGroup = '';
 
 int selectedYear = DateTime.now().year.toInt();
+int selectedYear2 = DateTime.now().year.toInt();
 double minYear = 0;
 double maxYear = 0;
 
@@ -98,6 +100,7 @@ class _testChartState extends State<testChart> {
         getYearlyDataWeek(selectedYear),
         getDataYear(),
         generateYearlySeries(),
+        generateYearlySeriesMonth(selectedYear, selectedYear2),
         queryAgeGroupsCount(selectedYear),
         getPurokCases(selectedYear),
       ]),
@@ -142,7 +145,7 @@ class _testChartState extends State<testChart> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('Sort by: ',
+                        Text('From: ',
                             style: GoogleFonts.poppins(fontSize: 20)),
                         DropdownButton<int>(
                           value: selectedYear,
@@ -156,28 +159,54 @@ class _testChartState extends State<testChart> {
                           onChanged: (newValue) async {
                             setState(() {
                               selectedYear = newValue!;
-                              hAgeGroup = '';
-                              lAgeGroup = '';
-
-                              if (selectedYear == newValue) {
-                                return;
-                              } else {
-                                getYearlyDataMonth(selectedYear).then((result) {
-                                  chart = result;
-                                });
-                                getYearlyDataWeek(selectedYear).then((result) {
-                                  chart2 = result;
-                                });
-                                queryAgeGroupsCount(selectedYear)
-                                    .then((result) {
-                                  pieChart = result;
-                                });
-                                getPurokCases(selectedYear).then((result) {
-                                  barChart = result;
-                                });
-                              }
                             });
                           },
+                        ),
+                        Text('To: ', style: GoogleFonts.poppins(fontSize: 20)),
+                        DropdownButton<int>(
+                          value: selectedYear2,
+                          items: listYear.map((year) {
+                            return DropdownMenuItem<int>(
+                              value: year,
+                              child: Text(year.toString(),
+                                  style: GoogleFonts.poppins(fontSize: 20)),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) async {
+                            setState(() {
+                              selectedYear2 = newValue!;
+                            });
+                          },
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.all(16.0),
+                            textStyle: const TextStyle(fontSize: 20),
+                          ),
+                          onPressed: () async {
+                            hAgeGroup = '';
+                            lAgeGroup = '';
+
+                            setState(() {
+                              getYearlyDataMonth(selectedYear).then((result) {
+                                chart = result;
+                              });
+                              getYearlyDataWeek(selectedYear).then((result) {
+                                chart2 = result;
+                              });
+
+                              queryAgeGroupsCount(selectedYear).then((result) {
+                                pieChart = result;
+                              });
+                              getPurokCases(selectedYear).then((result) {
+                                barChart = result;
+                              });
+                            });
+                          },
+                          child: Text('Filter',
+                              style: GoogleFonts.poppins(fontSize: 20)),
                         ),
                         TextButton(
                           style: TextButton.styleFrom(
@@ -435,7 +464,7 @@ class _testChartState extends State<testChart> {
                               ),
                             ),
                             tooltipBehavior: _tooltipBehavior4,
-                            series: yearlySeries,
+                            series: yearlySeriesMonth,
                           ),
                           Card(
                             child: Padding(
@@ -1055,6 +1084,10 @@ List<String> findMonthsWithSameCases(
   for (var series in yearlySeries) {
     combinedData.addAll(series.dataSource as Iterable<DengueData>);
   }
+  print('Combined Data:');
+  for (var data in combinedData) {
+    print('X: ${data.x}, Y: ${data.y}');
+  }
 
   // Create a map to store counts for each month
   Map<int, List<int>> countsByMonth = {};
@@ -1066,10 +1099,13 @@ List<String> findMonthsWithSameCases(
     }
     countsByMonth[data.x]!.add(data.y);
   }
-
+  print('\nCounts By Month:');
+  countsByMonth.forEach((month, counts) {
+    print('Month: $month, Counts: $counts');
+  });
   // Find months with the same number of active cases
   countsByMonth.forEach((month, counts) {
-    if (counts.toSet().length == 1 && counts.length == listYear.length) {
+    if (counts.length == listYear.length) {
       // All counts for this month are the same
       monthsWithSameCases.add(getMonthName(month));
     }
@@ -1162,4 +1198,51 @@ String findHighestCaseSP(List<StreetPurokData> data) {
   }
 
   return highSP;
+}
+
+Future<List<ChartSeries<DengueData, int>>> generateYearlySeriesMonth(
+    int year1, int year2) async {
+  yearlySeriesMonth = [];
+  List<int> listYear = await getListYear();
+  List<int> newlistYear = [];
+
+  for (int x in listYear) {
+    if (x <= year1 && x >= year2) {
+      newlistYear.add(x);
+    }
+  }
+
+  for (int year in newlistYear) {
+    String x = 'MorbidityMonth';
+    CollectionReference collection =
+        FirebaseFirestore.instance.collection('denguelinelist');
+    QuerySnapshot querySnapshot =
+        await collection.orderBy('MorbidityMonth', descending: false).get();
+
+    Map<int, int> valueL = {};
+
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data() as Map<String, dynamic>;
+      if (data.containsKey(x) && data['Year'] == year) {
+        var value = data[x];
+        valueL[value] = (valueL[value] ?? 0) + 1;
+      }
+    }
+
+    yearlyData = [];
+    Map<int, int> counts = valueL;
+
+    counts.forEach((x, y) {
+      yearlyData.add(DengueData(x, y));
+    });
+    yearlySeriesMonth.add(LineSeries<DengueData, int>(
+      dataSource: yearlyData,
+      xValueMapper: (DengueData data, _) => data.x,
+      yValueMapper: (DengueData data, _) => data.y,
+      name: 'Year: $year',
+      markerSettings: const MarkerSettings(isVisible: true),
+    ));
+  }
+
+  return yearlySeriesMonth;
 }
