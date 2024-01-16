@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:denguecare_firebase/views/widgets/inpuit_widget_nullable.dart';
+import 'package:denguecare_firebase/views/widgets/input_widget_nullable.dart';
 import 'package:denguecare_firebase/views/widgets/input_contact_number.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

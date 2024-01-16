@@ -42,7 +42,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-lib/views/widgets/inpuit_widget_nullable.dart
-lib/views/admins/admin_register.dart
-lib/views/users/user_report_page.dart
-lib/views/users/user_registerpage.dart
+
