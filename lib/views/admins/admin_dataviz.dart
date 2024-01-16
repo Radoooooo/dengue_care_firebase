@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:html';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
 import 'package:denguecare_firebase/charts/testchart.dart';
+import 'package:denguecare_firebase/views/admins/admin_userreportdataviz.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,22 @@ class AdminDataVizPage extends StatefulWidget {
   State<AdminDataVizPage> createState() => _AdminDataVizPageState();
 }
 
-class _AdminDataVizPageState extends State<AdminDataVizPage> {
+class _AdminDataVizPageState extends State<AdminDataVizPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   bool isLoading = false;
   bool isUploading = false;
 
@@ -30,7 +47,7 @@ class _AdminDataVizPageState extends State<AdminDataVizPage> {
             style: GoogleFonts.poppins(
               fontSize: 20,
             )),
-        content: CircularProgressIndicator(),
+        content: const CircularProgressIndicator(),
       ),
     );
   }
@@ -43,8 +60,31 @@ class _AdminDataVizPageState extends State<AdminDataVizPage> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      backgroundColor: Colors.white10,
-      body: const testChart(),
+      // backgroundColor: Colors.white10,
+      body: Column(
+        children: [
+          TabBar(
+            labelStyle: GoogleFonts.poppins(fontSize: 12, color: Colors.black),
+            labelColor: Colors.black,
+            controller: _tabController,
+            tabs: const [
+              Tab(text: 'User Case Reports'),
+              Tab(text: 'Dengue Line List'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                AdminUserReportDataViz(),
+                testChart(),
+                // Add another widget for the second tab content
+                // For example: YourSecondTabContent(),
+              ],
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         heroTag: '1312312312',
         onPressed: () async {

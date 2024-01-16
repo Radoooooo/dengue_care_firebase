@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:flutter_map_heatmap/flutter_map_heatmap.dart';
+import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 
-final PanelController _panelController = PanelController();
 final mapController = MapController();
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -29,8 +29,23 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
   int? problen;
   int? conflen;
   int forMap = 0;
-
+  List<WeightedLatLng> weightedLatLngList = [];
   final FirebaseFirestore db = FirebaseFirestore.instance;
+
+  void convertToWeightedLatLng(
+      Map<String, LatLng>? purokList, List<WeightedLatLng> weightedLatLngList) {
+    purokList?.forEach((purok, latLng) async {
+      // Get the case count for the current Purok
+      int caseCount = await getCountForPurok(purok);
+
+      // Calculate intensity based on case count
+      double intensity =
+          caseCount.toDouble() * 30.0; //!?adjust multiplier as needed
+
+      weightedLatLngList.add(WeightedLatLng(latLng, intensity));
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -65,15 +80,21 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
   Future<void> fetchData() async {
     try {
       final result = await fetchPurokData();
-      Map<String, LatLng> dataMap = result;
+      if (result != null) {
+        Map<String, LatLng> dataMap = result;
 
-      setState(() {
-        purokList = dataMap;
-      });
+        setState(() {
+          purokList = dataMap;
+          convertToWeightedLatLng(purokList, weightedLatLngList);
+        });
 
-      // Now you can use dataMap and uniquePurokCount as needed
-      print('Data Map: $dataMap');
-      fetchDataForSelectedPurok();
+        // Now you can use dataMap and uniquePurokCount as needed
+        print('Data Map: $dataMap');
+        fetchDataForSelectedPurok();
+      } else {
+        // Handle the case where data is null
+        print('Fetched data is null');
+      }
     } catch (e) {
       // Handle errors
       print('Error fetching data: $e');
@@ -158,16 +179,6 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
     for (int i = 0; i < purokList.length; i++) {
       print('Count for ${purokList.keys.elementAt(i)}: ${results[i]}');
     }
-
-    //!! OLD CODE
-    // for (var purok in purokList.keys) {
-    //   int fetchedData = await getCountForPurok(purok);
-    //   if (fetchedData != -1) {
-    //     print('Count for $purok: $fetchedData');
-    //   } else {
-    //     print('Error getting count for $purok');
-    //   }
-    // }
   }
 
   void _showDialog(BuildContext context, LatLng point, String purokName) async {
@@ -228,6 +239,21 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
     }
   }
 
+  // HeatmapLayerOptions heatmapLayerOptions = HeatmapLayerOptions(
+  //   radius: 25.0,
+  //   gradientColors: [
+  //     Colors.green,
+  //     Colors.yellow,
+  //     Colors.orange,
+  //     Colors.red,
+  //   ],
+  // );
+
+  // HeatmapLayer heatmapLayer = HeatmapLayer(
+  //   options: heatmapLayerOptions,
+  //   points: purokList.values.toList(),
+  // );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -236,7 +262,7 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
         mapController: mapController,
         options: const MapOptions(
           initialCenter: LatLng(7.1090628857797755, 125.61323257408277),
-          initialZoom: 15.0,
+          initialZoom: 14.0,
           maxZoom: 18.0,
           minZoom: 5.0,
         ),
@@ -244,6 +270,8 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
           TileLayer(
             urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
           ),
+
+          //! Marker Layer was here!
           MarkerLayer(
             markers: purokList.entries.map((entry) {
               return Marker(
@@ -255,9 +283,10 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
                       selectPurok = entry.key;
                     });
                   },
-                  child: Icon(
+                  child: const Icon(
                     Icons.circle,
-                    color: Colors.red[400],
+                    color: Colors.transparent,
+                    size: 20,
                   ),
                 ),
                 width: 40.0,
@@ -265,57 +294,70 @@ class _AdminOpenStreetMapState extends State<AdminOpenStreetMap> {
                 point: entry.value,
               );
             }).toList(),
-          )
+          ),
+
+          if (weightedLatLngList.isNotEmpty)
+            HeatMapLayer(
+              heatMapDataSource:
+                  InMemoryHeatMapDataSource(data: weightedLatLngList),
+              heatMapOptions: HeatMapOptions(
+                minOpacity: 0.1,
+                radius: 90,
+              ),
+            ),
+          if (weightedLatLngList.isEmpty)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
         ],
       ),
     );
   }
 }
 
-Widget _floatingCollapsed() {
-  return GestureDetector(
-    onTap: () {
-      if (_panelController.isPanelOpen) {
-        _panelController.close();
-      } else {
-        _panelController.open();
-      }
-    },
-    child: Container(
-      decoration: const BoxDecoration(
-        color: Colors.green,
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
-      ),
-      child: Center(
-        child: Text(
-          "Filter settings",
-          style: GoogleFonts.poppins(color: Colors.white),
-        ),
-      ),
-    ),
-  );
-}
 
-Widget _floatingPanel() {
-  return Container(
-    decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24.0),
-          topRight: Radius.circular(24.0),
-        ),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 20.0,
-            color: Colors.grey,
-          ),
-        ]),
-    child: Center(
-      child: Text(
-        "This is the SlidingUpPanel when open",
-        style: GoogleFonts.poppins(),
-      ),
-    ),
-  );
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//? MarkerLayer
+//  MarkerLayer(
+//             markers: purokList.entries.map((entry) {
+//               return Marker(
+//                 child: GestureDetector(
+//                   onTap: () {
+//                     _showDialog(context, entry.value, entry.key);
+//                     getCountForPurok(entry.key);
+//                     setState(() {
+//                       selectPurok = entry.key;
+//                     });
+//                   },
+//                   child: Icon(
+//                     Icons.circle,
+//                     color: Colors.red[400],
+//                   ),
+//                 ),
+//                 width: 40.0,
+//                 height: 40.0,
+//                 point: entry.value,
+//               );
+//             }).toList(),
+//           )

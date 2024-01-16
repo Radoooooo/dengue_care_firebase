@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:denguecare_firebase/views/widgets/inpuit_widget_nullable.dart';
 import 'package:denguecare_firebase/views/widgets/input_contact_number.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,8 @@ class _UserReportPageState extends State<UserReportPage> {
 
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
+  final TextEditingController _middlenameController = TextEditingController();
+  final TextEditingController _suffixController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _contactnumberController =
       TextEditingController();
@@ -189,9 +192,30 @@ class _UserReportPageState extends State<UserReportPage> {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
+                            child: InputWidgetNullable(
+                              labelText: "Middle Name",
+                              controller: _middlenameController,
+                              obscureText: false,
+                            ),
+                          )
+                        ],
+                      ),
+                      _gap(),
+                      Row(
+                        children: [
+                          Expanded(
                             child: InputWidget(
                               labelText: "Last Name",
                               controller: _lastnameController,
+                              obscureText: false,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: InputWidgetNullable(
+                              labelText: "Suffix i.e.(Jr., Sr., etc.)",
+                              controller: _suffixController,
+                              hintText: "Suffix(optional)",
                               obscureText: false,
                             ),
                           )
@@ -591,6 +615,7 @@ class _UserReportPageState extends State<UserReportPage> {
     });
     final FirebaseAuth auth = FirebaseAuth.instance;
     final user = auth.currentUser;
+    int age = int.parse(_ageController.text);
     try {
       CollectionReference reports =
           FirebaseFirestore.instance.collection('reports');
@@ -602,7 +627,9 @@ class _UserReportPageState extends State<UserReportPage> {
       await reports.add({
         'firstName': _firstnameController.text,
         'lastName': _lastnameController.text,
-        'age': _ageController.text,
+        'middle_name': _middlenameController.text,
+        'suffix': _suffixController.text,
+        'age': age,
         'sex': value,
         'contact_number': _contactnumberController.text,
         'document_id': uniqueDocId,
@@ -631,8 +658,10 @@ class _UserReportPageState extends State<UserReportPage> {
         'checked': 'No',
         'longitude': selectedLatLng.longitude,
         'latitude': selectedLatLng.latitude,
+
         // Add other fields as necessary
       });
+      Get.back();
     } catch (e) {
       _showSnackbarError(context, e.toString());
     } finally {
@@ -664,6 +693,8 @@ class _UserReportPageState extends State<UserReportPage> {
       _lastnameController.clear();
       _ageController.clear();
       _addressController.clear();
+      _middlenameController.clear();
+      _suffixController.clear();
       _contactnumberController.clear();
       purokvalue = 'Select Purok';
       value = 'Male';

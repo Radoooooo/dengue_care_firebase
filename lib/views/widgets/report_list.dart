@@ -188,11 +188,25 @@ class _ReportListWidgetState extends State<ReportListWidget> {
                                           fontSize: 14, color: Colors.white),
                                     ),
                                     const TextSpan(text: ' '),
+                                    if (data['middle_name'] != null)
+                                      TextSpan(
+                                        text: data['middle_name'],
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14, color: Colors.white),
+                                      ),
+                                    const TextSpan(text: ' '),
                                     TextSpan(
                                       text: data['lastName'],
                                       style: GoogleFonts.poppins(
                                           fontSize: 14, color: Colors.white),
                                     ),
+                                    const TextSpan(text: ' '),
+                                    if (data['suffix'] != null)
+                                      TextSpan(
+                                        text: data['suffix'],
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14, color: Colors.white),
+                                      ),
                                   ]),
                                 ),
                                 RichText(
@@ -205,7 +219,7 @@ class _ReportListWidgetState extends State<ReportListWidget> {
                                     ),
                                     const TextSpan(text: ' '),
                                     TextSpan(
-                                        text: data['age'],
+                                        text: data['age'].toString(),
                                         style: GoogleFonts.poppins(
                                             fontSize: 14, color: Colors.white)),
                                   ]),

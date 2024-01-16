@@ -36,6 +36,8 @@ class _AdminViewReportedCasesPageState
       TextEditingController();
   final TextEditingController _contactNumberController =
       TextEditingController();
+  final TextEditingController _middlenameController = TextEditingController();
+  final TextEditingController _suffixController = TextEditingController();
 
   String? valueHospital;
   final hospitalList = [
@@ -117,8 +119,15 @@ class _AdminViewReportedCasesPageState
     'Purok Watusi'
   ];
 
+  bool isEnglish = true;
+  void toggleLanguage() {
+    setState(() {
+      isEnglish = !isEnglish;
+    });
+  }
+
   DateTime selectedDateofSymptoms = DateTime.now();
-  String formattedDateOnly = '';
+  String? formattedDateOnly;
 
   @override
   void initState() {
@@ -199,8 +208,31 @@ class _AdminViewReportedCasesPageState
                           const SizedBox(width: 10),
                           Expanded(
                             child: InputWidget(
+                              labelText: "Middle Name",
+                              initialVal:
+                                  widget.reportedCaseData['middle_name'],
+                              obscureText: false,
+                              enableTextInput: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                      _gap(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InputWidget(
                               labelText: "Last Name",
                               initialVal: widget.reportedCaseData['lastName'],
+                              obscureText: false,
+                              enableTextInput: false,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: InputWidget(
+                              labelText: "Suffix i.e.(Jr., Sr., etc.)",
+                              initialVal: widget.reportedCaseData['suffix'],
                               obscureText: false,
                               enableTextInput: false,
                             ),
@@ -216,7 +248,8 @@ class _AdminViewReportedCasesPageState
                               hintText: "Age",
                               obscureText: false,
                               enableTextInput: false,
-                              initialVal: widget.reportedCaseData['age'],
+                              initialVal:
+                                  widget.reportedCaseData['age'].toString(),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -286,12 +319,35 @@ class _AdminViewReportedCasesPageState
                         ),
                       ),
                       _gap(),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          "Symptoms",
-                          style: GoogleFonts.poppins(fontSize: 28),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(isEnglish ? "Symptoms" : 'Sintomas',
+                                style: GoogleFonts.poppins(fontSize: 30)),
+                          ),
+                          const SizedBox(
+                            width: 4,
+                          ),
+                          InkWell(
+                            onTap: toggleLanguage,
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: toggleLanguage,
+                                  icon: const Icon(Icons.translate_rounded),
+                                  splashColor: Colors.green[300],
+                                ),
+                                // Text(
+                                //   'Translate',
+                                //   style: GoogleFonts.poppins(fontSize: 12),
+                                // ),
+                              ],
+                            ),
+                          )
+                        ],
                       ),
                       _gap(),
                       Row(
@@ -303,7 +359,10 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['headache'],
                               onChanged: (value) {},
-                              title: const Text('Headache'),
+                              title: Text(
+                                isEnglish ? 'Headache' : 'Sakit ng Ulo',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -315,7 +374,10 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['body_malaise'],
                               onChanged: (value) {},
-                              title: const Text('Body Malaise'),
+                              title: Text(
+                                isEnglish ? 'Body Malaise' : 'Sakit ng katawan',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -332,7 +394,10 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['myalgia'],
                               onChanged: (value) {},
-                              title: const Text('Myalgia'),
+                              title: Text(
+                                isEnglish ? 'Myalgia' : 'Pananakit ng kalamnan',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -344,7 +409,10 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['arthralgia'],
                               onChanged: (value) {},
-                              title: const Text('Arthralgia'),
+                              title: Text(
+                                isEnglish ? 'Arthralgia' : 'Rayuma',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -362,7 +430,12 @@ class _AdminViewReportedCasesPageState
                               value:
                                   widget.reportedCaseData['retroOrbitalPain'],
                               onChanged: (value) {},
-                              title: const Text('Retro Orbital Pain'),
+                              title: Text(
+                                isEnglish
+                                    ? 'Retro Orbital Pain'
+                                    : 'Pananakit sa likod ng mata',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -374,7 +447,10 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['anorexia'],
                               onChanged: (value) {},
-                              title: const Text('Anorexia'),
+                              title: Text(
+                                isEnglish ? 'Anorexia' : 'Walang ganang kumain',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -391,7 +467,10 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['nausea'],
                               onChanged: (value) {},
-                              title: const Text('Nausea'),
+                              title: Text(
+                                isEnglish ? 'Nausea' : 'Pagkahilo',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -403,7 +482,10 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['vomiting'],
                               onChanged: (value) {},
-                              title: const Text('Vomiting'),
+                              title: Text(
+                                isEnglish ? 'Vomiting' : 'Pagsusuka',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -420,7 +502,8 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['diarrhea'],
                               onChanged: (value) {},
-                              title: const Text('Diarrhea'),
+                              title: Text(isEnglish ? 'Diarrhea' : 'Pagtatae',
+                                  style: GoogleFonts.poppins(fontSize: 14)),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -432,7 +515,11 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['flushedSkin'],
                               onChanged: (value) {},
-                              title: const Text('Rashes'),
+                              title: Text(
+                                  isEnglish
+                                      ? 'Rashes'
+                                      : 'Pantal-pantal sa katawan',
+                                  style: GoogleFonts.poppins(fontSize: 14)),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -449,7 +536,9 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['fever'],
                               onChanged: (value) {},
-                              title: const Text('On and Off Fever'),
+                              title: Text(
+                                  isEnglish ? 'On and Off Fever' : 'Nilalagnat',
+                                  style: GoogleFonts.poppins(fontSize: 14)),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -461,7 +550,11 @@ class _AdminViewReportedCasesPageState
                               enabled: false,
                               value: widget.reportedCaseData['lowPlateLet'],
                               onChanged: (value) {},
-                              title: const Text('Low platelet count'),
+                              title: Text(
+                                  isEnglish
+                                      ? 'Low platelet count'
+                                      : 'Mababang bilang ng platelet',
+                                  style: GoogleFonts.poppins(fontSize: 14)),
                               controlAffinity: ListTileControlAffinity.leading,
                               dense: true,
                               contentPadding: const EdgeInsets.all(0),
@@ -471,6 +564,7 @@ class _AdminViewReportedCasesPageState
                       ),
                       //! For Updates
                       _gap(),
+                      //! STATUS
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -493,13 +587,12 @@ class _AdminViewReportedCasesPageState
                                 hint: Text(widget.reportedCaseData['status'] ??
                                     valueStatus),
                                 onChanged: (newvalue) {
-                                  updateStatusData(newvalue!);
+                                  //  updateStatusData(newvalue!);
                                   setState(() {
                                     valueStatus = newvalue;
+                                    // print it to the console
+                                    print("Selected value: $newvalue");
                                   });
-
-                                  // print it to the console
-                                  print("Selected value: $newvalue");
                                 },
                               ),
                             ),
@@ -507,6 +600,7 @@ class _AdminViewReportedCasesPageState
                         ],
                       ),
                       _gap(),
+                      //! DATE OF FIRST SYMPTOMS
                       Container(
                         margin: const EdgeInsets.all(3.0),
                         padding: const EdgeInsets.all(3.0),
@@ -552,12 +646,10 @@ class _AdminViewReportedCasesPageState
                                         selectedDateofSymptoms = picked;
                                         formattedDateOnly =
                                             "${selectedDateofSymptoms.year}-${selectedDateofSymptoms.month.toString().padLeft(2, '0')}-${selectedDateofSymptoms.day.toString().padLeft(2, '0')}";
-                                        print(formattedDateOnly);
                                         widget.reportedCaseData[
                                                 'first_symptom_date'] =
                                             formattedDateOnly;
-                                        updateFirstDateOfSymptomsData(
-                                            formattedDateOnly);
+                                        print(formattedDateOnly);
                                       });
                                     }
                                   },
@@ -572,6 +664,7 @@ class _AdminViewReportedCasesPageState
                         ),
                       ),
                       _gap(),
+                      //! Value Admitted
                       Container(
                         margin: const EdgeInsets.all(3.0),
                         padding: const EdgeInsets.all(3.0),
@@ -619,6 +712,7 @@ class _AdminViewReportedCasesPageState
                                 ),
                               ],
                             ),
+                            //!! value HOSPITAL (IF YES)
                             Visibility(
                               visible: valueAdmitted == 'Yes',
                               child: Row(
@@ -659,7 +753,6 @@ class _AdminViewReportedCasesPageState
                                                   'hospital_name'] ??
                                               valueHospital),
                                           onChanged: (value) {
-                                            updateHostpitalData(value!);
                                             setState(() {
                                               valueHospital = value;
                                             });
@@ -699,18 +792,15 @@ class _AdminViewReportedCasesPageState
                                       labelText: 'Hospital Name',
                                     ),
                                   ),
-                                  IconButton(
-                                    onPressed: () {
-                                      updateHostpitalData(
-                                          _otherHospitalController.text);
-                                    },
-                                    icon: const Icon(
-                                      Icons.save,
-                                      color: Colors.green,
-                                      size: 30,
-                                    ),
-                                    tooltip: 'Save',
-                                  ),
+                                  // IconButton(
+                                  //   onPressed: () {},
+                                  //   icon: const Icon(
+                                  //     Icons.save,
+                                  //     color: Colors.green,
+                                  //     size: 30,
+                                  //   ),
+                                  //   tooltip: 'Save',
+                                  // ),
                                 ],
                               ),
                             ),
@@ -743,7 +833,6 @@ class _AdminViewReportedCasesPageState
                                         'patient_recovered'] ??
                                     valueRecovered),
                                 onChanged: (value) {
-                                  updatePatientRecoveredData(value!);
                                   setState(() {
                                     // Update valueAdmitted only if the user selects a new value
                                     valueRecovered = value;
@@ -758,6 +847,50 @@ class _AdminViewReportedCasesPageState
                         ],
                       ),
                       _gap(),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 50,
+                              vertical: 15,
+                            ),
+                          ),
+                          onPressed: () {
+                            // Add your confirmation logic here
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Confirmation'),
+                                  content: const Text(
+                                      'Confirm Update of Information'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        updateToFirebase();
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Confirm'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Text(
+                            "Confirm Update",
+                            style: GoogleFonts.poppins(fontSize: 20),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -787,10 +920,10 @@ class _AdminViewReportedCasesPageState
     }).catchError((error) {
       print("Error updating Firestore data: $error");
     });
-    setState(() {
-      valueRecovered;
-      valueStatus;
-    });
+    // setState(() {
+    //   valueRecovered;
+    //   valueStatus;
+    // });
   }
 
   void updateFirstDateOfSymptomsData(String newDate) async {
@@ -825,8 +958,7 @@ class _AdminViewReportedCasesPageState
               _otherHospitalController.text = '';
               return valueAdmitted;
             })(),
-      'other_hospital': valueHospital == 'Other' ? 'Yes' : 'No',
-      'checked': 'Yes'
+      'other_hospital': valueHospital == 'Other' ? 'Yes' : 'No'
     }).then((value) {
       print("Firestore data updated successfully!");
     }).catchError((error) {
@@ -874,10 +1006,10 @@ class _AdminViewReportedCasesPageState
     }).catchError((error) {
       print("Error updating Firestore data: $error");
     });
-    setState(() {
-      valueStatus;
-      valueRecovered;
-    });
+    // setState(() {
+    //   valueStatus;
+    //   valueRecovered;
+    // });
   }
 
   Future<String> getDocumentID() async {
@@ -890,7 +1022,7 @@ class _AdminViewReportedCasesPageState
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
-      QueryDocumentSnapshot document = querySnapshot.docs[0];
+      QueryDocumentSnapshot document = querySnapshot.docs.first;
       String documentID = document.id;
       return documentID;
     } else {
@@ -943,6 +1075,60 @@ class _AdminViewReportedCasesPageState
       });
       _showSnackbarError(context, error.toString());
     });
+  }
+
+  void updateToFirebase() async {
+    try {
+      setState(() {
+        _isSubmitting = true;
+      });
+
+      String documentID = await fetchDocumentID();
+      print('Document ID: $documentID');
+
+      CollectionReference reports =
+          FirebaseFirestore.instance.collection('reports');
+      DocumentReference userDocRef = reports.doc(documentID);
+
+      if (valueRecovered == 'Yes') {
+        valueStatus = 'Recovered';
+      } else if (valueRecovered == 'No') {
+        valueStatus = valueAdmitted == 'Yes' ? 'Confirmed' : 'Probable';
+      } else {
+        // Default status when valueRecovered is neither 'Yes' nor 'No'
+        valueStatus = 'Suspected'; // Change this to your default status
+      }
+      Map<String, dynamic> updateData = {
+        'status': valueStatus,
+        'first_symptom_date': formattedDateOnly,
+        'patient_admitted': valueAdmitted,
+        'hospital_name': valueHospital == hospitalList[0]
+            ? ''
+            : valueHospital == 'Other'
+                ? _otherHospitalController.text
+                : valueHospital,
+        'other_hospital': valueHospital == 'Other' ? 'Yes' : 'No',
+        'patient_recovered': valueRecovered,
+        'checked': 'Yes',
+      };
+
+      print('Updating data with: $updateData');
+
+      await userDocRef.update(updateData);
+
+      setState(() {
+        _isSubmitting = false;
+      });
+
+      _showSnackbarSuccess(context, 'Update Success');
+      logAdminAction('Edit Dengue Case Report Form', documentID);
+    } catch (error) {
+      setState(() {
+        _isSubmitting = false;
+      });
+      print('Error updating data: $error');
+      _showSnackbarError(context, 'Error updating data: $error');
+    }
   }
 
   void logAdminAction(String action, String documentId) async {

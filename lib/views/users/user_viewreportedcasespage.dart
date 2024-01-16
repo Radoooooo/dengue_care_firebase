@@ -161,7 +161,8 @@ class _UserViewReportedCasesPageState extends State<UserViewReportedCasesPage> {
                               hintText: "Age",
                               obscureText: false,
                               enableTextInput: false,
-                              initialVal: widget.reportedCaseData['age'],
+                              initialVal:
+                                  widget.reportedCaseData['age'].toString(),
                             ),
                           ),
                           const SizedBox(width: 10),

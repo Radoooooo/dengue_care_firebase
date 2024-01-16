@@ -104,7 +104,7 @@ class _ReportsHistoryState extends State<ReportsHistory> {
                                     ),
                                     const TextSpan(text: ' '),
                                     TextSpan(
-                                        text: data['age'],
+                                        text: data['age'].toString(),
                                         style: GoogleFonts.poppins(
                                             fontSize: 14, color: Colors.white)),
                                   ]),
