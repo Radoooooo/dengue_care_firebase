@@ -588,6 +588,11 @@ class _AdminViewReportedCasesPageState
                                     valueStatus),
                                 onChanged: (newvalue) {
                                   //  updateStatusData(newvalue!);
+                                  User? user =
+                                      FirebaseAuth.instance.currentUser;
+                                  logAdminAction(
+                                      'Edit Report - Status', user!.uid);
+                                  updateStatusData(newvalue!);
                                   setState(() {
                                     valueStatus = newvalue;
                                     // print it to the console
@@ -649,7 +654,6 @@ class _AdminViewReportedCasesPageState
                                         widget.reportedCaseData[
                                                 'first_symptom_date'] =
                                             formattedDateOnly;
-                                        print(formattedDateOnly);
                                       });
                                     }
                                   },
@@ -700,6 +704,11 @@ class _AdminViewReportedCasesPageState
                                           valueAdmitted),
                                       onChanged: (value) {
                                         updatePatientAdmittedData(value!);
+                                        User? user =
+                                            FirebaseAuth.instance.currentUser;
+                                        logAdminAction(
+                                            'Edit Report - Patient Admitted',
+                                            user!.uid);
                                         setState(() {
                                           valueAdmitted = value;
                                         });
@@ -833,6 +842,7 @@ class _AdminViewReportedCasesPageState
                                         'patient_recovered'] ??
                                     valueRecovered),
                                 onChanged: (value) {
+                                  updatePatientRecoveredData(value!);
                                   setState(() {
                                     // Update valueAdmitted only if the user selects a new value
                                     valueRecovered = value;
