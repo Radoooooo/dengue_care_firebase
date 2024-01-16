@@ -588,11 +588,6 @@ class _AdminViewReportedCasesPageState
                                     valueStatus),
                                 onChanged: (newvalue) {
                                   //  updateStatusData(newvalue!);
-                                  User? user =
-                                      FirebaseAuth.instance.currentUser;
-                                  logAdminAction(
-                                      'Edit Report - Status', user!.uid);
-                                  updateStatusData(newvalue!);
                                   setState(() {
                                     valueStatus = newvalue;
                                     // print it to the console
@@ -703,12 +698,6 @@ class _AdminViewReportedCasesPageState
                                               'patient_admitted'] ??
                                           valueAdmitted),
                                       onChanged: (value) {
-                                        updatePatientAdmittedData(value!);
-                                        User? user =
-                                            FirebaseAuth.instance.currentUser;
-                                        logAdminAction(
-                                            'Edit Report - Patient Admitted',
-                                            user!.uid);
                                         setState(() {
                                           valueAdmitted = value;
                                         });
@@ -842,7 +831,6 @@ class _AdminViewReportedCasesPageState
                                         'patient_recovered'] ??
                                     valueRecovered),
                                 onChanged: (value) {
-                                  updatePatientRecoveredData(value!);
                                   setState(() {
                                     // Update valueAdmitted only if the user selects a new value
                                     valueRecovered = value;
@@ -1042,49 +1030,6 @@ class _AdminViewReportedCasesPageState
 
   Future<String> fetchDocumentID() async {
     return await getDocumentID();
-  }
-
-  void updateDataToFirebase() async {
-    setState(() {
-      _isSubmitting = true; // Begin submission
-    });
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    final user = auth.currentUser;
-
-    //!Retrieve Doc ID
-    String documentID = await fetchDocumentID();
-
-    CollectionReference reports =
-        FirebaseFirestore.instance.collection('reports');
-    DocumentReference userDocRef =
-        reports.doc(documentID); // Use the document_id here
-
-    _buildProgressIndicator();
-
-    Map<String, dynamic> updateData = {
-      'patient_admitted': valueAdmitted,
-      'hospital_name': valueHospital == hospitalList[0]
-          ? ''
-          : valueHospital == 'Other'
-              ? _otherHospitalController.text
-              : valueHospital,
-      'other_hospital': valueHospital == 'Other' ? 'Yes' : 'No',
-      'patient_recovered': valueRecovered,
-      'checked': 'Yes'
-    };
-
-    userDocRef.update(updateData).then((value) {
-      setState(() {
-        _isSubmitting = false; // end submission
-      });
-      _showSnackbarSuccess(context, 'Success');
-      logAdminAction('Edit Dengue Case Report Form', documentID);
-    }).catchError((error) {
-      setState(() {
-        _isSubmitting = false; // end submission
-      });
-      _showSnackbarError(context, error.toString());
-    });
   }
 
   void updateToFirebase() async {
