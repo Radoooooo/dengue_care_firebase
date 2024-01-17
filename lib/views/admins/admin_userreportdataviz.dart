@@ -172,10 +172,11 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                         ElevatedButton(
                           onPressed: () async {
                             DateTime? picked = await showDatePicker(
-                                context: context,
-                                initialDate: selectedDateofSymptoms,
-                                firstDate: DateTime(2015, 8),
-                                lastDate: DateTime(2101));
+                              context: context,
+                              initialDate: selectedDateofSymptoms,
+                              firstDate: DateTime(2015, 8),
+                              lastDate: DateTime(2101),
+                            );
                             if (picked != null &&
                                 picked != selectedDateofSymptoms) {
                               selectedDateofSymptoms = picked;
@@ -230,38 +231,6 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                           child: Text('Filter',
                               style: GoogleFonts.poppins(fontSize: 20)),
                         ),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.all(16.0),
-                            textStyle: const TextStyle(fontSize: 20),
-                          ),
-                          onPressed: () async {
-                            setState(() {
-                              hAgeGroup = '';
-                              lAgeGroup = '';
-                              chart = [];
-                              chart2 = [];
-                              chart3 = [];
-                              barChart = [];
-                              pieChart = [];
-                              yearlyData = [];
-                              yearlySeries = [];
-                              hAgeGroup = '';
-                              lAgeGroup = '';
-
-                              a1 = 0;
-                              a2 = 0;
-                            });
-                            showLoadingDialog();
-                            await deleteAllDocumentsInCollection(
-                                'denguelinelist');
-                            dismissLoadingDialog();
-                          },
-                          child: Text('Clear Data',
-                              style: GoogleFonts.poppins(fontSize: 20)),
-                        ),
                       ],
                     ),
                     Container(
@@ -309,7 +278,7 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCasesYM(selectedYear, selectedYear2)}\nLowest Active Cases(Month): ${findMonthWithLowestCasesYM(selectedYear, selectedYear2)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -361,7 +330,7 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCasesYM(selectedYear, selectedYear2)}\nLowest Active Cases(Month): ${findMonthWithLowestCasesYM(selectedYear, selectedYear2)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -413,7 +382,7 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCasesYM(selectedYear, selectedYear2)}\nLowest Active Cases(Month): ${findMonthWithLowestCasesYM(selectedYear, selectedYear2)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -628,7 +597,7 @@ Future<List<int>> getListYear() async {
       .orderBy('date', descending: false)
       .get();
 
-  Set<int> uniqueYears = Set<int>();
+  Set<int> uniqueYears = <int>{};
 
   for (var doc in querySnapshot.docs) {
     var data = doc.data() as Map<String, dynamic>;

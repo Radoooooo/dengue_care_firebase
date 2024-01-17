@@ -215,40 +215,6 @@ class _testChartState extends State<testChart> {
                           child: Text('Filter',
                               style: GoogleFonts.poppins(fontSize: 20)),
                         ),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.all(16.0),
-                            textStyle: const TextStyle(fontSize: 20),
-                          ),
-                          onPressed: () async {
-                            setState(() {
-                              hAgeGroup = '';
-                              lAgeGroup = '';
-                              chart = [];
-                              chart2 = [];
-                              chart3 = [];
-                              barChart = [];
-                              pieChart = [];
-                              yearlyData = [];
-                              yearlySeries = [];
-                              hAgeGroup = '';
-                              lAgeGroup = '';
-
-                              a1 = 0;
-                              a2 = 0;
-                              a3 = 0;
-                              a4 = 0;
-                            });
-                            showLoadingDialog();
-                            await deleteAllDocumentsInCollection(
-                                'denguelinelist');
-                            dismissLoadingDialog();
-                          },
-                          child: Text('Clear Data',
-                              style: GoogleFonts.poppins(fontSize: 20)),
-                        ),
                       ],
                     ),
                     Container(
@@ -296,7 +262,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCasesYM(selectedYear, selectedYear2)}\nLowest Active Cases(Month): ${findMonthWithLowestCasesYM(selectedYear, selectedYear2)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -348,7 +314,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per week for the selected year.\nHighest Active Cases(Week): ${findWeekWithHighestCasesYM(selectedYear, selectedYear2)}\nLowest Active Cases(Week): ${findWeekWithLowestCasesYM(selectedYear, selectedYear2)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -409,7 +375,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per year.\nHighest Active Cases(Year): ${findYearWithHighestCasesYM(chartYear)}\nLowest Active Cases(Year): ${findYearLowestCaseYM(chartYear)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -464,7 +430,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per year\nMonths that has same active cases(Recurring): ${findMonthsWithSameCases(yearlySeries)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -541,7 +507,7 @@ class _testChartState extends State<testChart> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
                               'Analysis: This chart shows the number of active cases per age group\nAge group that have highest cases: ${findHighCasesAgeGroup(pieChartYR)}\nAge group that have lowest cases: ${findLowCasesAgeGroup(pieChartYR)}',
-                              style: TextStyle(fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ),
                         )
@@ -602,7 +568,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per Street/Purok\nStreet/Purok that have highest cases: ${findHighestCaseSPYR(barChartYR)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -942,7 +908,7 @@ String findMonthWithHighestCases(List<DengueData> data) {
       maxCases = entry.y;
       maxMonth = entry.x;
       getHighM = getMonthName(maxMonth);
-      highM = highM + ' ' + getHighM;
+      highM = '$highM $getHighM';
     }
   }
 
@@ -970,7 +936,7 @@ String findMonthWithLowestCases(List<DengueData> data) {
         minCases = entry.y;
         minMonth = entry.x;
         getLowM = getMonthName(minMonth);
-        lowM = lowM + ' ' + getLowM;
+        lowM = '$lowM $getLowM';
       }
     }
     return lowM;
@@ -1028,7 +994,7 @@ String findHighestCase(List<DengueData> data) {
       maxCases = entry.y;
       maxWeek = entry.x;
       getHighW = maxWeek.toString();
-      highW = highW + ' ' + getHighW;
+      highW = '$highW $getHighW';
     }
   }
 
@@ -1057,7 +1023,7 @@ String findLowestCase(List<DengueData> data) {
         minCases = entry.y;
         minWeek = entry.x;
         getLowW = minWeek.toString();
-        lowW = lowW + ' ' + getLowW;
+        lowW = '$lowW $getLowW';
       }
     }
     return lowW;
@@ -1071,7 +1037,7 @@ List<String> findMonthsWithSameCases(
   // Combine data from all years into a single list
   List<DengueData> combinedData = [];
   for (var series in yearlySeries) {
-    combinedData.addAll(series.dataSource as Iterable<DengueData>);
+    combinedData.addAll(series.dataSource);
   }
   // Create a map to store counts for each month
   Map<int, List<int>> countsByMonth = {};
@@ -1116,7 +1082,7 @@ String findHighCasesAgeGroup(List<piechartData> data) {
           Cases = entry.number;
           ageGroup = entry.ageGroup;
           getAgeGroup = ageGroup;
-          hAgeGroup = hAgeGroup + ' ' + getAgeGroup;
+          hAgeGroup = '$hAgeGroup $getAgeGroup';
         }
       }
     }
@@ -1147,7 +1113,7 @@ String findLowCasesAgeGroup(List<piechartData> data) {
         if (entry.number == cases) {
           ageGroup = entry.ageGroup;
           getAgeGroup = ageGroup;
-          lAgeGroup = lAgeGroup + ' ' + getAgeGroup;
+          lAgeGroup = '$lAgeGroup $getAgeGroup';
         }
       }
     }
@@ -1175,7 +1141,7 @@ String findHighestCaseSP(List<StreetPurokData> data) {
     if (entry.cases == maxCases) {
       sPurok = entry.purok;
       getHighSP = sPurok;
-      highSP = highSP + ' ' + getHighSP;
+      highSP = '$highSP $getHighSP';
     }
   }
 
@@ -1433,7 +1399,7 @@ String findMonthWithHighestCasesYM(int year1, int year2) {
 
     if (yearV >= year1 && yearV <= year2) {
       if (series.dataSource.isNotEmpty) {
-        for (DengueData data in series.dataSource!) {
+        for (DengueData data in series.dataSource) {
           if (maxCases < data.y) {
             maxCases = data.y;
             maxMonth = data.x;
@@ -1452,13 +1418,13 @@ String findMonthWithHighestCasesYM(int year1, int year2) {
 
     if (yearV >= year1 && yearV <= year2) {
       if (series.dataSource.isNotEmpty) {
-        for (DengueData data in series.dataSource!) {
+        for (DengueData data in series.dataSource) {
           if (maxCases == data.y) {
             yearH = series.name;
             maxCases = data.y;
             maxMonth = data.x;
-            gethighM = getMonthName(maxMonth) + '(' + yearH.toString() + ')';
-            highM = highM + ' ' + gethighM;
+            gethighM = '${getMonthName(maxMonth)}($yearH)';
+            highM = '$highM $gethighM';
           }
         }
       } else {
@@ -1486,7 +1452,7 @@ String findMonthWithLowestCasesYM(int year1, int year2) {
     yearV = int.tryParse(series1)!;
 
     if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+      for (DengueData data in series.dataSource) {
         if (minCases > data.y) {
           minCases = data.y;
           minMonth = data.x;
@@ -1501,13 +1467,13 @@ String findMonthWithLowestCasesYM(int year1, int year2) {
     yearV = int.tryParse(series1)!;
 
     if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+      for (DengueData data in series.dataSource) {
         if (minCases == data.y) {
           yearH = series.name;
           minCases = data.y;
           minMonth = data.x;
-          getLowM = getMonthName(minMonth) + '(' + yearH.toString() + ')';
-          lowM = lowM + ' ' + getLowM;
+          getLowM = '${getMonthName(minMonth)}($yearH)';
+          lowM = '$lowM $getLowM';
         }
       }
     }
@@ -1532,7 +1498,7 @@ String findWeekWithHighestCasesYM(int year1, int year2) {
     yearV = int.tryParse(series1)!;
 
     if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+      for (DengueData data in series.dataSource) {
         if (maxCases < data.y) {
           maxCases = data.y;
           maxWeek = data.x;
@@ -1547,13 +1513,13 @@ String findWeekWithHighestCasesYM(int year1, int year2) {
     yearV = int.tryParse(series1)!;
 
     if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+      for (DengueData data in series.dataSource) {
         if (maxCases == data.y) {
           yearH = series.name;
           maxCases = data.y;
           maxWeek = data.x;
-          getHighW = maxWeek.toString() + '(' + yearH.toString() + ')';
-          highW = highW + ' ' + getHighW;
+          getHighW = '$maxWeek($yearH)';
+          highW = '$highW $getHighW';
         }
       }
     }
@@ -1578,7 +1544,7 @@ String findWeekWithLowestCasesYM(int year1, int year2) {
     yearV = int.tryParse(series1)!;
 
     if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+      for (DengueData data in series.dataSource) {
         if (minCases > data.y) {
           minCases = data.y;
           minWeek = data.x;
@@ -1593,13 +1559,13 @@ String findWeekWithLowestCasesYM(int year1, int year2) {
     yearV = int.tryParse(series1)!;
 
     if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+      for (DengueData data in series.dataSource) {
         if (minCases == data.y) {
           yearH = series.name;
           minCases = data.y;
           minWeek = data.x;
-          getLowW = minWeek.toString() + '(' + yearH.toString() + ')';
-          lowW = lowW + ' ' + getLowW;
+          getLowW = '$minWeek($yearH)';
+          lowW = '$lowW $getLowW';
         }
       }
     }
@@ -1629,7 +1595,7 @@ String findYearWithHighestCasesYM(List<DengueData> data) {
       maxCases = entry.y;
       maxWeek = entry.x;
       getHighW = maxWeek.toString();
-      highW = highW + ' ' + getHighW;
+      highW = '$highW $getHighW';
     }
   }
 
@@ -1658,7 +1624,7 @@ String findYearLowestCaseYM(List<DengueData> data) {
         minCases = entry.y;
         minWeek = entry.x;
         getLowW = minWeek.toString();
-        lowW = lowW + ' ' + getLowW;
+        lowW = '$lowW $getLowW';
       }
     }
     return lowW;
@@ -1686,7 +1652,7 @@ String findHighCasesAgeGroupYR(List<piechartData> data) {
           Cases = entry.number;
           ageGroup = entry.ageGroup;
           getAgeGroup = ageGroup;
-          hAgeGroup = hAgeGroup + ' ' + getAgeGroup;
+          hAgeGroup = '$hAgeGroup $getAgeGroup';
         }
       }
     }
@@ -1718,7 +1684,7 @@ String findLowCasesAgeGroupYR(List<piechartData> data) {
         if (entry.number == cases) {
           ageGroup = entry.ageGroup;
           getAgeGroup = ageGroup;
-          lAgeGroup = lAgeGroup + ' ' + getAgeGroup;
+          lAgeGroup = '$lAgeGroup $getAgeGroup';
         }
       }
     }
@@ -1744,7 +1710,7 @@ String findHighestCaseSPYR(List<StreetPurokData> data) {
     if (entry.cases == maxCases) {
       sPurok = entry.purok;
       getHighSP = sPurok;
-      highSP = highSP + ' ' + getHighSP;
+      highSP = '$highSP $getHighSP';
     }
   }
 
