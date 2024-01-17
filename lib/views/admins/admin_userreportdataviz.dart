@@ -22,8 +22,13 @@ List<LineSeries<DengueData, int>> yearlySeriesMonthP = [];
 List<LineSeries<DengueData, int>> yearlySeriesMonthC = [];
 List<piechartData> pieChartYR = [];
 List<piechartData> pieChartYR2 = [];
+List<piechartData> pieChartYR3 = [];
 double b1 = 0;
 double b2 = 0;
+double c1 = 0;
+double c2 = 0;
+double c3 = 0;
+double c4 = 0;
 
 List<DengueData> chart = [];
 List<DengueData> chart2 = [];
@@ -125,7 +130,7 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
         getDataYear(),
         generateYearlySeries(),
         generateMonthS(selectedDateofSymptoms, selectedDateofSymptoms2),
-        //generateMonthP(selectedDateofSymptoms, selectedDateofSymptoms2),
+        generateMonthP(selectedDateofSymptoms, selectedDateofSymptoms2),
         generateMonthC(selectedDateofSymptoms, selectedDateofSymptoms2),
         generateYearlySeriesWeek(selectedYear, selectedYear2),
         getDataYearRange(selectedYear, selectedYear2),
@@ -134,7 +139,9 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
             selectedDateofSymptoms, selectedDateofSymptoms2),
         queryPatientAdmittedCountYearRange(
             selectedDateofSymptoms, selectedDateofSymptoms2),
-        getPurokCasesYR(selectedYear, selectedYear2),
+        queryAgeGroupsCountYearRange(
+            selectedDateofSymptoms, selectedDateofSymptoms2),
+        getPurokCasesYR(selectedDateofSymptoms, selectedDateofSymptoms2),
         getPurokCases(selectedYear),
       ]),
       builder: (context, snapshot) {
@@ -223,6 +230,7 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                                 selectedDateofSymptoms2);
                             generateMonthC(selectedDateofSymptoms,
                                 selectedDateofSymptoms2);
+
                             setState(() {
                               //hAGE = findHighCasesAgeGroupYR(pieChartYR);
                               //lAGE = findLowCasesAgeGroupYR(pieChartYR);
@@ -273,15 +281,15 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                             tooltipBehavior: _tooltipBehavior,
                             series: yearlySeriesMonthS,
                           ),
-                          Card(
+                          /*Card(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCasesYM(selectedYear, selectedYear2)}\nLowest Active Cases(Month): ${findMonthWithLowestCasesYM(selectedYear, selectedYear2)}',
+                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Suspected Cases(Month): ${findMonthWithHighestCasesYMS(selectedDateofSymptoms, selectedDateofSymptoms2)}\nLowest Active Cases(Month): ${findMonthWithLowestCasesYMS(selectedDateofSymptoms, selectedDateofSymptoms2)}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
-                          )
+                          )*/
                         ],
                       ),
                     ),
@@ -325,7 +333,7 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                             tooltipBehavior: _tooltipBehavior2,
                             series: yearlySeriesMonthP,
                           ),
-                          Card(
+                          /*Card(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
@@ -333,7 +341,7 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
-                          )
+                          )*/
                         ],
                       ),
                     ),
@@ -377,7 +385,7 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                             tooltipBehavior: _tooltipBehavior3,
                             series: yearlySeriesMonthC,
                           ),
-                          Card(
+                          /*Card(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
@@ -385,9 +393,85 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
-                          )
+                          )*/
                         ],
                       ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            offset: Offset(2, 2),
+                          ),
+                        ],
+                      ),
+                      width: double.infinity,
+                      child: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: SfCircularChart(
+                                title: ChartTitle(
+                                    text: 'Active Cases Age Group',
+                                    textStyle: GoogleFonts.poppins(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold)),
+                                series: <CircularSeries>[
+                                  PieSeries<piechartData, String>(
+                                    dataSource: pieChartYR3,
+                                    pointColorMapper: (piechartData data, _) =>
+                                        data.color,
+                                    xValueMapper: (piechartData data, _) =>
+                                        data.status,
+                                    yValueMapper: (piechartData data, _) =>
+                                        data.number,
+                                    dataLabelMapper: (piechartData data, _) =>
+                                        '${data.status}:${data.number}',
+                                    dataLabelSettings: const DataLabelSettings(
+                                      isVisible: true,
+                                      labelPosition:
+                                          ChartDataLabelPosition.outside,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Child(0-16): ${c1.toInt()}',
+                                      style: GoogleFonts.poppins(fontSize: 20)),
+                                  Text('Young Adult(17-30): ${c2.toInt()}',
+                                      style: GoogleFonts.poppins(fontSize: 20)),
+                                  Text('Middle Adult(31-45): ${c3.toInt()}',
+                                      style: GoogleFonts.poppins(fontSize: 20)),
+                                  Text('Old Adult(45 above): ${c4.toInt()}',
+                                      style: GoogleFonts.poppins(fontSize: 20)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        /*Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Analysis: This chart shows the number of active cases per age group\nAge group that have highest cases: {findHighCasesAgeGroup(pieChartYR)}\nAge group that have lowest cases: {findLowCasesAgeGroup(pieChartYR)}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        )*/
+                      ]),
                     ),
                     Container(
                       margin: const EdgeInsets.symmetric(
@@ -514,6 +598,69 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                           ],
                         ),
                       ]),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            offset: Offset(2, 2),
+                          ),
+                        ],
+                      ),
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 750,
+                            child: SfCartesianChart(
+                              //zoomPanBehavior: _zoomPanBehavior,
+                              title: ChartTitle(
+                                  text:
+                                      'Active Cases Per Street/Purok(Suspected, Probable and Confirmed)',
+                                  textStyle: GoogleFonts.poppins(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                              series: <ChartSeries>[
+                                BarSeries<StreetPurokData, String>(
+                                  dataSource: barChartYR,
+                                  xValueMapper: (StreetPurokData data, _) =>
+                                      data.purok,
+                                  yValueMapper: (StreetPurokData data, _) =>
+                                      data.cases,
+
+                                  //borderWidth: 3,
+                                )
+                              ],
+                              primaryXAxis: CategoryAxis(
+                                labelStyle: const TextStyle(fontSize: 10),
+                              ),
+                              primaryYAxis: NumericAxis(
+                                  title: AxisTitle(
+                                    text: 'Number Active Cases',
+                                    textStyle:
+                                        GoogleFonts.poppins(fontSize: 10),
+                                  ),
+                                  interval: 1),
+                            ),
+                          ),
+                          /*Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Analysis: This chart shows the number of active cases per Street/Purok\nStreet/Purok that have highest cases: {findHighestCaseSPYR(barChartYR)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          )*/
+                        ],
+                      ),
                     ),
                   ]),
             ),
@@ -975,6 +1122,235 @@ Future<List<piechartData>> queryPatientAdmittedCountYearRange(
   b2 = no;
 
   return pieChartYR2;
+}
+
+Future<List<piechartData>> queryAgeGroupsCountYearRange(
+    DateTime dayTime1, dayTime2) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  double ageGroupCount = 0;
+  double ageGroupCount2 = 0;
+  double ageGroupCount3 = 0;
+  double ageGroupCount4 = 0;
+
+  int childAgeMax = 16;
+  int yAdultAgeMin = 17;
+  int yAdultAgeMax = 30;
+  int mAdultAgeMin = 31;
+  int mAdultAgeMax = 45;
+  int oAdultAgeMin = 45;
+
+  QuerySnapshot querySnapshot = await firestore
+      .collection('reports')
+      .where('age', isLessThanOrEqualTo: childAgeMax)
+      .get();
+
+  for (var doc in querySnapshot.docs) {
+    var data = doc.data() as Map<String, dynamic>;
+    DateTime documentDate = data['date'].toDate();
+    if (documentDate.isAfter(dayTime1!) && documentDate.isBefore(dayTime2!)) {
+      ageGroupCount = ageGroupCount + 1;
+    }
+  }
+
+  pieChartYR3 = [];
+  pieChartYR3.add(piechartData('Child', ageGroupCount, Colors.blue));
+
+  QuerySnapshot querySnapshot2 = await firestore
+      .collection('reports')
+      .where('age', isGreaterThanOrEqualTo: yAdultAgeMin)
+      .where('age', isLessThanOrEqualTo: yAdultAgeMax)
+      .get();
+
+  for (var doc in querySnapshot2.docs) {
+    var data = doc.data() as Map<String, dynamic>;
+    DateTime documentDate = data['date'].toDate();
+    if (documentDate.isAfter(dayTime1!) && documentDate.isBefore(dayTime2!)) {
+      ageGroupCount2 = ageGroupCount2 + 1;
+    }
+  }
+  pieChartYR3.add(piechartData('Young Adult', ageGroupCount2, Colors.red));
+
+  QuerySnapshot querySnapshot3 = await firestore
+      .collection('reports')
+      .where('age', isGreaterThanOrEqualTo: mAdultAgeMin)
+      .where('age', isLessThanOrEqualTo: mAdultAgeMax)
+      .get();
+
+  for (var doc in querySnapshot3.docs) {
+    var data = doc.data() as Map<String, dynamic>;
+    DateTime documentDate = data['date'].toDate();
+    if (documentDate.isAfter(dayTime1!) && documentDate.isBefore(dayTime2!)) {
+      ageGroupCount3 = ageGroupCount3 + 1;
+    }
+  }
+  pieChartYR3.add(piechartData('Middle Adult', ageGroupCount3, Colors.green));
+
+  QuerySnapshot querySnapshot4 = await firestore
+      .collection('reports')
+      .where('age', isGreaterThan: oAdultAgeMin)
+      .get();
+
+  for (var doc in querySnapshot4.docs) {
+    var data = doc.data() as Map<String, dynamic>;
+    DateTime documentDate = data['date'].toDate();
+    if (documentDate.isAfter(dayTime1!) && documentDate.isBefore(dayTime2!)) {
+      ageGroupCount4 = ageGroupCount4 + 1;
+    }
+  }
+  pieChartYR3.add(piechartData('Old Adult', ageGroupCount4, Colors.yellow));
+
+  c1 = ageGroupCount;
+  c2 = ageGroupCount2;
+  c3 = ageGroupCount3;
+  c4 = ageGroupCount4;
+
+  return pieChartYR3;
+}
+
+Future<List<StreetPurokData>> getPurokCasesYR(
+    DateTime dayTime1, DateTime dayTime2) async {
+  try {
+    String x = 'purok';
+    CollectionReference collection =
+        FirebaseFirestore.instance.collection('reports');
+    QuerySnapshot querySnapshot = await collection.get();
+
+    Map<String, int> casesByPurok = {};
+
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data() as Map<String, dynamic>;
+      DateTime documentDate = data['date'].toDate();
+      if (documentDate.isAfter(dayTime1!) && documentDate.isBefore(dayTime2!)) {
+        var value = data[x];
+        casesByPurok[value] = (casesByPurok[value] ?? 0) + 1;
+      }
+    }
+
+    barChartYR = [];
+    casesByPurok.forEach((x, y) {
+      barChartYR.add(StreetPurokData(x, y));
+    });
+    barChartYR.sort((a, b) => a.cases.compareTo(b.cases));
+    return Future.delayed(const Duration(seconds: 1), () {
+      return barChartYR;
+    });
+  } catch (e) {
+    print('BarChart Error');
+    return Future.value([]);
+  }
+}
+
+String findMonthWithHighestCasesYMS(DateTime dayTime1, DateTime dayTime2) {
+  String? yearH = '';
+  String highM = '';
+  String gethighM = '';
+  int maxMonth = 0;
+  int maxCases = 0;
+  int yearV = 0;
+
+  String? series1 = '';
+
+  String dayTime1S = dayTime1.year.toString();
+  int dayTime1I = int.tryParse(dayTime1S)!;
+
+  String dayTime2S = dayTime2.year.toString();
+  int dayTime2I = int.tryParse(dayTime2S)!;
+
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthS) {
+    series1 = series.name.toString();
+    series1 = series1.substring(series1.length - 4);
+    yearV = int.tryParse(series1)!;
+
+    if (yearV >= dayTime1I && yearV <= dayTime2I) {
+      if (series.dataSource.isNotEmpty) {
+        for (DengueData data in series.dataSource) {
+          if (maxCases < data.y) {
+            maxCases = data.y;
+            maxMonth = data.x;
+          }
+        }
+      }
+    } else {
+      return highM;
+    }
+  }
+
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthS) {
+    series1 = series.name.toString();
+    series1 = series1.substring(series1.length - 4);
+    yearV = int.tryParse(series1)!;
+
+    if (yearV >= dayTime1I && yearV <= dayTime2I) {
+      if (series.dataSource.isNotEmpty) {
+        for (DengueData data in series.dataSource) {
+          if (maxCases == data.y) {
+            yearH = series.name;
+            maxCases = data.y;
+            maxMonth = data.x;
+            gethighM = '${getMonthName(maxMonth)}($yearH)';
+            highM = '$gethighM';
+          }
+        }
+      } else {
+        return highM;
+      }
+    }
+  }
+
+  return highM;
+}
+
+String findMonthWithLowestCasesYMS(DateTime dayTime1, DateTime dayTime2) {
+  String? yearH = '';
+  String lowM = '';
+  String getLowM = '';
+  int minMonth = 0;
+  int minCases = 999999999; // Initialize to a large value
+  int yearV = 0;
+
+  String? series1 = '';
+
+  String dayTime1S = dayTime1.year.toString();
+  int dayTime1I = int.tryParse(dayTime1S)!;
+
+  String dayTime2S = dayTime2.year.toString();
+  int dayTime2I = int.tryParse(dayTime2S)!;
+
+  for (LineSeries<DengueData, int> series in yearlySeries) {
+    series1 = series.name.toString();
+    series1 = series1.substring(series1.length - 4);
+    yearV = int.tryParse(series1)!;
+
+    if (yearV >= dayTime1I && yearV <= dayTime2I) {
+      for (DengueData data in series.dataSource) {
+        if (minCases > data.y) {
+          minCases = data.y;
+          minMonth = data.x;
+        }
+      }
+    }
+  }
+
+  for (LineSeries<DengueData, int> series in yearlySeries) {
+    series1 = series.name.toString();
+    series1 = series1.substring(series1.length - 4);
+    yearV = int.tryParse(series1)!;
+
+    if (yearV >= dayTime1I && yearV <= dayTime2I) {
+      for (DengueData data in series.dataSource) {
+        if (minCases == data.y) {
+          yearH = series.name;
+          minCases = data.y;
+          minMonth = data.x;
+          getLowM = '${getMonthName(minMonth)}($yearH)';
+          lowM = '$lowM $getLowM';
+        }
+      }
+    }
+  }
+
+  return lowM;
 }
 /*
 Future<List<ChartSeries<DengueData, int>>> generateYearlySeriesWeek(
