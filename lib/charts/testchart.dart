@@ -295,7 +295,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCases(chart)}\nLowest Active Cases(Month): ${findMonthWithLowestCases(chart)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -355,7 +355,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per week for the selected year.\nHighest Active Cases(Week): ${findHighestCase(chart2)}\nLowest Active Cases(Week): ${findLowestCase(chart2)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -416,7 +416,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per year.\nHighest Active Cases(Year): ${findHighestCase(chart3)}\nLowest Active Cases(Year): ${findLowestCase(chart3)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -471,7 +471,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per year\nMonths that has same active cases(Recurring): ${findMonthsWithSameCases(yearlySeries)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -548,7 +548,7 @@ class _testChartState extends State<testChart> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
                               'Analysis: This chart shows the number of active cases per age group\nAge group that have highest cases: ${findHighCasesAgeGroup(pieChart)}\nAge group that have lowest cases: ${findLowCasesAgeGroup(pieChart)}',
-                              style: TextStyle(fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ),
                         )
@@ -609,7 +609,7 @@ class _testChartState extends State<testChart> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Analysis: This chart shows the number of active cases per Street/Purok\nStreet/Purok that have highest cases: ${findHighestCaseSP(barChart)}',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -952,7 +952,7 @@ String findMonthWithHighestCases(List<DengueData> data) {
       maxCases = entry.y;
       maxMonth = entry.x;
       getHighM = getMonthName(maxMonth);
-      highM = highM + ' ' + getHighM;
+      highM = '$highM $getHighM';
     }
   }
 
@@ -981,7 +981,7 @@ String findMonthWithLowestCases(List<DengueData> data) {
         minCases = entry.y;
         minMonth = entry.x;
         getLowM = getMonthName(minMonth);
-        lowM = lowM + ' ' + getLowM;
+        lowM = '$lowM $getLowM';
       }
     }
     return lowM;
@@ -1039,7 +1039,7 @@ String findHighestCase(List<DengueData> data) {
       maxCases = entry.y;
       maxWeek = entry.x;
       getHighW = maxWeek.toString();
-      highW = highW + ' ' + getHighW;
+      highW = '$highW $getHighW';
     }
   }
 
@@ -1068,7 +1068,7 @@ String findLowestCase(List<DengueData> data) {
         minCases = entry.y;
         minWeek = entry.x;
         getLowW = minWeek.toString();
-        lowW = lowW + ' ' + getLowW;
+        lowW = '$lowW $getLowW';
       }
     }
     return lowW;
@@ -1135,7 +1135,7 @@ String findHighCasesAgeGroup(List<piechartData> data) {
           Cases = entry.number;
           ageGroup = entry.ageGroup;
           getAgeGroup = ageGroup;
-          hAgeGroup = hAgeGroup + ' ' + getAgeGroup;
+          hAgeGroup = '$hAgeGroup $getAgeGroup';
         }
       }
     }
@@ -1166,7 +1166,7 @@ String findLowCasesAgeGroup(List<piechartData> data) {
         if (entry.number == cases) {
           ageGroup = entry.ageGroup;
           getAgeGroup = ageGroup;
-          lAgeGroup = lAgeGroup + ' ' + getAgeGroup;
+          lAgeGroup = '$lAgeGroup $getAgeGroup';
         }
       }
     }
@@ -1193,7 +1193,7 @@ String findHighestCaseSP(List<StreetPurokData> data) {
     if (entry.cases == maxCases) {
       sPurok = entry.purok;
       getHighSP = sPurok;
-      highSP = highSP + ' ' + getHighSP;
+      highSP = '$highSP $getHighSP';
     }
   }
 

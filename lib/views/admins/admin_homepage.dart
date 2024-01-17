@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:denguecare_firebase/charts/testchart.dart';
 import 'package:denguecare_firebase/views/admins/admin_accountsettings.dart';
 import 'package:denguecare_firebase/views/admins/admin_announcements.dart';
 import 'package:denguecare_firebase/views/admins/admin_manageadmin.dart';
 import 'package:denguecare_firebase/views/admins/admin_openstreetmap.dart';
 import 'package:denguecare_firebase/views/admins/admin_postpage.dart';
+import 'package:denguecare_firebase/views/admins/admin_settingspage.dart';
 import 'package:denguecare_firebase/views/widgets/post_list.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -326,6 +328,22 @@ class _AdminMainPageState extends State<AdminMainPage>
                         onTap: () {
                           Get.offAll(() => const adminLogs());
                         },
+                      ),
+                      Visibility(
+                        visible: role == 'superadmin',
+                        child: ListTile(
+                          title: Text(
+                            'Settings',
+                            style: GoogleFonts.poppins(),
+                          ),
+                          leading: const Icon(
+                            Icons.settings,
+                            color: Colors.black,
+                          ),
+                          onTap: () {
+                            Get.offAll(() => const AdminSettingsPage());
+                          },
+                        ),
                       ),
                       ListTile(
                         title: Text(

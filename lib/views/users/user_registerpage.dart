@@ -112,6 +112,7 @@ class _UserRegisterPageState extends State<UserRegisterPage>
   final String userType = 'User';
   var _verificationId = ''.obs;
   bool _isEulaAccepted = false;
+  bool _isResident = false;
 //late int _remainingTime = 60;
 
   int _counter = 0;
@@ -342,6 +343,25 @@ class _UserRegisterPageState extends State<UserRegisterPage>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Checkbox(
+                      value: _isResident,
+                      onChanged: (value) {
+                        setState(() {
+                          _isResident = value!;
+                        });
+                      },
+                    ),
+                    Text(
+                      'I am a resident of Brgy. Buhangin!   ',
+                      style: GoogleFonts.poppins(fontSize: 12),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                //!! EULA
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Checkbox(
                       value: _isEulaAccepted,
                       onChanged: (value) {
                         setState(() {
@@ -362,6 +382,7 @@ class _UserRegisterPageState extends State<UserRegisterPage>
                   ],
                 ),
                 const SizedBox(height: 20),
+
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -375,7 +396,8 @@ class _UserRegisterPageState extends State<UserRegisterPage>
                     onPressed: () async {
                       try {
                         if (_formKey.currentState!.validate() &&
-                            _isEulaAccepted) {
+                            _isEulaAccepted &&
+                            _isResident) {
                           String num = "+63${_contactNumberController.text}";
                           _startTimer();
                           _showOTPDialog(context);

@@ -1044,15 +1044,21 @@ class _AdminViewReportedCasesPageState
       CollectionReference reports =
           FirebaseFirestore.instance.collection('reports');
       DocumentReference userDocRef = reports.doc(documentID);
-
-      if (valueRecovered == 'Yes') {
-        valueStatus = 'Recovered';
-      } else if (valueRecovered == 'No') {
-        valueStatus = valueAdmitted == 'Yes' ? 'Confirmed' : 'Probable';
+      if (valueStatus != 'Recovered') {
+        valueRecovered = 'No';
       } else {
-        // Default status when valueRecovered is neither 'Yes' nor 'No'
-        valueStatus = 'Suspected'; // Change this to your default status
+        valueRecovered = 'Yes';
       }
+      // if (valueRecovered == 'Yes') {
+      //   valueStatus = 'Recovered';
+      // }
+
+      // else if (valueRecovered == 'No') {
+      //   valueStatus = valueAdmitted == 'Yes' ? 'Confirmed' : 'Probable';
+      // } else {
+      //   // Default status when valueRecovered is neither 'Yes' nor 'No'
+      //   valueStatus = 'Suspected'; // Change this to your default status
+      // }
       Map<String, dynamic> updateData = {
         'status': valueStatus,
         'first_symptom_date': formattedDateOnly,
