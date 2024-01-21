@@ -645,24 +645,29 @@ class _AdminViewReportedCasesPageState
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
-                                  onPressed: () async {
-                                    DateTime? picked = await showDatePicker(
-                                        context: context,
-                                        initialDate: selectedDateofSymptoms,
-                                        firstDate: DateTime(2015, 8),
-                                        lastDate: DateTime(2101));
-                                    if (picked != null &&
-                                        picked != selectedDateofSymptoms) {
-                                      setState(() {
-                                        selectedDateofSymptoms = picked;
-                                        formattedDateOnly =
-                                            "${selectedDateofSymptoms.year}-${selectedDateofSymptoms.month.toString().padLeft(2, '0')}-${selectedDateofSymptoms.day.toString().padLeft(2, '0')}";
-                                        widget.reportedCaseData[
-                                                'first_symptom_date'] =
-                                            formattedDateOnly;
-                                      });
-                                    }
-                                  },
+                                  onPressed: isDropdownEnabled
+                                      ? () async {
+                                          DateTime? picked =
+                                              await showDatePicker(
+                                                  context: context,
+                                                  initialDate:
+                                                      selectedDateofSymptoms,
+                                                  firstDate: DateTime(2015, 8),
+                                                  lastDate: DateTime(2101));
+                                          if (picked != null &&
+                                              picked !=
+                                                  selectedDateofSymptoms) {
+                                            setState(() {
+                                              selectedDateofSymptoms = picked;
+                                              formattedDateOnly =
+                                                  "${selectedDateofSymptoms.year}-${selectedDateofSymptoms.month.toString().padLeft(2, '0')}-${selectedDateofSymptoms.day.toString().padLeft(2, '0')}";
+                                              widget.reportedCaseData[
+                                                      'first_symptom_date'] =
+                                                  formattedDateOnly;
+                                            });
+                                          }
+                                        }
+                                      : null,
                                   child: Text(
                                     'Select date',
                                     style: GoogleFonts.poppins(fontSize: 14),
@@ -708,14 +713,16 @@ class _AdminViewReportedCasesPageState
                                       hint: Text(widget.reportedCaseData[
                                               'patient_admitted'] ??
                                           valueAdmitted),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          valueAdmitted = value;
-                                        });
+                                      onChanged: isDropdownEnabled
+                                          ? (value) {
+                                              setState(() {
+                                                valueAdmitted = value;
+                                              });
 
-                                        // print it to the console
-                                        print("Selected value: $value");
-                                      },
+                                              // print it to the console
+                                              print("Selected value: $value");
+                                            }
+                                          : null,
                                     ),
                                   ),
                                 ),
@@ -761,12 +768,15 @@ class _AdminViewReportedCasesPageState
                                           hint: Text(widget.reportedCaseData[
                                                   'hospital_name'] ??
                                               valueHospital),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              valueHospital = value;
-                                            });
-                                            print("Selected value: $value");
-                                          },
+                                          onChanged: isDropdownEnabled
+                                              ? (value) {
+                                                  setState(() {
+                                                    valueHospital = value;
+                                                  });
+                                                  print(
+                                                      "Selected value: $value");
+                                                }
+                                              : null,
                                         ),
                                       ),
                                     ),
