@@ -12,7 +12,8 @@ import '../widgets/input_widget.dart';
 
 class AdminViewReportedCasesPage extends StatefulWidget {
   final Map<String, dynamic> reportedCaseData;
-  const AdminViewReportedCasesPage({super.key, required this.reportedCaseData});
+  const AdminViewReportedCasesPage(
+      {super.key, required this.reportedCaseData, required});
 
   @override
   State<AdminViewReportedCasesPage> createState() =>
@@ -22,6 +23,7 @@ class AdminViewReportedCasesPage extends StatefulWidget {
 class _AdminViewReportedCasesPageState
     extends State<AdminViewReportedCasesPage> {
   bool _isSubmitting = false;
+
   Widget _buildProgressIndicator() {
     if (_isSubmitting) {
       return const Center(
@@ -32,6 +34,7 @@ class _AdminViewReportedCasesPageState
     }
   }
 
+  bool isDropdownEnabled = true;
   final TextEditingController _otherHospitalController =
       TextEditingController();
   final TextEditingController _contactNumberController =
@@ -134,8 +137,13 @@ class _AdminViewReportedCasesPageState
     super.initState();
     // Set the default value for the text controller
     //_hospitalnameController.text = widget.reportedCaseData['hospital_name'];
+
     valueRecovered = widget.reportedCaseData['patient_recovered'];
+
     valueAdmitted = widget.reportedCaseData['patient_admitted'];
+    if (valueRecovered == 'Yes') {
+      isDropdownEnabled = false;
+    }
     valueStatus = widget.reportedCaseData['status'];
     if (hospitalList.contains(widget.reportedCaseData['hospital_name'])) {
       // If 'hospital_name' is in the list, use it
@@ -586,14 +594,17 @@ class _AdminViewReportedCasesPageState
                                     widget.reportedCaseData['status'],
                                 hint: Text(widget.reportedCaseData['status'] ??
                                     valueStatus),
-                                onChanged: (newvalue) {
-                                  //  updateStatusData(newvalue!);
-                                  setState(() {
-                                    valueStatus = newvalue;
-                                    // print it to the console
-                                    print("Selected value: $newvalue");
-                                  });
-                                },
+                                onChanged: isDropdownEnabled
+                                    ? (newvalue) {
+                                        //  updateStatusData(newvalue!);
+                                        setState(() {
+                                          valueStatus = newvalue;
+
+                                          // print it to the console
+                                          print("Selected value: $newvalue");
+                                        });
+                                      }
+                                    : null,
                               ),
                             ),
                           ),
@@ -634,24 +645,29 @@ class _AdminViewReportedCasesPageState
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
-                                  onPressed: () async {
-                                    DateTime? picked = await showDatePicker(
-                                        context: context,
-                                        initialDate: selectedDateofSymptoms,
-                                        firstDate: DateTime(2015, 8),
-                                        lastDate: DateTime(2101));
-                                    if (picked != null &&
-                                        picked != selectedDateofSymptoms) {
-                                      setState(() {
-                                        selectedDateofSymptoms = picked;
-                                        formattedDateOnly =
-                                            "${selectedDateofSymptoms.year}-${selectedDateofSymptoms.month.toString().padLeft(2, '0')}-${selectedDateofSymptoms.day.toString().padLeft(2, '0')}";
-                                        widget.reportedCaseData[
-                                                'first_symptom_date'] =
-                                            formattedDateOnly;
-                                      });
-                                    }
-                                  },
+                                  onPressed: isDropdownEnabled
+                                      ? () async {
+                                          DateTime? picked =
+                                              await showDatePicker(
+                                                  context: context,
+                                                  initialDate:
+                                                      selectedDateofSymptoms,
+                                                  firstDate: DateTime(2015, 8),
+                                                  lastDate: DateTime(2101));
+                                          if (picked != null &&
+                                              picked !=
+                                                  selectedDateofSymptoms) {
+                                            setState(() {
+                                              selectedDateofSymptoms = picked;
+                                              formattedDateOnly =
+                                                  "${selectedDateofSymptoms.year}-${selectedDateofSymptoms.month.toString().padLeft(2, '0')}-${selectedDateofSymptoms.day.toString().padLeft(2, '0')}";
+                                              widget.reportedCaseData[
+                                                      'first_symptom_date'] =
+                                                  formattedDateOnly;
+                                            });
+                                          }
+                                        }
+                                      : null,
                                   child: Text(
                                     'Select date',
                                     style: GoogleFonts.poppins(fontSize: 14),
@@ -697,14 +713,16 @@ class _AdminViewReportedCasesPageState
                                       hint: Text(widget.reportedCaseData[
                                               'patient_admitted'] ??
                                           valueAdmitted),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          valueAdmitted = value;
-                                        });
+                                      onChanged: isDropdownEnabled
+                                          ? (value) {
+                                              setState(() {
+                                                valueAdmitted = value;
+                                              });
 
-                                        // print it to the console
-                                        print("Selected value: $value");
-                                      },
+                                              // print it to the console
+                                              print("Selected value: $value");
+                                            }
+                                          : null,
                                     ),
                                   ),
                                 ),
@@ -750,12 +768,15 @@ class _AdminViewReportedCasesPageState
                                           hint: Text(widget.reportedCaseData[
                                                   'hospital_name'] ??
                                               valueHospital),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              valueHospital = value;
-                                            });
-                                            print("Selected value: $value");
-                                          },
+                                          onChanged: isDropdownEnabled
+                                              ? (value) {
+                                                  setState(() {
+                                                    valueHospital = value;
+                                                  });
+                                                  print(
+                                                      "Selected value: $value");
+                                                }
+                                              : null,
                                         ),
                                       ),
                                     ),
@@ -830,15 +851,17 @@ class _AdminViewReportedCasesPageState
                                 hint: Text(widget.reportedCaseData[
                                         'patient_recovered'] ??
                                     valueRecovered),
-                                onChanged: (value) {
-                                  setState(() {
-                                    // Update valueAdmitted only if the user selects a new value
-                                    valueRecovered = value;
-                                  });
+                                onChanged: isDropdownEnabled
+                                    ? (value) {
+                                        setState(() {
+                                          // Update valueAdmitted only if the user selects a new value
+                                          valueRecovered = value;
+                                        });
 
-                                  // print it to the console
-                                  print("Selected value: $value");
-                                },
+                                        // print it to the console
+                                        print("Selected value: $value");
+                                      }
+                                    : null,
                               ),
                             ),
                           ),
@@ -855,34 +878,36 @@ class _AdminViewReportedCasesPageState
                               vertical: 15,
                             ),
                           ),
-                          onPressed: () {
-                            // Add your confirmation logic here
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Confirmation'),
-                                  content: const Text(
-                                      'Confirm Update of Information'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () async {
-                                        updateToFirebase();
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Confirm'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Cancel'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
+                          onPressed: isDropdownEnabled
+                              ? () {
+                                  // Add your confirmation logic here
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Confirmation'),
+                                        content: const Text(
+                                            'Confirm Update of Information'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () async {
+                                              updateToFirebase();
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('Confirm'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                              : null,
                           child: Text(
                             "Confirm Update",
                             style: GoogleFonts.poppins(fontSize: 20),
