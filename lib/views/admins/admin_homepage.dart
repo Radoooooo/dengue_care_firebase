@@ -6,6 +6,7 @@ import 'package:denguecare_firebase/views/admins/admin_manageadmin.dart';
 import 'package:denguecare_firebase/views/admins/admin_openstreetmap.dart';
 import 'package:denguecare_firebase/views/admins/admin_postpage.dart';
 import 'package:denguecare_firebase/views/admins/admin_settingspage.dart';
+import 'package:denguecare_firebase/views/admins/admin_verifyuser_page.dart';
 import 'package:denguecare_firebase/views/widgets/post_list.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -313,6 +314,22 @@ class _AdminMainPageState extends State<AdminMainPage>
                           ),
                           onTap: () {
                             Get.offAll(() => const ManageAdmin());
+                          },
+                        ),
+                      ),
+                      Visibility(
+                        visible: role == 'superadmin',
+                        child: ListTile(
+                          title: Text(
+                            'Manage Users',
+                            style: GoogleFonts.poppins(),
+                          ),
+                          leading: const Icon(
+                            Icons.group_sharp,
+                            color: Colors.black,
+                          ),
+                          onTap: () {
+                            Get.offAll(() => const AdminVerifyUserPage());
                           },
                         ),
                       ),

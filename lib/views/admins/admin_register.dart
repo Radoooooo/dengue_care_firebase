@@ -603,6 +603,7 @@ If you have any questions about this Agreement, You can contact Us:
         'contact_number': contactnumber,
         'role': userType,
         'approved': false,
+        'isVerified': false,
       }, SetOptions(merge: true));
 
       // Sign out the user to clear the authentication state

@@ -1,4 +1,5 @@
 import 'package:denguecare_firebase/views/users/user_accountsettings.dart';
+import 'package:denguecare_firebase/views/users/user_verifyaccountpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -55,6 +56,17 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
             ),
             onTap: () {
               Get.to(() => const UserAccountSettingsPage());
+            },
+          ),
+          ListTile(
+            title: Text('Verify Account',
+                style: GoogleFonts.poppins(fontSize: 18)),
+            leading: const Icon(
+              Icons.verified_user_sharp,
+              color: Colors.black,
+            ),
+            onTap: () {
+              Get.to(() => const UserVerifyAccountPage());
             },
           ),
           ListTile(

@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+Map<String, dynamic>? userData;
+
 class UserAccountSettingsPage extends StatefulWidget {
   const UserAccountSettingsPage({super.key});
 
@@ -151,13 +153,12 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator(); // Loading indicator
         }
-        Map<String, dynamic> userData =
-            snapshot.data!.data() as Map<String, dynamic>;
-        _newnameController.text = userData['name'] ?? '';
-        _newfirstnameController.text = userData['firstName'] ?? '';
-        _newlastnameController.text = userData['lastName'] ?? '';
-        _newageController.text = userData['age'] ?? '';
-        _newemailController.text = userData['email'] ?? '';
+        userData = snapshot.data!.data() as Map<String, dynamic>;
+        _newnameController.text = userData!['name'] ?? '';
+        _newfirstnameController.text = userData!['firstName'] ?? '';
+        _newlastnameController.text = userData!['lastName'] ?? '';
+        _newageController.text = userData!['age'] ?? '';
+        _newemailController.text = userData!['email'] ?? '';
         return SingleChildScrollView(
           child: Center(
             child: Padding(
@@ -215,7 +216,7 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
                       ),
                       const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
-                        value: _selectedPurok ?? userData['purok'],
+                        value: _selectedPurok ?? userData!['purok'],
                         items: puroklist.map((purok) {
                           return DropdownMenuItem(
                             value: purok,

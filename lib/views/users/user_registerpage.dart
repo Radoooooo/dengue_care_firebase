@@ -907,6 +907,7 @@ If you have any questions about this Agreement, You can contact Us:
       'purok': purokvalue,
       'role': userType,
       'approved': true,
+      'isVerified': false,
     });
 
     Get.offAll(() => const UserMainPage());

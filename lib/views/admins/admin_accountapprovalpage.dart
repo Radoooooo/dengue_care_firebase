@@ -22,7 +22,7 @@ class _AdminAccountApprovalPageState extends State<AdminAccountApprovalPage> {
       DocumentReference userDocument = user.doc(userId);
 
       // Update the 'approved' field to true
-      await userDocument.update({'approved': true});
+      await userDocument.update({'approved': true, 'isVerified': true});
 
       // Show success message using the provided _showSnackbarSuccess function
       _showSnackbarSuccess(context, "User Approved Successfully");
