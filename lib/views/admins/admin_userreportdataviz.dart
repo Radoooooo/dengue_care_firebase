@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
+
 import 'package:denguecare_firebase/charts/testchart.dart';
 
 import 'package:google_fonts/google_fonts.dart';
@@ -42,7 +42,7 @@ List<piechartData> pieChart = [];
 
 List<StreetPurokData> barChart = [];
 List<StreetPurokData> barChartYR = [];
-List<int> listYear = [2023];
+List<int> listYear = [];
 String ageGroup = '';
 String hAgeGroup = '';
 String lAgeGroup = '';
@@ -187,8 +187,6 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                             if (picked != null &&
                                 picked != selectedDateofSymptoms) {
                               selectedDateofSymptoms = picked;
-                              print('Selected Symptoms 1:');
-                              print(picked);
                             }
                           },
                           child: Text(
@@ -207,8 +205,6 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                             if (picked2 != null &&
                                 picked2 != selectedDateofSymptoms2) {
                               selectedDateofSymptoms2 = picked2;
-                              print('Selected Symptoms 2:');
-                              print(picked2);
                             }
                           },
                           child: Text(
@@ -224,17 +220,7 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                             textStyle: const TextStyle(fontSize: 20),
                           ),
                           onPressed: () async {
-                            generateMonthS(selectedDateofSymptoms,
-                                selectedDateofSymptoms2);
-                            generateMonthP(selectedDateofSymptoms,
-                                selectedDateofSymptoms2);
-                            generateMonthC(selectedDateofSymptoms,
-                                selectedDateofSymptoms2);
-
-                            setState(() {
-                              //hAGE = findHighCasesAgeGroupYR(pieChartYR);
-                              //lAGE = findLowCasesAgeGroupYR(pieChartYR);
-                            });
+                            setState(() {});
                           },
                           child: Text('Filter',
                               style: GoogleFonts.poppins(fontSize: 20)),
@@ -281,15 +267,15 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                             tooltipBehavior: _tooltipBehavior,
                             series: yearlySeriesMonthS,
                           ),
-                          /*Card(
+                          Card(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Suspected Cases(Month): ${findMonthWithHighestCasesYMS(selectedDateofSymptoms, selectedDateofSymptoms2)}\nLowest Active Cases(Month): ${findMonthWithLowestCasesYMS(selectedDateofSymptoms, selectedDateofSymptoms2)}',
+                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Suspected Cases(Month): ${findMonthWithHighestCasesYMS(selectedDateofSymptoms, selectedDateofSymptoms2)}\nLowest Suspected Cases(Month): ${findMonthWithLowestCasesYMS(selectedDateofSymptoms, selectedDateofSymptoms2)}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
-                          )*/
+                          )
                         ],
                       ),
                     ),
@@ -333,15 +319,15 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                             tooltipBehavior: _tooltipBehavior2,
                             series: yearlySeriesMonthP,
                           ),
-                          /*Card(
+                          Card(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCasesYM(selectedYear, selectedYear2)}\nLowest Active Cases(Month): ${findMonthWithLowestCasesYM(selectedYear, selectedYear2)}',
+                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Probable Cases(Month): ${findMonthWithHighestCasesYMP(selectedDateofSymptoms, selectedDateofSymptoms2)}\nLowest Probable Cases(Month): ${findMonthWithLowestCasesYMP(selectedDateofSymptoms, selectedDateofSymptoms2)}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
-                          )*/
+                          )
                         ],
                       ),
                     ),
@@ -385,15 +371,15 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                             tooltipBehavior: _tooltipBehavior3,
                             series: yearlySeriesMonthC,
                           ),
-                          /*Card(
+                          Card(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Active Cases(Month): ${findMonthWithHighestCasesYM(selectedYear, selectedYear2)}\nLowest Active Cases(Month): ${findMonthWithLowestCasesYM(selectedYear, selectedYear2)}',
+                                'Analysis: This chart shows the number of active cases per month for the selected year.\nHighest Confirmed Cases(Month): ${findMonthWithHighestCasesYMC(selectedDateofSymptoms, selectedDateofSymptoms2)}\nLowest Confirmed Cases(Month): ${findMonthWithLowestCasesYMC(selectedDateofSymptoms, selectedDateofSymptoms2)}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
-                          )*/
+                          )
                         ],
                       ),
                     ),
@@ -525,9 +511,9 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Yes: ${a1.toInt()}',
+                                  Text('Patient Recovered(Yes): ${a1.toInt()}',
                                       style: GoogleFonts.poppins(fontSize: 20)),
-                                  Text('No: ${a2.toInt()}',
+                                  Text('Patient Recovered(No): ${a2.toInt()}',
                                       style: GoogleFonts.poppins(fontSize: 20)),
                                 ],
                               ),
@@ -588,9 +574,9 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Yes: ${b1.toInt()}',
+                                  Text('Patient Admitted(Yes): ${b1.toInt()}',
                                       style: GoogleFonts.poppins(fontSize: 20)),
-                                  Text('No: ${b2.toInt()}',
+                                  Text('Patient Admitted(No): ${b2.toInt()}',
                                       style: GoogleFonts.poppins(fontSize: 20)),
                                 ],
                               ),
@@ -650,15 +636,15 @@ class _AdminUserReportDataVizState extends State<AdminUserReportDataViz> {
                                   interval: 1),
                             ),
                           ),
-                          /*Card(
+                          Card(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Analysis: This chart shows the number of active cases per Street/Purok\nStreet/Purok that have highest cases: {findHighestCaseSPYR(barChartYR)}',
+                                'Analysis: This chart shows the number of active cases per Street/Purok\nStreet/Purok that have highest cases: ${findHighestCaseSPYR(barChartYR)}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
-                          )*/
+                          )
                         ],
                       ),
                     ),
@@ -847,63 +833,55 @@ Future<List<ChartSeries<DengueData, int>>> generateMonthS(
   List<int> listYear = await getListYear();
   List<int> newlistYear = [];
 
-  try {
-    for (int x in listYear) {
-      if (x >= dayTime1!.year.toInt() && x <= dayTime2!.year.toInt()) {
-        newlistYear.add(x);
-      }
+  for (int x in listYear) {
+    if (x >= dayTime1!.year.toInt() && x <= dayTime2!.year.toInt()) {
+      newlistYear.add(x);
     }
-
-    for (int year in newlistYear) {
-      String x = 'Suspected';
-      CollectionReference collection =
-          FirebaseFirestore.instance.collection('reports');
-      QuerySnapshot querySnapshot =
-          await collection.orderBy('date', descending: false).get();
-
-      // Reset the map for each year
-      Map<int, int> valueL = {};
-
-      for (var doc in querySnapshot.docs) {
-        var data = doc.data() as Map<String, dynamic>;
-        DateTime documentDate = data['date'].toDate();
-
-        dateMonth = documentDate.month.toString();
-        dateMonthInt = int.tryParse(dateMonth)!;
-        dateYear = documentDate.year.toString();
-        dateYearInt = int.tryParse(dateYear)!;
-
-        if (data['status'] == x &&
-            documentDate.isAfter(dayTime1!) &&
-            documentDate.isBefore(dayTime2!) &&
-            dateYearInt == year) {
-          var value = dateMonthInt;
-          valueL[value] = (valueL[value] ?? 0) + 1;
-        }
-      }
-
-      yearlyData = [];
-      Map<int, int> counts = valueL;
-
-      counts.forEach((x, y) {
-        yearlyData.add(DengueData(x, y));
-      });
-
-      yearlySeriesMonthS.add(LineSeries<DengueData, int>(
-        dataSource: yearlyData,
-        xValueMapper: (DengueData data, _) => data.x,
-        yValueMapper: (DengueData data, _) => data.y,
-        name: 'Year: $year',
-        markerSettings: const MarkerSettings(isVisible: true),
-      ));
-    }
-
-    return yearlySeriesMonthS;
-  } catch (e) {
-    // Handle any potential errors, e.g., network issues or Firestore exceptions
-    print('Error getting count: $e');
-    return yearlySeriesMonthS; // Return a special value to indicate an error
   }
+
+  for (int year in newlistYear) {
+    String x = 'Suspected';
+    CollectionReference collection =
+        FirebaseFirestore.instance.collection('reports');
+    QuerySnapshot querySnapshot =
+        await collection.orderBy('date', descending: false).get();
+
+    // Reset the map for each year
+    Map<int, int> valueL = {};
+
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data() as Map<String, dynamic>;
+      DateTime documentDate = data['date'].toDate();
+
+      dateMonth = documentDate.month.toString();
+      dateMonthInt = int.tryParse(dateMonth)!;
+      dateYear = documentDate.year.toString();
+      dateYearInt = int.tryParse(dateYear)!;
+
+      if (data['status'] == x &&
+          documentDate.isAfter(dayTime1!) &&
+          documentDate.isBefore(dayTime2!) &&
+          dateYearInt == year) {
+        var value = dateMonthInt;
+        valueL[value] = (valueL[value] ?? 0) + 1;
+      }
+    }
+    yearlyData = [];
+    Map<int, int> counts = valueL;
+    // Populate yearlyData inside the loop
+    counts.forEach((x, y) {
+      yearlyData.add(DengueData(x, y));
+    });
+
+    yearlySeriesMonthS.add(LineSeries<DengueData, int>(
+      dataSource: yearlyData,
+      xValueMapper: (DengueData data, _) => data.x,
+      yValueMapper: (DengueData data, _) => data.y,
+      name: 'Year: $year',
+      markerSettings: const MarkerSettings(isVisible: true),
+    ));
+  }
+  return yearlySeriesMonthS;
 }
 
 Future<List<ChartSeries<DengueData, int>>> generateMonthP(
@@ -1244,35 +1222,23 @@ Future<List<StreetPurokData>> getPurokCasesYR(
 String findMonthWithHighestCasesYMS(DateTime dayTime1, DateTime dayTime2) {
   String? yearH = '';
   String highM = '';
-  String gethighM = '';
+  String getHighM = '';
   int maxMonth = 0;
   int maxCases = 0;
   int yearV = 0;
-
-  String? series1 = '';
-
-  String dayTime1S = dayTime1.year.toString();
-  int dayTime1I = int.tryParse(dayTime1S)!;
-
-  String dayTime2S = dayTime2.year.toString();
-  int dayTime2I = int.tryParse(dayTime2S)!;
-
+  String series1 = '';
   for (LineSeries<DengueData, int> series in yearlySeriesMonthS) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= dayTime1I && yearV <= dayTime2I) {
-      if (series.dataSource.isNotEmpty) {
-        for (DengueData data in series.dataSource) {
-          if (maxCases < data.y) {
-            maxCases = data.y;
-            maxMonth = data.x;
-          }
+    if (yearV >= dayTime1.year && yearV <= dayTime2.year) {
+      for (DengueData data in series.dataSource) {
+        if (maxCases < data.y) {
+          maxCases = data.y;
+          maxMonth = data.x;
         }
       }
-    } else {
-      return highM;
     }
   }
 
@@ -1281,19 +1247,15 @@ String findMonthWithHighestCasesYMS(DateTime dayTime1, DateTime dayTime2) {
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= dayTime1I && yearV <= dayTime2I) {
-      if (series.dataSource.isNotEmpty) {
-        for (DengueData data in series.dataSource) {
-          if (maxCases == data.y) {
-            yearH = series.name;
-            maxCases = data.y;
-            maxMonth = data.x;
-            gethighM = '${getMonthName(maxMonth)}($yearH)';
-            highM = '$gethighM';
-          }
+    if (yearV >= dayTime1.year && yearV <= dayTime2.year) {
+      for (DengueData data in series.dataSource) {
+        if (maxCases == data.y) {
+          yearH = series.name;
+          maxCases = data.y;
+          maxMonth = data.x;
+          getHighM = '${getMonthName(maxMonth)}($yearH)';
+          highM = '$highM $getHighM,';
         }
-      } else {
-        return highM;
       }
     }
   }
@@ -1306,7 +1268,7 @@ String findMonthWithLowestCasesYMS(DateTime dayTime1, DateTime dayTime2) {
   String lowM = '';
   String getLowM = '';
   int minMonth = 0;
-  int minCases = 999999999; // Initialize to a large value
+  int minCases = 999999999;
   int yearV = 0;
 
   String? series1 = '';
@@ -1317,7 +1279,7 @@ String findMonthWithLowestCasesYMS(DateTime dayTime1, DateTime dayTime2) {
   String dayTime2S = dayTime2.year.toString();
   int dayTime2I = int.tryParse(dayTime2S)!;
 
-  for (LineSeries<DengueData, int> series in yearlySeries) {
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthS) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
@@ -1332,7 +1294,7 @@ String findMonthWithLowestCasesYMS(DateTime dayTime1, DateTime dayTime2) {
     }
   }
 
-  for (LineSeries<DengueData, int> series in yearlySeries) {
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthS) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
@@ -1344,7 +1306,7 @@ String findMonthWithLowestCasesYMS(DateTime dayTime1, DateTime dayTime2) {
           minCases = data.y;
           minMonth = data.x;
           getLowM = '${getMonthName(minMonth)}($yearH)';
-          lowM = '$lowM $getLowM';
+          lowM = '$lowM $getLowM,';
         }
       }
     }
@@ -1352,241 +1314,67 @@ String findMonthWithLowestCasesYMS(DateTime dayTime1, DateTime dayTime2) {
 
   return lowM;
 }
-/*
-Future<List<ChartSeries<DengueData, int>>> generateYearlySeriesWeek(
-    int year1, int year2) async {
-  yearlySeriesWeek = [];
-  List<int> listYear = await getListYear();
-  List<int> newlistYear = [];
 
-  for (int x in listYear) {
-    if (x >= year1 && x <= year2) {
-      newlistYear.add(x);
-    }
-  }
-
-  for (int year in newlistYear) {
-    String x = 'MorbidityWeek';
-    CollectionReference collection =
-        FirebaseFirestore.instance.collection('denguelinelist');
-    QuerySnapshot querySnapshot =
-        await collection.orderBy('MorbidityWeek', descending: false).get();
-
-    Map<int, int> valueL = {};
-
-    for (var doc in querySnapshot.docs) {
-      var data = doc.data() as Map<String, dynamic>;
-      if (data.containsKey(x) && data['Year'] == year) {
-        var value = data[x];
-        valueL[value] = (valueL[value] ?? 0) + 1;
-      }
-    }
-
-    yearlyData = [];
-    Map<int, int> counts = valueL;
-
-    counts.forEach((x, y) {
-      yearlyData.add(DengueData(x, y));
-    });
-    yearlySeriesWeek.add(LineSeries<DengueData, int>(
-      dataSource: yearlyData,
-      xValueMapper: (DengueData data, _) => data.x,
-      yValueMapper: (DengueData data, _) => data.y,
-      name: 'Year: $year',
-      markerSettings: const MarkerSettings(isVisible: true),
-    ));
-  }
-
-  return yearlySeriesWeek;
-}
-
-Future<List<DengueData>> getDataYearRange(int year1, int year2) async {
-  try {
-    String x = 'Year';
-    CollectionReference collection =
-        FirebaseFirestore.instance.collection('denguelinelist');
-    QuerySnapshot querySnapshot =
-        await collection.orderBy('Year', descending: false).get();
-
-    Map<int, int> valueL = {};
-
-    for (var doc in querySnapshot.docs) {
-      var data = doc.data() as Map<String, dynamic>;
-      if (data.containsKey(x)) {
-        var value = data[x];
-        valueL[value] = (valueL[value] ?? 0) + 1;
-      }
-    }
-
-    chartYear = [];
-    Map<int, int> counts = valueL;
-    counts.forEach((x, y) {
-      if (x >= year1 && x <= year2) {
-        chartYear.add(DengueData(x, y));
-      }
-    });
-
-    return chartYear;
-  } catch (e) {
-    print('Chart3 Error');
-    return Future.value([]);
-  }
-}
-
-Future<List<piechartData>> queryAgeGroupsCountYearRange(
-    int year1, int year2) async {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  double ageGroupCount = 0;
-  double ageGroupCount2 = 0;
-  double ageGroupCount3 = 0;
-  double ageGroupCount4 = 0;
-
-  int childAgeMax = 16;
-  int yAdultAgeMin = 17;
-  int yAdultAgeMax = 30;
-  int mAdultAgeMin = 31;
-  int mAdultAgeMax = 45;
-  int oAdultAgeMin = 45;
-
-  List<int> listYear = await getListYear();
-  List<int> newlistYear = [];
-
-  for (int x in listYear) {
-    if (x >= year1 && x <= year2) {
-      newlistYear.add(x);
-    }
-  }
-
-  for (int x in newlistYear) {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('denguelinelist')
-        .where('AgeYears', isLessThanOrEqualTo: childAgeMax)
-        .where('Year', isEqualTo: x)
-        .get();
-
-    ageGroupCount = ageGroupCount + querySnapshot.size.toDouble();
-    pieChartYR = [];
-    pieChartYR.add(piechartData('Child', ageGroupCount, Colors.blue));
-
-    QuerySnapshot querySnapshot2 = await firestore
-        .collection('denguelinelist')
-        .where('AgeYears', isGreaterThanOrEqualTo: yAdultAgeMin)
-        .where('AgeYears', isLessThanOrEqualTo: yAdultAgeMax)
-        .where('Year', isEqualTo: x)
-        .get();
-
-    ageGroupCount2 = ageGroupCount2 + querySnapshot2.size.toDouble();
-    pieChartYR.add(piechartData('Young Adult', ageGroupCount2, Colors.red));
-
-    QuerySnapshot querySnapshot3 = await firestore
-        .collection('denguelinelist')
-        .where('AgeYears', isGreaterThanOrEqualTo: mAdultAgeMin)
-        .where('AgeYears', isLessThanOrEqualTo: mAdultAgeMax)
-        .where('Year', isEqualTo: x)
-        .get();
-
-    ageGroupCount3 = ageGroupCount3 + querySnapshot3.size.toDouble();
-    pieChartYR.add(piechartData('Middle Adult', ageGroupCount3, Colors.green));
-
-    QuerySnapshot querySnapshot4 = await firestore
-        .collection('denguelinelist')
-        .where('AgeYears', isGreaterThan: oAdultAgeMin)
-        .where('Year', isEqualTo: x)
-        .get();
-
-    ageGroupCount4 = ageGroupCount4 + querySnapshot4.size.toDouble();
-    pieChartYR.add(piechartData('Old Adult', ageGroupCount4, Colors.yellow));
-  }
-
-  a1 = ageGroupCount;
-  a2 = ageGroupCount2;
-  a3 = ageGroupCount3;
-  a4 = ageGroupCount4;
-
-  return pieChartYR;
-}
-
-Future<List<StreetPurokData>> getPurokCasesYR(int year1, int year2) async {
-  try {
-    String x = 'Streetpurok';
-    CollectionReference collection =
-        FirebaseFirestore.instance.collection('denguelinelist');
-    QuerySnapshot querySnapshot = await collection.get();
-
-    Map<String, int> casesByPurok = {};
-
-    for (var doc in querySnapshot.docs) {
-      var data = doc.data() as Map<String, dynamic>;
-      if (data.containsKey(x) &&
-          data['Year'] >= year1 &&
-          data['Year'] <= year2) {
-        var value = data[x];
-        casesByPurok[value] = (casesByPurok[value] ?? 0) + 1;
-      }
-    }
-
-    barChartYR = [];
-    casesByPurok.forEach((x, y) {
-      barChartYR.add(StreetPurokData(x, y));
-    });
-
-    return Future.delayed(const Duration(seconds: 1), () {
-      return barChartYR;
-    });
-  } catch (e) {
-    print('BarChart Error');
-    return Future.value([]);
-  }
-}
-
-String findMonthWithHighestCasesYM(int year1, int year2) {
+String findMonthWithHighestCasesYMP(DateTime dayTime1, DateTime dayTime2) {
   String? yearH = '';
   String highM = '';
-  String gethighM = '';
+  String getHighM = '';
   int maxMonth = 0;
   int maxCases = 0;
   int yearV = 0;
-
   String? series1 = '';
+  /*for (LineSeries<DengueData, int> series in yearlySeriesMonthP) {
+    String seriesName = series.name.toString();
+    yearV = int.tryParse(seriesName.substring(seriesName.length - 4))!;
 
-  for (LineSeries<DengueData, int> series in yearlySeries) {
+    if (yearV >= dayTime1.year && yearV <= dayTime2.year) {
+      for (DengueData data in series.dataSource) {
+        if (maxCases < data.y) {
+          maxCases = data.y;
+          maxMonth = data.x;
+          yearH = series.name;
+        }
+      }
+
+      if (maxCases > 0) {
+        getHighM = '${getMonthName(maxMonth)}($yearH)';
+        if (highM.isNotEmpty) {
+          highM += ', ';
+        }
+        highM += getHighM;
+      }
+      maxCases = 0;
+    }
+  }*/
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthP) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= year1 && yearV <= year2) {
-      if (series.dataSource.isNotEmpty) {
-        for (DengueData data in series.dataSource!) {
-          if (maxCases < data.y) {
-            maxCases = data.y;
-            maxMonth = data.x;
-          }
+    if (yearV >= dayTime1.year && yearV <= dayTime2.year) {
+      for (DengueData data in series.dataSource) {
+        if (maxCases < data.y) {
+          maxCases = data.y;
+          maxMonth = data.x;
         }
       }
-    } else {
-      return highM;
     }
   }
 
-  for (LineSeries<DengueData, int> series in yearlySeries) {
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthP) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= year1 && yearV <= year2) {
-      if (series.dataSource.isNotEmpty) {
-        for (DengueData data in series.dataSource!) {
-          if (maxCases == data.y) {
-            yearH = series.name;
-            maxCases = data.y;
-            maxMonth = data.x;
-            gethighM = getMonthName(maxMonth) + '(' + yearH.toString() + ')';
-            highM = highM + ' ' + gethighM;
-          }
+    if (yearV >= dayTime1.year && yearV <= dayTime2.year) {
+      for (DengueData data in series.dataSource) {
+        if (maxCases == data.y) {
+          yearH = series.name;
+          maxCases = data.y;
+          maxMonth = data.x;
+          getHighM = '${getMonthName(maxMonth)}($yearH)';
+          highM = '$highM $getHighM,';
         }
-      } else {
-        return highM;
       }
     }
   }
@@ -1594,23 +1382,29 @@ String findMonthWithHighestCasesYM(int year1, int year2) {
   return highM;
 }
 
-String findMonthWithLowestCasesYM(int year1, int year2) {
+String findMonthWithLowestCasesYMP(DateTime dayTime1, DateTime dayTime2) {
   String? yearH = '';
   String lowM = '';
   String getLowM = '';
   int minMonth = 0;
-  int minCases = 999999999; // Initialize to a large value
+  int minCases = 999999999;
   int yearV = 0;
 
   String? series1 = '';
 
-  for (LineSeries<DengueData, int> series in yearlySeries) {
+  String dayTime1S = dayTime1.year.toString();
+  int dayTime1I = int.tryParse(dayTime1S)!;
+
+  String dayTime2S = dayTime2.year.toString();
+  int dayTime2I = int.tryParse(dayTime2S)!;
+
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthP) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+    if (yearV >= dayTime1I && yearV <= dayTime2I) {
+      for (DengueData data in series.dataSource) {
         if (minCases > data.y) {
           minCases = data.y;
           minMonth = data.x;
@@ -1619,19 +1413,19 @@ String findMonthWithLowestCasesYM(int year1, int year2) {
     }
   }
 
-  for (LineSeries<DengueData, int> series in yearlySeries) {
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthP) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+    if (yearV >= dayTime1I && yearV <= dayTime2I) {
+      for (DengueData data in series.dataSource) {
         if (minCases == data.y) {
           yearH = series.name;
           minCases = data.y;
           minMonth = data.x;
-          getLowM = getMonthName(minMonth) + '(' + yearH.toString() + ')';
-          lowM = lowM + ' ' + getLowM;
+          getLowM = '${getMonthName(minMonth)}($yearH)';
+          lowM = '$lowM $getLowM,';
         }
       }
     }
@@ -1640,215 +1434,101 @@ String findMonthWithLowestCasesYM(int year1, int year2) {
   return lowM;
 }
 
-String findWeekWithHighestCasesYM(int year1, int year2) {
+String findMonthWithHighestCasesYMC(DateTime dayTime1, DateTime dayTime2) {
   String? yearH = '';
-  String highW = '';
-  String getHighW = '';
-  int maxWeek = 0;
+  String highM = '';
+  String getHighM = '';
+  int maxMonth = 0;
   int maxCases = 0;
   int yearV = 0;
+  String series1 = '';
 
-  String? series1 = '';
-
-  for (LineSeries<DengueData, int> series in yearlySeriesWeek) {
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthC) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+    if (yearV >= dayTime1.year && yearV <= dayTime2.year) {
+      for (DengueData data in series.dataSource) {
         if (maxCases < data.y) {
           maxCases = data.y;
-          maxWeek = data.x;
+          maxMonth = data.x;
         }
       }
     }
   }
 
-  for (LineSeries<DengueData, int> series in yearlySeriesWeek) {
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthC) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+    if (yearV >= dayTime1.year && yearV <= dayTime2.year) {
+      for (DengueData data in series.dataSource) {
         if (maxCases == data.y) {
           yearH = series.name;
           maxCases = data.y;
-          maxWeek = data.x;
-          getHighW = maxWeek.toString() + '(' + yearH.toString() + ')';
-          highW = highW + ' ' + getHighW;
+          maxMonth = data.x;
+          getHighM = '${getMonthName(maxMonth)}($yearH)';
+          highM = '$highM $getHighM,';
         }
       }
     }
   }
 
-  return highW;
+  return highM;
 }
 
-String findWeekWithLowestCasesYM(int year1, int year2) {
+String findMonthWithLowestCasesYMC(DateTime dayTime1, DateTime dayTime2) {
   String? yearH = '';
-  String lowW = '';
-  String getLowW = '';
-  int minWeek = 0;
-  int minCases = 999999999; // Initialize to a large value
+  String lowM = '';
+  String getLowM = '';
+  int minMonth = 0;
+  int minCases = 999999999;
   int yearV = 0;
 
   String? series1 = '';
 
-  for (LineSeries<DengueData, int> series in yearlySeriesWeek) {
+  String dayTime1S = dayTime1.year.toString();
+  int dayTime1I = int.tryParse(dayTime1S)!;
+
+  String dayTime2S = dayTime2.year.toString();
+  int dayTime2I = int.tryParse(dayTime2S)!;
+
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthC) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+    if (yearV >= dayTime1I && yearV <= dayTime2I) {
+      for (DengueData data in series.dataSource) {
         if (minCases > data.y) {
           minCases = data.y;
-          minWeek = data.x;
+          minMonth = data.x;
         }
       }
     }
   }
 
-  for (LineSeries<DengueData, int> series in yearlySeriesWeek) {
+  for (LineSeries<DengueData, int> series in yearlySeriesMonthC) {
     series1 = series.name.toString();
     series1 = series1.substring(series1.length - 4);
     yearV = int.tryParse(series1)!;
 
-    if (yearV >= year1 && yearV <= year2) {
-      for (DengueData data in series.dataSource!) {
+    if (yearV >= dayTime1I && yearV <= dayTime2I) {
+      for (DengueData data in series.dataSource) {
         if (minCases == data.y) {
           yearH = series.name;
           minCases = data.y;
-          minWeek = data.x;
-          getLowW = minWeek.toString() + '(' + yearH.toString() + ')';
-          lowW = lowW + ' ' + getLowW;
+          minMonth = data.x;
+          getLowM = '${getMonthName(minMonth)}($yearH)';
+          lowM = '$lowM $getLowM,';
         }
       }
     }
   }
 
-  return lowW;
-}
-
-String findYearWithHighestCasesYM(List<DengueData> data) {
-  String highW = '';
-  String getHighW = '';
-  int maxWeek = 0;
-  int maxCases = 0;
-  int yearV = 0;
-
-  for (DengueData entry in data) {
-    if (entry.y > maxCases) {
-      maxCases = entry.y;
-      maxWeek = entry.x;
-      //getHighW = highW;
-      //highW = highW + ' ' + getHighW;
-    }
-  }
-
-  for (DengueData entry in data) {
-    if (entry.y == maxCases) {
-      maxCases = entry.y;
-      maxWeek = entry.x;
-      getHighW = maxWeek.toString();
-      highW = highW + ' ' + getHighW;
-    }
-  }
-
-  return highW;
-}
-
-String findYearLowestCaseYM(List<DengueData> data) {
-  String getLowW = '';
-  int minWeek = 0;
-  int minCases = data.isNotEmpty ? data[0].y : 0;
-  String lowW = '';
-
-  if (minCases == null) {
-    print('null');
-    return lowW;
-  } else {
-    for (DengueData entry in data) {
-      if (entry.y <= minCases) {
-        minCases = entry.y;
-        minWeek = entry.x;
-      }
-    }
-
-    for (DengueData entry in data) {
-      if (entry.y == minCases) {
-        minCases = entry.y;
-        minWeek = entry.x;
-        getLowW = minWeek.toString();
-        lowW = lowW + ' ' + getLowW;
-      }
-    }
-    return lowW;
-  }
-}
-
-String findHighCasesAgeGroupYR(List<piechartData> data) {
-  double Cases = 0;
-  String getAgeGroup = '';
-
-  if (pieChartYR.isEmpty) {
-    print('data is empty');
-    return hAgeGroup;
-  } else {
-    if (hAgeGroup == '') {
-      for (piechartData entry in pieChartYR) {
-        if (entry.number > Cases) {
-          Cases = entry.number;
-          ageGroup = entry.ageGroup;
-        }
-      }
-
-      for (piechartData entry in pieChartYR) {
-        if (entry.number == Cases) {
-          Cases = entry.number;
-          ageGroup = entry.ageGroup;
-          getAgeGroup = ageGroup;
-          hAgeGroup = hAgeGroup + ' ' + getAgeGroup;
-        }
-      }
-    }
-  }
-
-  return hAgeGroup;
-}
-
-String findLowCasesAgeGroupYR(List<piechartData> data) {
-  double cases = data.isNotEmpty ? data[0].number : 0;
-
-  String getAgeGroup = '';
-
-  String ageGroup = '';
-  if (pieChartYR.isEmpty) {
-    print('data is empty');
-
-    return lAgeGroup;
-  } else {
-    if (lAgeGroup == '') {
-      for (piechartData entry in data) {
-        if (entry.number <= cases) {
-          cases = entry.number;
-          ageGroup = entry.ageGroup;
-        }
-      }
-
-      for (piechartData entry in data) {
-        if (entry.number == cases) {
-          ageGroup = entry.ageGroup;
-          getAgeGroup = ageGroup;
-          lAgeGroup = lAgeGroup + ' ' + getAgeGroup;
-        }
-      }
-    }
-
-    return lAgeGroup;
-  }
+  return lowM;
 }
 
 String findHighestCaseSPYR(List<StreetPurokData> data) {
@@ -1868,9 +1548,9 @@ String findHighestCaseSPYR(List<StreetPurokData> data) {
     if (entry.cases == maxCases) {
       sPurok = entry.purok;
       getHighSP = sPurok;
-      highSP = highSP + ' ' + getHighSP;
+      highSP = '$highSP $getHighSP,';
     }
   }
 
   return highSP;
-}*/
+}
