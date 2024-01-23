@@ -112,7 +112,6 @@ class _UserRegisterPageState extends State<UserRegisterPage>
   final String userType = 'User';
   var _verificationId = ''.obs;
   bool _isEulaAccepted = false;
-  bool _isResident = false;
 //late int _remainingTime = 60;
 
   int _counter = 0;
@@ -337,25 +336,7 @@ class _UserRegisterPageState extends State<UserRegisterPage>
                     },
                   ),
                 ),
-                const SizedBox(height: 20),
-                //!! EULA
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Checkbox(
-                      value: _isResident,
-                      onChanged: (value) {
-                        setState(() {
-                          _isResident = value!;
-                        });
-                      },
-                    ),
-                    Text(
-                      'I am a resident of Brgy. Buhangin!   ',
-                      style: GoogleFonts.poppins(fontSize: 12),
-                    ),
-                  ],
-                ),
+
                 const SizedBox(height: 20),
                 //!! EULA
                 Row(
@@ -396,8 +377,7 @@ class _UserRegisterPageState extends State<UserRegisterPage>
                     onPressed: () async {
                       try {
                         if (_formKey.currentState!.validate() &&
-                            _isEulaAccepted &&
-                            _isResident) {
+                            _isEulaAccepted) {
                           String num = "+63${_contactNumberController.text}";
                           _startTimer();
                           _showOTPDialog(context);
@@ -498,6 +478,33 @@ For the purposes of this End-User License Agreement:
     company, or other legal entity on behalf of which such individual is
     accessing or using the Application, as applicable.
 
+PERSONAL INFORMATION COLLECTION
+-------------------------------
+When you create an account, or otherwise provide us with your personal 
+information through the website (www.denguecare.online) or through our 
+application DengueCare, the personal information we collect may include your:
+- Name 
+- Address 
+- Email Address 
+- Contact Number 
+- Mobile Number 
+- Date of Birth 
+- Gender
+
+You must only submit to us, our authorized agent or the website, information
+which is accurate and not misleading and you must keep it up to date and inform
+us of changes (more information below). We reserve the right to request
+for documentation to verify the information provided by you.
+
+We will only be able to collect your personal information if you voluntarily submit
+the information to us. If you choose not to submit your personal information to us or
+subsequently withdraw your consent to our use of your personal information,
+we may not be able to provide you with our Services. You may access and update 
+your personal information submitted to us at any time as described below.
+
+If you provide personal information of any third party to us, we assume that
+you have obtained the required consent from the relevant third party to share 
+and transfer his/her personal information to us.
 
 Acknowledgment  
 --------------

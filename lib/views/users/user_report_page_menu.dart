@@ -17,6 +17,7 @@ class UserReportPageMenu extends StatefulWidget {
 
 class _UserReportPageMenuState extends State<UserReportPageMenu> {
   bool isVerified = false;
+  bool isPending = false;
   User? user;
   @override
   void initState() {
@@ -24,6 +25,19 @@ class _UserReportPageMenuState extends State<UserReportPageMenu> {
     user = FirebaseAuth.instance.currentUser;
     // Call a method to fetch boolean data from Firestore
     _fetchIsVerifiedData();
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get()
+        .then((snapshot) {
+      if (snapshot.exists) {
+        Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          // Update _selectedPurok if the 'purok' key exists in userData
+          isPending = userData['isPending'];
+        });
+      }
+    });
   }
 
   Future<void> _fetchIsVerifiedData() async {
@@ -87,16 +101,22 @@ class _UserReportPageMenuState extends State<UserReportPageMenu> {
     if (!isVerified) {
       submitButton = GestureDetector(
         onTap: () {
-          _showVerificationDialog();
-          print('Hey');
+          if (!isVerified && isPending) {
+            _showPendingStatusDialog();
+          } else {
+            _showVerificationDialog();
+          }
         },
         child: submitButton,
       );
 
       viewHistoryButton = GestureDetector(
         onTap: () {
-          _showVerificationDialog();
-          print('Hey2');
+          if (!isVerified && isPending) {
+            _showPendingStatusDialog();
+          } else {
+            _showVerificationDialog();
+          }
         },
         child: viewHistoryButton,
       );
@@ -155,10 +175,57 @@ class _UserReportPageMenuState extends State<UserReportPageMenu> {
             ),
             TextButton(
               onPressed: () {
+                Navigator.of(context).pop();
                 Get.to(() => const UserVerifyAccountPage());
               },
               child: Text(
                 'Proceed',
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showPendingStatusDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Verification is on the way',
+            style: GoogleFonts.poppins(
+              fontSize: 24,
+            ),
+          ),
+          content: Text(
+            'We ask for your patience as we verify your account.',
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'OK',
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                 ),

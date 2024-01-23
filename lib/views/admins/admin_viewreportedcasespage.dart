@@ -122,7 +122,7 @@ class _AdminViewReportedCasesPageState
     'Purok Watusi'
   ];
 
-  bool isEnglish = true;
+  bool isEnglish = false;
   void toggleLanguage() {
     setState(() {
       isEnglish = !isEnglish;

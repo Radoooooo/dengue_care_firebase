@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:denguecare_firebase/charts/testchart.dart';
 import 'package:denguecare_firebase/views/admins/admin_accountsettings.dart';
 import 'package:denguecare_firebase/views/admins/admin_announcements.dart';
 import 'package:denguecare_firebase/views/admins/admin_manageadmin.dart';

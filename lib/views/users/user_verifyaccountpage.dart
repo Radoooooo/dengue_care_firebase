@@ -50,7 +50,7 @@ class _UserVerifyAccountPageState extends State<UserVerifyAccountPage> {
         title: const Text("Verify Account"),
         leading: BackButton(
           onPressed: () {
-            Get.to(() => const UserMainPage());
+            Get.back();
           },
         ),
       ),
@@ -68,18 +68,68 @@ class _UserVerifyAccountPageState extends State<UserVerifyAccountPage> {
                 maxWidth: 400,
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    'Upload an ID',
+                    'Upload proof of residency',
                     style: GoogleFonts.poppins(
-                        fontSize: 30, fontWeight: FontWeight.bold),
+                        fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Upload an image of an ID containing proof of your residence.',
+                    'To verify your account, you will need to upload a document such as a proof of residence.',
                     style: GoogleFonts.poppins(fontSize: 12),
                   ),
-                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: RichText(
+                      text: TextSpan(
+                        style: GoogleFonts.poppins(),
+                        children: const <TextSpan>[
+                          TextSpan(
+                              text:
+                                  'Prepare one (1) proof of residence. Any of the following below.\n'),
+                          TextSpan(
+                              text: '• ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: 'Barangay Certificate\n'),
+                          TextSpan(
+                              text: '• ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: 'Water Bill\n'),
+                          TextSpan(
+                              text: '• ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: 'Electricity Bill\n'),
+                          TextSpan(
+                              text: '• ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: 'Internet Bill\n'),
+                          TextSpan(
+                              text: '• ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: 'Police Clearance\n'),
+                          TextSpan(
+                              text: '• ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text:
+                                  'National Bureau of Investigation (NBI) Clearance\n'),
+                          TextSpan(
+                              text: '• ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: 'Lease Contract\n'),
+
+                          TextSpan(
+                              text: '• ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: 'Credit Card Statement of Account (SoA)\n'),
+                          // Add more TextSpans as needed
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                   // First Placeholder for ID Upload
                   _buildIDUploadSection(),
                   const SizedBox(height: 16),
@@ -220,6 +270,10 @@ class _UserVerifyAccountPageState extends State<UserVerifyAccountPage> {
           'date': FieldValue.serverTimestamp(),
           'status': false,
         });
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'isPending': true});
         _showConfirmationDialog();
       } else if (Platform.isAndroid) {
         String? imageUrl;
@@ -245,6 +299,10 @@ class _UserVerifyAccountPageState extends State<UserVerifyAccountPage> {
           'date': FieldValue.serverTimestamp(),
           'status': false,
         });
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'isPending': true});
         _showConfirmationDialog();
       }
     } catch (e) {
@@ -268,7 +326,7 @@ class _UserVerifyAccountPageState extends State<UserVerifyAccountPage> {
             ),
           ),
           content: Text(
-            'We ask for your understanding as we validate your request.',
+            'We ask for your patience as we validate your request.',
             style: GoogleFonts.poppins(
               fontSize: 16,
             ),

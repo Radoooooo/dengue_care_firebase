@@ -1,9 +1,7 @@
 import 'package:denguecare_firebase/views/users/user_dengueheatmap.dart';
-import 'package:denguecare_firebase/views/users/user_report_page.dart';
 import 'package:denguecare_firebase/views/users/user_report_page_menu.dart';
 import 'package:denguecare_firebase/views/users/user_settings_page.dart';
 import 'package:denguecare_firebase/views/widgets/post_list.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -12,7 +10,6 @@ class UserHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
     return const Scaffold(
       body: PostsList(),
     );
@@ -40,10 +37,10 @@ class UserMainPage extends StatefulWidget {
 class _UserMainPageState extends State<UserMainPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
   @override
   void initState() {
     super.initState();
-
     _tabController = TabController(length: 4, vsync: this);
     // Calling the Future function when the page loads.
   }
@@ -65,26 +62,6 @@ class _UserMainPageState extends State<UserMainPage>
           'DengueCare',
           style: GoogleFonts.poppins(fontSize: 20),
         ),
-        actions: <Widget>[
-          PopupMenuButton<int>(
-            padding: EdgeInsets.zero,
-            onSelected: (item) => handleClick(item),
-            itemBuilder: (context) => [
-              PopupMenuItem<int>(
-                value: 1,
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.info,
-                    color: Colors.black,
-                    size: 26,
-                  ),
-                  title: const Text('About'),
-                  onTap: () {},
-                ),
-              ),
-            ],
-          ),
-        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -100,10 +77,7 @@ class _UserMainPageState extends State<UserMainPage>
               icon: Icon(Icons.report_rounded),
               text: 'Reports',
             ),
-            Tab(
-              icon: Icon(Icons.settings_rounded),
-              text: 'Settings',
-            ),
+            Tab(text: 'Settings', icon: Icon(Icons.settings)),
           ],
         ),
       ),

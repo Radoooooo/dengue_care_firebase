@@ -335,18 +335,21 @@ class _AdminConfirmationPageState extends State<AdminConfirmationPage> {
   }
 
   void updateVerificationStatus() async {
-    String postID = await fetchPostID();
+    // String postID = await fetchPostID();
     String docID = await fetchDocumentID();
+    String docforVerificationID = await fetchDocumentIDforVerification();
+
     try {
+      await FirebaseFirestore.instance.collection('users').doc(docID).update({
+        'isVerified': true,
+        'isPending': false,
+      });
       await FirebaseFirestore.instance
           .collection('forVerification')
-          .doc(postID)
-          .update({'status': true});
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(docID)
-          .update({'isVerified': true});
+          .doc(docforVerificationID)
+          .update({
+        'status': true,
+      });
       print('Status updated successfully.');
     } catch (e) {
       print('Error updating status: $e');
@@ -377,7 +380,7 @@ class _AdminConfirmationPageState extends State<AdminConfirmationPage> {
                 Get.back();
               },
               child: Text(
-                'Cancel,',
+                'Cancel',
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                 ),
@@ -386,11 +389,13 @@ class _AdminConfirmationPageState extends State<AdminConfirmationPage> {
             TextButton(
               onPressed: () {
                 updateVerificationStatus();
+                // deleteRequest();
+                // deleteFileByURL(widget.post['imageUrl']);
                 Get.offAll(() => const AdminVerifyUserPage());
                 _showSnackbarSuccess(context, 'Confirmation Successful');
               },
               child: Text(
-                'Confirm,',
+                'Confirm',
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                 ),
@@ -426,7 +431,7 @@ class _AdminConfirmationPageState extends State<AdminConfirmationPage> {
                 Get.back();
               },
               child: Text(
-                'Cancel,',
+                'Cancel',
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                 ),
@@ -434,13 +439,14 @@ class _AdminConfirmationPageState extends State<AdminConfirmationPage> {
             ),
             TextButton(
               onPressed: () {
-                deleteRequest();
-                deleteFileByURL(widget.post['imageUrl']);
+                updateVerificationStatusRejected();
+                // deleteRequest();
+                // deleteFileByURL(widget.post['imageUrl']);
                 Get.offAll(() => const AdminVerifyUserPage());
                 _showSnackbarSuccess(context, 'Action Successful');
               },
               child: Text(
-                'Confirm,',
+                'Confirm',
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                 ),
@@ -484,6 +490,22 @@ class _AdminConfirmationPageState extends State<AdminConfirmationPage> {
     } catch (e) {
       print('Error deleting file: $e');
       _showSnackbarError(context, e.toString());
+    }
+  }
+
+  void updateVerificationStatusRejected() async {
+    // String postID = await fetchPostID();
+    String docID = await fetchDocumentID();
+
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(docID).update({
+        'isVerified': false,
+        'isPending': false,
+      });
+
+      print('Status updated successfully.');
+    } catch (e) {
+      print('Error updating status: $e');
     }
   }
 

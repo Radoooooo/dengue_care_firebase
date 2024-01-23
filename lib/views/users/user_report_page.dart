@@ -49,7 +49,7 @@ class _UserReportPageState extends State<UserReportPage> {
   final TextEditingController _contactnumberController =
       TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  bool isEnglish = true;
+  bool isEnglish = false;
 
   void toggleLanguage() {
     setState(() {
